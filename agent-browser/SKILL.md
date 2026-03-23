@@ -424,3 +424,16 @@ Priority (lowest to highest): `~/.agent-browser/config.json` < `./agent-browser.
 ./templates/authenticated-session.sh https://app.example.com/login
 ./templates/capture-workflow.sh https://example.com ./output
 ```
+
+---
+
+## Attribution
+
+This skill documents the [agent-browser](https://github.com/vercel-labs/agent-browser) CLI tool by [Vercel Labs](https://github.com/vercel-labs).
+
+- **Project**: agent-browser
+- **Author**: Vercel Inc.
+- **License**: Apache License 2.0
+- **Copyright**: Copyright 2025 Vercel Inc.
+
+See [LICENSE](./LICENSE) for full license text.
