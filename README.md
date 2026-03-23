@@ -12,6 +12,7 @@ This repository contains a collection of skills for AI agents.
 | [notion-second-brain](./notion-second-brain) | Notion second brain integration | - |
 | [skill-creator](./skill-creator) | Guide for creating effective skills | MIT |
 | [using-git-worktrees](./using-git-worktrees) | Create isolated git worktrees | MIT |
+| [humanizer](./humanizer) | Remove signs of AI-generated writing from text | MIT |
 
 ---
 
@@ -48,6 +49,12 @@ The following skills were created by others and are included here with their res
 - **Author**: Tobia De Angelis
 - **License**: MIT License
 - **Copyright**: Copyright 2025 Tobia De Angelis
+
+### humanizer
+- **Source**: [blader/humanizer](https://github.com/blader/humanizer)
+- **Author**: Siqi Chen
+- **License**: MIT License
+- **Copyright**: Copyright 2025 Siqi Chen
 
 ---
 
