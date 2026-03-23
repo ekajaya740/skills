@@ -13,6 +13,7 @@ This repository contains a collection of skills for AI agents.
 | [skill-creator](./skill-creator) | Guide for creating effective skills | MIT |
 | [using-git-worktrees](./using-git-worktrees) | Create isolated git worktrees | MIT |
 | [humanizer](./humanizer) | Remove signs of AI-generated writing from text | MIT |
+| [notebooklm](./notebooklm) | Claude Code skill for NotebookLM integration | MIT |
 
 ---
 
@@ -55,6 +56,12 @@ The following skills were created by others and are included here with their res
 - **Author**: Siqi Chen
 - **License**: MIT License
 - **Copyright**: Copyright 2025 Siqi Chen
+
+### notebooklm
+- **Source**: [PleasePrompto/notebooklm-skill](https://github.com/PleasePrompto/notebooklm-skill)
+- **Author**: Please Prompto!
+- **License**: MIT License
+- **Copyright**: Copyright 2025 Please Prompto!
 
 ---
 
