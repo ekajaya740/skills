@@ -34,6 +34,9 @@ Practical step-by-step templates for common Notion second brain operations. Each
 
 4. **Prepare properties**
    - Map user-provided values to schema properties
+   - **CRITICAL - Status handling:** If the database has a Status property and the user did NOT explicitly specify a status, ALWAYS set it to the "inbox" status (or equivalent initial status like "To Do", "Not Started", or "Open")
+   - Only use a different status if the user explicitly requests it
+   - **CRITICAL - Tags/Topics formatting:** Always use kebab-case for tags and topics (e.g., `my-topic`, `project-alpha`, `urgent-task`). Convert spaces to hyphens and use lowercase.
    - Set default values for optional properties if not provided
 
 5. **Create the page**
@@ -50,7 +53,9 @@ Practical step-by-step templates for common Notion second brain operations. Each
 ### Example
 
 **User prompt:**
-> Add a new task about finishing the Q4 report, set status to In Progress, due Friday, and link it to the Marketing project.
+> Add a new task about finishing the Q4 report, due Friday, and link it to the Marketing project.
+
+**Note:** The user did NOT specify a status, so it will default to inbox/initial status.
 
 **Tool calls:**
 
@@ -73,6 +78,32 @@ Practical step-by-step templates for common Notion second brain operations. Each
   }
 }
 ```
+
+```json
+{
+  "tool": "notion_notion-create-pages",
+  "args": {
+    "parent": {
+      "database_id": "database-id-for-tasks"
+    },
+    "pages": [
+      {
+        "properties": {
+          "Name": "Finish Q4 Report",
+          "Status": "Inbox",
+          "date:Due Date:start": "2024-12-20",
+          "date:Due Date:is_datetime": 0
+        }
+      }
+    ]
+  }
+}
+```
+
+**Another example - user explicitly specifies status:**
+> Add a new task about finishing the Q4 report, set status to In Progress, due Friday.
+
+In this case, use "In Progress" as requested:
 
 ```json
 {
