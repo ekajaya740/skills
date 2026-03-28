@@ -216,3 +216,16 @@ Ready to implement auth feature
 
 **Pairs with:**
 - **finishing-a-development-branch** - REQUIRED for cleanup after work complete
+
+---
+
+## Attribution
+
+This skill is based on the [worktrees-skill](https://github.com/tbdng/worktrees-skill) by [Tobia De Angelis](https://github.com/tbdng).
+
+- **Project**: worktrees-skill
+- **Author**: Tobia De Angelis
+- **License**: MIT License
+- **Copyright**: Copyright (c) 2025 Tobia De Angelis
+
+See [LICENSE](./LICENSE) for full license text.

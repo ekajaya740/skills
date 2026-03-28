@@ -131,3 +131,16 @@ I can still help you with this task directly! Would you like me to proceed?
 If this is something you do often, you could create your own skill:
 npx skills init my-xyz-skill
 ```
+
+---
+
+## Attribution
+
+This skill is from the [oh-my-claudecode](https://github.com/Yeachan-Heo/oh-my-claudecode) project by [Yeachan Heo](https://github.com/Yeachan-Heo).
+
+- **Project**: oh-my-claudecode
+- **Author**: Yeachan Heo
+- **License**: MIT License
+- **Copyright**: Copyright (c) 2025 Yeachan Heo
+
+See [LICENSE](./LICENSE) for full license text.

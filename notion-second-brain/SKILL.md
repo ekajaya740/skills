@@ -84,3 +84,4 @@ For database creation patterns, see [references/database-patterns.md](references
 - Use the user's existing terminology and conventions
 - Create entries in the appropriate parent page or database
 - Link new entries to related content immediately after creation
+- **Topics/Tags formatting**: Always use kebab-case for tags and topics (e.g., `my-topic`, `project-alpha`, `urgent-task`)

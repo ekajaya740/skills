@@ -31,17 +31,17 @@ Central tracking for projects of any size.
 | Property | Type | Notes |
 |----------|------|-------|
 | Name | title | Primary identifier |
-| Status | select | Options: Not Started, In Progress, Completed, On Hold |
+| Status | select | Options: Inbox, Not Started, In Progress, Completed, On Hold |
 | Due Date | date | Optional deadline |
 | Area | relation | Links to Areas database |
-| Tags | multi_select | For categorization |
+| Tags | multi_select | For categorization - use kebab-case |
 
 ### Notion DDL
 
 ```sql
 CREATE TABLE "Projects" (
   "Name" TITLE,
-  "Status" SELECT('Not Started', 'In Progress', 'Completed', 'On Hold'),
+  "Status" SELECT('Inbox', 'Not Started', 'In Progress', 'Completed', 'On Hold'),
   "Due Date" DATE,
   "Area" RELATION('areas-database-id'),
   "Tags" MULTI_SELECT()
@@ -59,7 +59,7 @@ Actionable items that may or may not belong to a project.
 | Property | Type | Notes |
 |----------|------|-------|
 | Name | title | Primary identifier |
-| Status | select | Options: To Do, In Progress, Done |
+| Status | select | Options: Inbox, To Do, In Progress, Done |
 | Project | relation | Links to Projects database |
 | Due Date | date | Optional deadline |
 | Priority | select | Options: Low, Medium, High |
@@ -69,7 +69,7 @@ Actionable items that may or may not belong to a project.
 ```sql
 CREATE TABLE "Tasks" (
   "Name" TITLE,
-  "Status" SELECT('To Do', 'In Progress', 'Done'),
+  "Status" SELECT('Inbox', 'To Do', 'In Progress', 'Done'),
   "Project" RELATION('projects-database-id'),
   "Due Date" DATE,
   "Priority" SELECT('Low', 'Medium', 'High')
@@ -88,7 +88,7 @@ Ad-hoc notes and quick captures.
 |----------|------|-------|
 | Name | title | Primary identifier |
 | Content | rich_text | Note body |
-| Tags | multi_select | For categorization |
+| Tags | multi_select | For categorization - use kebab-case |
 | Linked Project | relation | Optional project association |
 
 ### Notion DDL
@@ -115,7 +115,7 @@ Reference material and learnings from external sources.
 | Name | title | Primary identifier |
 | Summary | rich_text | Brief description |
 | Source | url | Original source link |
-| Tags | multi_select | For categorization |
+| Tags | multi_select | For categorization - use kebab-case |
 
 ### Notion DDL
 
@@ -140,7 +140,7 @@ Broader categories that contain projects, such as work areas or life domains.
 |----------|------|-------|
 | Name | title | Primary identifier |
 | Description | rich_text | Area details |
-| Status | select | Options: Active, Completed, On Hold |
+| Status | select | Options: Inbox, Active, Completed, On Hold |
 
 ### Notion DDL
 
@@ -148,7 +148,7 @@ Broader categories that contain projects, such as work areas or life domains.
 CREATE TABLE "Areas" (
   "Name" TITLE,
   "Description" RICH_TEXT,
-  "Status" SELECT('Active', 'Completed', 'On Hold')
+  "Status" SELECT('Inbox', 'Active', 'Completed', 'On Hold')
 )
 ```
 
@@ -187,6 +187,8 @@ Multiple-choice tags allowing zero or more selections.
 ```sql
 "Tags" MULTI_SELECT()
 ```
+
+**Formatting Rule**: Always use kebab-case for tag values (e.g., `my-topic`, `project-alpha`, `urgent-task`). Convert spaces to hyphens and use lowercase.
 
 ### DATE
 
