@@ -1,87 +1,188 @@
 ---
 name: notion-second-brain
-description: "Use when user wants to interact with their Notion second brain for: (1) Adding new entries (projects, tasks, notes, knowledge), (2) Linking entries together, (3) Searching/retrieving information, (4) Updating existing entries, (5) Creating new databases. Requires Notion MCP configured with access to user's workspace."
+description: "Use when user wants to interact with their Notion second brain for: (1) Adding new entries (projects, tasks, notes, knowledge), (2) Linking entries together, (3) Searching/retrieving information, (4) Updating existing entries, (5) Creating new databases. Uses Notion CLI (ntn) to interact with the user's Notion workspace."
 ---
 
 # Notion Second Brain
 
 ## Overview
 
-This skill enables Claude to interact with a user's Notion workspace as a second brain. It provides structured workflows for discovering the user's existing structure, adding new entries, linking related content, and retrieving information using Notion MCP tools.
+This skill enables Claude to interact with a user's Notion workspace as a second brain using the Notion CLI (`ntn`). It provides structured workflows for discovering the user's existing structure, adding new entries, linking related content, and retrieving information.
+
+**IMPORTANT**: This skill ALWAYS writes to Notion. Never create local files when this skill is invoked.
 
 ## Prerequisite Check
 
-Before using this skill, verify Notion MCP is configured:
+Before using this skill, verify the Notion CLI is available:
 
-1. Check if Notion tools are available in the current session
-2. If Notion tools are not available, inform the user that Notion MCP must be configured first
+1. Check if `ntn` command is available
+2. Verify `NOTION_API_TOKEN` environment variable is set
+3. If not available, inform the user they need to:
+   - Install: `npm i -g ntn@latest`
+   - Set token: `export NOTION_API_TOKEN="secret_xxx"`
 
 ## Discovery Workflow
 
 Map the user's Notion structure before performing any actions:
 
-1. **Identify top-level pages** - Search for the user's main hub pages (e.g., "Second Brain", "Dashboard", "Projects")
-2. **Map databases** - Find all database structures (tables, boards, calendars) and their schemas
-3. **Identify linking patterns** - Understand how entries are connected (relations, linked pages, tags)
-4. **Document the structure** - Create a mental model of the workspace layout for context-aware actions
+1. **Search for existing content**: Use `ntn api v1/search` to find relevant pages/databases
+2. **Identify databases**: Find all database structures and their schemas
+3. **Map parent pages**: Understand the workspace hierarchy (e.g., "Second Brain", "Projects", "Notes")
+4. **Document the structure**: Create a mental model of the workspace layout
 
-For detailed discovery techniques, see [references/structure-discovery.md](references/structure-discovery.md).
+Example discovery commands:
+```bash
+# Search for databases
+ntn api v1/search filter="{\"property\":\"object\",\"value\":\"database\"}"
+
+# Search for pages with "Second Brain" in title
+ntn api v1/search query="Second Brain"
+
+# Get database schema
+ntn api v1/databases/<database-id>
+```
 
 ## Action Execution
 
-After discovery, execute actions based on the user's request:
+After discovery, execute actions based on the user's request using `ntn api`:
 
 ### Adding New Entries
 
-- Create pages in existing databases or as standalone pages
-- Set appropriate properties (status, dates, tags, etc.)
-- Link new entries to related existing content
+**ALWAYS use Notion** - never create local files:
 
-For creation patterns, see [references/database-patterns.md](references/database-patterns.md) and [references/action-templates.md](references/action-templates.md).
+```bash
+# Create a page in a database
+ntn api v1/pages -d '{
+  "parent": {"database_id": "DATABASE_ID"},
+  "properties": {
+    "Name": {"title": [{"text": {"content": "Entry Title"}}]},
+    "Status": {"select": {"name": "In Progress"}},
+    "Tags": {"multi_select": [{"name": "tag-name"}]}
+  }
+}'
+
+# Create a standalone page
+ntn api v1/pages -d '{
+  "parent": {"page_id": "PAGE_ID"},
+  "properties": {
+    "title": {"title": [{"text": {"content": "Page Title"}}]}
+  }
+}'
+```
 
 ### Linking Entries
 
-- Use Notion relations or inline page links to connect related entries
-- Create hub pages that aggregate related content
-- Maintain bidirectional links where appropriate
+Create relations between entries:
 
-For linking strategies, see [references/linking-strategy.md](references/linking-strategy.md).
+```bash
+# Update a page to add a relation
+ntn api v1/pages/PAGE_ID -d '{
+  "properties": {
+    "Related": {"relation": [{"id": "OTHER_PAGE_ID"}]}
+  }
+}'
+
+# Add a mention in page content
+ntn api v1/blocks/PAGE_ID/children -d '{
+  "children": [{
+    "object": "block",
+    "type": "paragraph",
+    "paragraph": {
+      "rich_text": [{
+        "type": "mention",
+        "mention": {"type": "page", "page": {"id": "OTHER_PAGE_ID"}}
+      }]
+    }
+  }]
+}'
+```
 
 ### Searching and Retrieving
 
-- Use `notion_notion-search` for semantic search across the workspace
-- Use `notion_notion-fetch` to retrieve full page/database contents
-- Navigate relations to find related information
+```bash
+# Search across workspace
+ntn api v1/search query="search terms"
+
+# Fetch specific page content
+ntn api v1/blocks/PAGE_ID/children
+
+# Query database with filters
+ntn api v1/databases/DB_ID/query -d '{
+  "filter": {
+    "property": "Status",
+    "select": {"equals": "Done"}
+  }
+}'
+```
 
 ### Updating Entries
 
-- Modify page content using `notion_notion-update-page`
-- Update database properties (status changes, due dates, etc.)
-- Add or remove relations as context evolves
+```bash
+# Update page properties
+ntn api v1/pages/PAGE_ID -d '{
+  "properties": {
+    "Status": {"select": {"name": "Completed"}},
+    "Completed Date": {"date": {"start": "2024-01-15"}}
+  }
+}'
+
+# Append content to a page
+ntn api v1/blocks/PAGE_ID/children -d '{
+  "children": [{
+    "object": "block",
+    "type": "paragraph",
+    "paragraph": {
+      "rich_text": [{"type": "text", "text": {"content": "Additional content"}}]
+    }
+  }]
+}'
+```
 
 ### Creating New Databases
 
-- Design database schema based on the user's needs
-- Create appropriate views (table, board, calendar, etc.)
-- Set up initial properties and relations
-
-For database creation patterns, see [references/database-patterns.md](references/database-patterns.md).
+```bash
+# Create a database as child of a page
+ntn api v1/databases -d '{
+  "parent": {"page_id": "PAGE_ID"},
+  "title": [{"type": "text", "text": {"content": "Database Title"}}],
+  "properties": {
+    "Name": {"title": {}},
+    "Status": {"select": {"options": [{"name": "Todo", "color": "red"}, {"name": "Done", "color": "green"}]}},
+    "Tags": {"multi_select": {"options": []}}
+  }
+}'
+```
 
 ## Quick Reference
 
-| Action | Notion MCP Tools |
-|--------|-----------------|
-| Search | `notion_notion-search` |
-| Fetch page/db | `notion_notion-fetch` |
-| Create page | `notion_notion-create-pages` |
-| Update page | `notion_notion-update-page` |
-| Create database | `notion_notion-create-database` |
-| Add comment | `notion_notion-create-comment` |
+| Action | Notion CLI Command |
+|--------|-------------------|
+| Search | `ntn api v1/search` |
+| Fetch page | `ntn api v1/pages/PAGE_ID` |
+| Fetch blocks | `ntn api v1/blocks/PAGE_ID/children` |
+| Create page | `ntn api v1/pages` |
+| Update page | `ntn api v1/pages/PAGE_ID` |
+| Query database | `ntn api v1/databases/DB_ID/query` |
+| Create database | `ntn api v1/databases` |
+| Add blocks | `ntn api v1/blocks/PAGE_ID/children` |
 
 ## Tips
 
-- Always discover the workspace structure first before making changes
+- **Always use Notion**: When this skill is invoked, all data goes to Notion. Never create local files.
+- Discover the workspace structure first before making changes
 - Use the user's existing terminology and conventions
 - Create entries in the appropriate parent page or database
 - Link new entries to related content immediately after creation
 - **Topics/Tags formatting**: Always use kebab-case for tags and topics (e.g., `my-topic`, `project-alpha`, `urgent-task`)
+- Use `ntn api <path> --help` for quick reference on any endpoint
+
+## Self-Documentation
+
+Always prefer checking the CLI help over guessing:
+
+```bash
+ntn api ls                    # List all endpoints
+ntn api v1/pages --help       # Help for pages endpoint
+ntn api v1/pages --docs       # Full official docs
+ntn <command> --help          # General command help
+```

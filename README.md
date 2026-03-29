@@ -14,6 +14,7 @@ This repository contains a collection of skills for AI agents.
 | [using-git-worktrees](./using-git-worktrees) | Create isolated git worktrees | MIT |
 | [humanizer](./humanizer) | Remove signs of AI-generated writing from text | MIT |
 | [notebooklm](./notebooklm) | Claude Code skill for NotebookLM integration | MIT |
+| [Understand-Anything](./Understand-Anything) | Turn any codebase into an interactive knowledge graph | MIT |
 
 ---
 
@@ -62,6 +63,12 @@ The following skills were created by others and are included here with their res
 - **Author**: Please Prompto!
 - **License**: MIT License
 - **Copyright**: Copyright 2025 Please Prompto!
+
+### Understand-Anything
+- **Source**: [Lum1104/Understand-Anything](https://github.com/Lum1104/Understand-Anything)
+- **Author**: Yuxiang Lin (Lum1104)
+- **License**: MIT License
+- **Copyright**: Copyright 2026 Yuxiang Lin
 
 ---
 
