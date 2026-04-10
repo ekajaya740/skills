@@ -1,6 +1,6 @@
 # Structure Discovery
 
-This guide provides a systematic process for discovering and mapping an existing Notion workspace structure using the Notion MCP tools.
+This guide provides a systematic process for discovering and mapping an existing Notion workspace structure using the Notion CLI (`ntn`).
 
 ## Table of Contents
 
@@ -29,7 +29,7 @@ Run each step in order. Do not skip steps.
 
 ## Step 1: Search for Existing Databases
 
-Use `notion_notion-search` to discover databases and pages in the workspace.
+Use `ntn api v1/search` to discover databases and pages in the workspace.
 
 ### Core Search Queries
 
@@ -102,7 +102,7 @@ Store all discovered IDs for Step 2.
 
 ## Step 2: Fetch Database Schemas
 
-For each discovered database ID, use `notion_notion-fetch` to get the schema.
+For each discovered database ID, use `ntn api v1/databases/<id> -X GET` to get the schema.
 
 ### Fetch a Database
 
@@ -158,7 +158,7 @@ From the response, record:
 
 ## Step 3: Map Page Hierarchy
 
-Identify top-level pages and their children using `notion_notion-search`.
+Identify top-level pages and their children using `ntn api v1/search`.
 
 ### Find Top-Level Pages
 
@@ -232,7 +232,7 @@ Look for these common patterns:
 
 ## Step 4: Identify Linking Targets
 
-Find specific entries that can serve as targets for `notion_notion-create-pages` relations or page links.
+Find specific entries that can serve as targets for relations or page links using `ntn api v1/search`.
 
 ### Find Linkable Entries
 
@@ -343,7 +343,7 @@ Refresh the cached structure when:
 ### Step 1: Initial Search
 
 ```
-notion_notion-search: {"query": "second brain", "query_type": "internal", "page_size": 10}
+ntn api v1/search: {"query": "second brain", "query_type": "internal", "page_size": 10}
 ```
 
 Returns:
@@ -353,7 +353,7 @@ Returns:
 ### Step 2: Fetch Database Schema
 
 ```
-notion_notion-fetch: {"id": "projects-db-456"}
+ntn api v1/databases/projects-db-456 -X GET
 ```
 
 Response includes:
@@ -372,7 +372,7 @@ Response includes:
 ### Step 3: Map Page Hierarchy
 
 ```
-notion_notion-fetch: {"id": "dashboard-123"}
+ntn api v1/pages/dashboard-123 -X GET
 ```
 
 Response shows child pages and databases linked from the dashboard.
@@ -380,7 +380,7 @@ Response shows child pages and databases linked from the dashboard.
 ### Step 4: Identify Link Targets
 
 ```
-notion_notion-search: {"query": "Project Alpha", "query_type": "internal", "page_size": 5}
+ntn api v1/search: {"query": "Project Alpha", "query_type": "internal", "page_size": 5}
 ```
 
 Returns the Project Alpha entry with ID `proj-alpha-789`.

@@ -50,34 +50,18 @@ Before creating any new entry, execute a search to find existing alternatives.
 
 1. **User requests new entry** - User mentions adding something (project, note, contact, etc.)
 2. **Extract key terms** - Identify the likely name, tags, or topic
-3. **Search workspace** - Use `notion_notion-search` with relevant query
+3. **Search workspace** - Use `ntn api v1/search` with relevant query
 4. **Evaluate results** - Check if any existing entry covers the same ground
 5. **Decide** - Proceed with reuse or creation based on findings
 
-### Search Query Examples
+### Search CLI Commands
 
-```json
-{
-  "query": "<item-name>",
-  "query_type": "internal",
-  "page_size": 10
-}
-```
+```bash
+# Search for existing entry
+ntn api v1/search -d '{"query": "<item-name>"}'
 
-```json
-{
-  "query": "<topic-keyword>",
-  "query_type": "internal",
-  "page_size": 10
-}
-```
-
-```json
-{
-  "query": "<tag-name>",
-  "query_type": "internal",
-  "page_size": 10
-}
+# Search for related topics
+ntn api v1/search -d '{"query": "<topic-keyword>"}'
 ```
 
 ### What to Search For
@@ -316,7 +300,7 @@ Done
 
 **User Request:** "Add a task for the website redesign"
 
-**Search:** `notion_notion-search` for "website redesign project"
+**Search:** `ntn api v1/search` for "website redesign project"
 
 **Result:** Found Project "Website Redesign" (ID: `proj-123`)
 
@@ -343,7 +327,7 @@ Done
 
 **User Request:** "Add notes on machine learning"
 
-**Search:** `notion_notion-search` for "machine learning"
+**Search:** `ntn api v1/search` for "machine learning"
 
 **Result:** Found page "ML Fundamentals" (ID: `ml-456`)
 
@@ -395,7 +379,7 @@ Content: Team overview, responsibilities, key metrics
 
 **Scenario:** User wants to link all frontend-related entries
 
-**Search:** `notion_notion-search` for "frontend"
+**Search:** `ntn api v1/search` for "frontend"
 
 **Results:** Multiple entries tagged with `frontend`
 

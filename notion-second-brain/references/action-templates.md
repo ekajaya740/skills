@@ -1,6 +1,6 @@
 # Action Templates
 
-Practical step-by-step templates for common Notion second brain operations. Each template provides trigger conditions, exact steps, and working examples.
+Practical step-by-step templates for common Notion second brain operations using the Notion CLI (`ntn`).
 
 ## Table of Contents
 
@@ -8,7 +8,6 @@ Practical step-by-step templates for common Notion second brain operations. Each
 2. [Link Entries](#template-2-link-entries)
 3. [Find Related Entries](#template-3-find-related-entries)
 4. [Update Entry Status](#template-4-update-entry-status)
-5. [Create New Database](#template-5-create-new-database)
 
 ---
 
@@ -20,499 +19,196 @@ Practical step-by-step templates for common Notion second brain operations. Each
 
 ### Steps
 
-1. **Identify the target database**
-   - Search for the database to confirm it exists
-   - If database does not exist, use [Template 5](#template-5-create-new-database) first
+1. **Extract database ID from URL** (if provided) or search for the database
+2. **Query the database** to get its schema and data_source_id
+3. **Check for duplicates** - search for existing entries with the same name
+4. **Prepare properties**:
+   - Map values to schema properties
+   - **Status**: If database has Status and user didn't specify, set to "Inbox"
+   - **Topics/Tags**: Always use kebab-case (e.g., `my-topic`)
+5. **Create the page** with `ntn api v1/pages`
+6. **Link to related entries** bidirectionally
 
-2. **Search for duplicates**
-   - Use `notion_notion-search` to check if entry already exists
-   - Query with the proposed entry name or key terms
+### CLI Commands
 
-3. **Fetch the database schema**
-   - Use `notion_notion-fetch` with the database ID
-   - Identify required properties and their types
+```bash
+# Search for existing entry
+ntn api v1/search -d '{"query": "Entry Name"}'
 
-4. **Prepare properties**
-   - Map user-provided values to schema properties
-   - **CRITICAL - Status handling:** If the database has a Status property and the user did NOT explicitly specify a status, ALWAYS set it to the "inbox" status (or equivalent initial status like "To Do", "Not Started", or "Open")
-   - Only use a different status if the user explicitly requests it
-   - **CRITICAL - Tags/Topics formatting:** Always use kebab-case for tags and topics (e.g., `my-topic`, `project-alpha`, `urgent-task`). Convert spaces to hyphens and use lowercase.
-   - Set default values for optional properties if not provided
+# Get database schema (use database_id from URL)
+ntn api v1/databases/DATABASE_ID -X GET
 
-5. **Create the page**
-   - Use `notion_notion-create-pages` with parent set to database ID
-   - Include all required properties
+# Query to get data_source_id
+ntn api v1/data_sources/DATA_SOURCE_ID/query -d '{"page_size": 1}'
 
-6. **Link to related entries**
-   - After creation, use [Template 2](#template-2-link-entries) to connect to related pages
-   - Link to parent pages, related projects, tags, and team members
-
-7. **Confirm and report**
-   - Return the created page URL and summary of properties set
-
-### Example
-
-**User prompt:**
-> Add a new task about finishing the Q4 report, due Friday, and link it to the Marketing project.
-
-**Note:** The user did NOT specify a status, so it will default to inbox/initial status.
-
-**Tool calls:**
-
-```json
-{
-  "tool": "notion_notion-search",
-  "args": {
-    "query": "Q4 report task",
-    "query_type": "internal",
-    "page_size": 5
+# Create page (use data_source_id in parent)
+ntn api v1/pages -d '{
+  "parent": {"database_id": "NOTES_DATABASE_ID"},
+  "properties": {
+    "Name": {"title": [{"text": {"content": "Entry Title"}}]},
+    "Status": {"status": {"name": "Inbox"}}
   }
-}
+}'
+
+# Add bidirectional relations
+ntn api v1/pages/PAGE_ID -X PATCH -d '{
+  "properties": {
+    "Topics": {"relation": [{"id": "TOPIC_ID"}]}
+  }
+}'
 ```
 
-```json
-{
-  "tool": "notion_notion-fetch",
-  "args": {
-    "id": "database-id-for-tasks"
+### Example: Add Anime to Watchlist
+
+```bash
+# 1. Search if entry exists
+ntn api v1/search -d '{"query": "Nano Machine"}'
+
+# 2. Create topic if needed
+ntn api v1/pages -d '{
+  "parent": {"database_id": "TOPICS_DB_ID"},
+  "properties": {"Name": {"title": [{"text": {"content": "nano-machine"}}]}}
+}'
+
+# 3. Create note in Notes database
+ntn api v1/pages -d '{
+  "parent": {"database_id": "NOTES_DB_ID"},
+  "properties": {
+    "Name": {"title": [{"text": {"content": "Nano Machine"}}]},
+    "Areas": {"relation": [{"id": "ANIME_AREA_ID"}]},
+    "Topics": {"relation": [{"id": "TOPIC_ID"}]}
   }
-}
-```
+}'
 
-```json
-{
-  "tool": "notion_notion-create-pages",
-  "args": {
-    "parent": {
-      "database_id": "database-id-for-tasks"
-    },
-    "pages": [
-      {
-        "properties": {
-          "Name": "Finish Q4 Report",
-          "Status": "Inbox",
-          "date:Due Date:start": "2024-12-20",
-          "date:Due Date:is_datetime": 0
-        }
-      }
-    ]
+# 4. Bidirectional links
+ntn api v1/pages/AREA_ID -X PATCH -d '{
+  "properties": {
+    "Notes": {"relation": [{"id": "NOTE_ID"}]}
   }
-}
+}'
 ```
-
-**Another example - user explicitly specifies status:**
-> Add a new task about finishing the Q4 report, set status to In Progress, due Friday.
-
-In this case, use "In Progress" as requested:
-
-```json
-{
-  "tool": "notion_notion-create-pages",
-  "args": {
-    "parent": {
-      "database_id": "database-id-for-tasks"
-    },
-    "pages": [
-      {
-        "properties": {
-          "Name": "Finish Q4 Report",
-          "Status": "In Progress",
-          "date:Due Date:start": "2024-12-20",
-          "date:Due Date:is_datetime": 0
-        }
-      }
-    ]
-  }
-}
-```
-
-**Response:** Page created at `https://notion.so/workspace/task-q4-report-abc123`
-
-**Next step:** Use Template 2 to link to the Marketing project.
 
 ---
 
 ## Template 2: Link Entries
 
-**Trigger:** User says "link [entry A] to [entry B]" or "connect X with Y" or "add relation between X and Y"
+**Trigger:** User says "link [entry A] to [entry B]" or "connect X with Y"
 
-**Purpose:** Create bidirectional links between existing entries using relations or inline page links
+**Purpose:** Create bidirectional links between existing entries
 
 ### Steps
 
-1. **Locate entry A**
-   - Use `notion_notion-search` to find the first entry
-   - Record its ID and determine if it belongs to a database
+1. **Find both entries** using search
+2. **Determine relation method**:
+   - Both are database entries → use relation property
+   - One is standalone page → use inline page link in content
+3. **Update both sides** of the relation
 
-2. **Locate entry B**
-   - Use `notion_notion-search` to find the second entry
-   - Record its ID and type (database entry or standalone page)
+### CLI Commands
 
-3. **Determine link method**
+```bash
+# Find entry A
+ntn api v1/search -d '{"query": "Entry A Name"}'
 
-   | Entry A Type | Entry B Type | Recommended Method |
-   |--------------|--------------|--------------------|
-   | Database page | Database page | Relation property (see [linking-strategy.md](linking-strategy.md)) |
-   | Any | Standalone page | Inline page link in content |
-   | Database page | Standalone page | Relation property or inline link |
-
-4. **For relation property method**
-   - Fetch entry A schema to check for existing relation properties
-   - If valid relation exists, use `notion_notion-update-page` to set the relation
-   - If no relation exists, add inline page link to entry A content instead
-
-5. **For inline link method**
-   - Fetch entry A to get current content
-   - Add page reference using Notion markdown: `<page url="notion-page-id">`
-   - Use `notion_notion-update-page` with `replace_content` command
-
-6. **Verify link created**
-   - Fetch both entries to confirm link appears correctly
-
-### Example
-
-**User prompt:**
-> Link the "Q4 Report" task to the "Marketing" project page.
-
-**Tool calls:**
-
-```json
-{
-  "tool": "notion_notion-search",
-  "args": {
-    "query": "Q4 Report",
-    "query_type": "internal",
-    "page_size": 5
+# Update relation property (use PATCH method)
+ntn api v1/pages/PAGE_A_ID -X PATCH -d '{
+  "properties": {
+    "PropertyName": {"relation": [{"id": "PAGE_B_ID"}]}
   }
-}
-```
+}'
 
-```json
-{
-  "tool": "notion_notion-search",
-  "args": {
-    "query": "Marketing project",
-    "query_type": "internal",
-    "page_size": 5
-  }
-}
-```
-
-```json
-{
-  "tool": "notion_notion-fetch",
-  "args": {
-    "id": "task-q4-report-id"
-  }
-}
-```
-
-Check if a relation property exists for Projects. If yes:
-
-```json
-{
-  "tool": "notion_notion-update-page",
-  "args": {
-    "page_id": "task-q4-report-id",
-    "command": "update_properties",
-    "properties": {
-      "relation:Projects": "marketing-project-id"
+# Add inline page link to content
+ntn api v1/blocks/PAGE_A_ID/children -X PATCH -d '{
+  "children": [{
+    "object": "block",
+    "type": "paragraph",
+    "paragraph": {
+      "rich_text": [{
+        "type": "mention",
+        "mention": {"type": "page", "page": {"id": "PAGE_B_ID"}}
+      }]
     }
-  }
-}
+  }]
+}'
 ```
-
-If no relation property exists, add inline link:
-
-```json
-{
-  "tool": "notion_notion-update-page",
-  "args": {
-    "page_id": "task-q4-report-id",
-    "command": "update_content",
-    "content_updates": [
-      {
-        "old_str": "# Q4 Report\n",
-        "new_str": "# Q4 Report\n\nRelated to [[Marketing]] project.\n"
-      }
-    ]
-  }
-}
-```
-
-**Response:** Entries now linked. Verify by fetching both entries.
 
 ---
 
 ## Template 3: Find Related Entries
 
-**Trigger:** User says "find all entries related to X", "show me X and its connections", or "what entries link to X"
+**Trigger:** User says "find all entries related to X" or "show me connections to X"
 
-**Purpose:** Search and retrieve entries with semantic matching, filter by properties, return organized results
+### CLI Commands
 
-### Steps
+```bash
+# Search for related entries
+ntn api v1/search -d '{"query": "search terms"}'
 
-1. **Perform semantic search**
-   - Use `notion_notion-search` with `query_type: "internal"`
-   - Query with the topic, project name, or concept
-   - Set `page_size` appropriately (default 10, max 25)
+# Query database for entries with specific relation
+ntn api v1/data_sources/DATA_SOURCE_ID/query -d '{"page_size": 100}'
 
-2. **For targeted search by property**
-   - First discover database schema using [structure-discovery.md](structure-discovery.md)
-   - Search for entries matching specific property values
-
-3. **Organize results**
-   - Group by database or parent page
-   - Note the type of each entry (page, database entry)
-   - List relevant properties for each result
-
-4. **Check for related entries**
-   - For each strong match, fetch to identify linked entries
-   - Use relation properties and inline links to map connections
-
-5. **Return organized results**
-   - Present as a list with entry name, type, URL, and key properties
-   - Include a summary of how entries relate to the search topic
-
-### Example
-
-**User prompt:**
-> Find all entries related to the Q4 marketing campaign.
-
-**Tool calls:**
-
-```json
-{
-  "tool": "notion_notion-search",
-  "args": {
-    "query": "Q4 marketing campaign",
-    "query_type": "internal",
-    "page_size": 10
-  }
-}
+# Get page content
+ntn api v1/blocks/PAGE_ID/children
 ```
 
-**Response example:**
+### Output Format
 
 ```
-Found 4 related entries:
+Found N related entries:
 
-1. **Q4 Marketing Campaign** (Database)
-   URL: https://notion.so/workspace/q4-campaign-db-123
-   Type: Database with 3 properties
+1. **Entry Name** 
+   URL: https://notion.so/Entry-ID
+   Type: Note/Area/Topic/Project
+   Relations: Areas → Anime, Topics → nano-machine
 
-2. **Campaign Strategy** (Page)
-   URL: https://notion.so/workspace/campaign-strategy-456
-   Type: Child page under Q4 Marketing
-   Links to: Campaign Tasks database
-
-3. **Launch Checklist** (Database entry)
-   URL: https://notion.so/workspace/launch-checklist-789
-   Type: Entry in Campaign Tasks database
-   Status: In Progress
-   Related Project: Q4 Marketing Campaign
-
-4. **Budget Tracker** (Page)
-   URL: https://notion.so/workspace/budget-tracker-abc
-   Type: Standalone page
-   References: Q4 Marketing via inline link
+2. ...
 ```
 
 ---
 
 ## Template 4: Update Entry Status
 
-**Trigger:** User says "update the status of X to Y", "change X's property to Y", or "mark X as done"
+**Trigger:** User says "update the status of X to Y" or "mark X as done"
 
-**Purpose:** Modify an existing entry's properties to reflect new state
+### CLI Commands
 
-### Steps
+```bash
+# Find the entry first
+ntn api v1/search -d '{"query": "Entry Name"}'
 
-1. **Find the entry**
-   - Use `notion_notion-search` to locate entry by name
-   - Verify you have the correct entry before proceeding
-
-2. **Fetch current state**
-   - Use `notion_notion-fetch` to get current properties
-   - Confirm the property you need to update exists
-
-3. **Determine property type and valid values**
-   - Select properties: use exact option names
-   - Checkbox: use `__YES__` or `__NO__`
-   - Date: use ISO format `YYYY-MM-DD`
-   - Text: use plain string value
-
-4. **Update the property**
-   - Use `notion_notion-update-page` with `update_properties` command
-   - Include only the properties being changed
-
-5. **Verify update**
-   - Fetch the entry again to confirm changes applied
-
-### Example
-
-**User prompt:**
-> Mark the Q4 Report task as done.
-
-**Tool calls:**
-
-```json
-{
-  "tool": "notion_notion-search",
-  "args": {
-    "query": "Q4 Report",
-    "query_type": "internal",
-    "page_size": 5
+# Update properties (NOTE: requires PATCH method, not POST)
+ntn api v1/pages/PAGE_ID -X PATCH -d '{
+  "properties": {
+    "Status": {"status": {"name": "Done"}}
   }
-}
+}'
+
+# Verify update
+ntn api v1/pages/PAGE_ID -X GET
 ```
-
-```json
-{
-  "tool": "notion_notion-fetch",
-  "args": {
-    "id": "task-q4-report-id"
-  }
-}
-```
-
-**Current state:** Status is "In Progress", needs to change to "Done"
-
-```json
-{
-  "tool": "notion_notion-update-page",
-  "args": {
-    "page_id": "task-q4-report-id",
-    "command": "update_properties",
-    "properties": {
-      "Status": "Done"
-    }
-  }
-}
-```
-
-**Response:** Status updated to "Done". Verify by fetching the entry.
-
----
-
-## Template 5: Create New Database
-
-**Trigger:** User says "create a new database for X" or "set up a new [project/task/contact] tracker"
-
-**Purpose:** Create a new database with appropriate schema, properties, and initial views
-
-### Steps
-
-1. **Design the schema**
-   - Identify the entity type (tasks, projects, contacts, etc.)
-   - List required properties (name, status, dates, etc.)
-   - Determine relation needs (link to existing databases)
-   - See [database-patterns.md](database-patterns.md) for schema patterns
-
-2. **Create the database**
-   - Use `notion_notion-create-database` with SQL DDL syntax
-   - Include title property and essential properties
-   - Set appropriate property types (select, date, relation, etc.)
-
-3. **Create initial views**
-   - Use `notion_notion-create-view` for each needed view type
-   - Common views: table (default), board (for status), calendar (for dates), gallery (for visual)
-   - Configure filters and sorts for each view
-
-4. **Create template entry (optional)**
-   - Add one sample entry to demonstrate structure
-   - Include placeholder values in all required fields
-
-5. **Link to parent structure**
-   - Identify where this database fits in the page hierarchy
-   - Create a parent page if needed, or link from existing hub page
-   - Use [structure-discovery.md](structure-discovery.md) to find appropriate parent
-
-6. **Document in project memory**
-   - Add new database to cached structure
-   - Update link targets for future relations
-
-### Example
-
-**User prompt:**
-> Create a new database for tracking client feedback with status, priority, and client name.
-
-**Tool calls:**
-
-```json
-{
-  "tool": "notion_notion-create-database",
-  "args": {
-    "parent": {
-      "page_id": "parent-page-id"
-    },
-    "title": "Client Feedback",
-    "schema": "CREATE TABLE (\"Name\" TITLE, \"Status\" SELECT('Open':default, 'In Review':yellow, 'Resolved':green), \"Priority\" SELECT('Low':gray, 'Medium':yellow, 'High':red), \"Client Name\" RICH_TEXT, \"Due Date\" DATE)"
-  }
-}
-```
-
-**Response:** Database created with ID `feedback-db-xyz`
-
-**Create views:**
-
-```json
-{
-  "tool": "notion_notion-create-view",
-  "args": {
-    "database_id": "feedback-db-xyz",
-    "data_source_id": "feedback-db-xyz",
-    "name": "All Feedback",
-    "type": "table"
-  }
-}
-```
-
-```json
-{
-  "tool": "notion_notion-create-view",
-  "args": {
-    "database_id": "feedback-db-xyz",
-    "data_source_id": "feedback-db-xyz",
-    "name": "By Status",
-    "type": "board",
-    "configure": "GROUP BY \"Status\""
-  }
-}
-```
-
-```json
-{
-  "tool": "notion_notion-create-view",
-  "args": {
-    "database_id": "feedback-db-xyz",
-    "data_source_id": "feedback-db-xyz",
-    "name": "High Priority",
-    "type": "table",
-    "configure": "FILTER \"Priority\" = \"High\""
-  }
-}
-```
-
-**Result:**
-- Database "Client Feedback" created
-- 3 views configured: table, board grouped by status, filtered table
-- Ready for entries to be added
 
 ---
 
 ## Quick Reference
 
-| Action | Primary Tool | Key Parameter |
-|--------|--------------|---------------|
-| Add entry | `notion_notion-create-pages` | `parent.database_id` |
-| Link entries | `notion_notion-update-page` | `update_properties` with relation or `update_content` |
-| Find entries | `notion_notion-search` | `query`, `query_type: "internal"` |
-| Update entry | `notion_notion-update-page` | `update_properties` |
-| Create database | `notion_notion-create-database` | `schema` (SQL DDL) |
+| Action | CLI Command |
+|--------|-------------|
+| Search | `ntn api v1/search -d '{"query": "terms"}'` |
+| Get database schema | `ntn api v1/databases/<id> -X GET` |
+| Query database | `ntn api v1/data_sources/<id>/query -d '{}'` |
+| Create page | `ntn api v1/pages -d '{...}'` |
+| Update page | `ntn api v1/pages/<id> -X PATCH -d '{...}'` |
+| Append blocks | `ntn api v1/blocks/<id>/children -X PATCH -d '{...}'` |
+
+## Common Mistakes
+
+1. **Using POST instead of PATCH** for updates → Use `-X PATCH`
+2. **Forgetting bidirectional links** → Always update both sides
+3. **Wrong ID type** → Use `data_source_id` for queries, `database_id` for creation
+4. **Status handling** → Default to "Inbox" if user doesn't specify
 
 ## Related Guides
 
-- [structure-discovery.md](structure-discovery.md) - Discover existing workspace structure before making changes
-- [database-patterns.md](database-patterns.md) - Schema design patterns and property type recommendations
-- [linking-strategy.md](linking-strategy.md) - When to use relations vs inline links
+- [structure-discovery.md](structure-discovery.md) - Discover existing workspace structure
+- [database-patterns.md](database-patterns.md) - Schema design patterns
+- [linking-strategy.md](linking-strategy.md) - Relations vs inline links

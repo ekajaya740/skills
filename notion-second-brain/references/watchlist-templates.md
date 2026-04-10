@@ -1,254 +1,213 @@
-# Watchlist Template Guide
+# Watchlist/Readlist Template Guide
 
-This guide provides templates for tracking anime, films, and movies in your Notion second brain, with automated metadata enrichment from web sources.
+This guide explains how to track anime, comics (manga/webtoons), books, and media series in your Notion second brain using the unified Notes/Areas/Topics structure.
 
-## Table of Contents
+## Core Concept
 
-1. [Overview](#overview)
-2. [Anime Watchlist Database](#anime-watchlist-database)
-3. [Film & Movie Database](#film--movie-database)
-4. [Example: Dr. Stone (ドクターストーン)](#example-dr-stone-ドクターストーン)
-5. [Automated Metadata Lookup](#automated-metadata-lookup)
-6. [Template Setup Instructions](#template-setup-instructions)
+The user's Notion second brain uses a **unified structure**:
+- **Notes** - Individual entries (anime episodes, comics, books, articles)
+- **Areas** - Broad categories (Anime, Comic, Language, Programming)
+- **Topics** - Tags/subjects (nano-machine, fitness, japanese)
+- **Projects** - Work container with tasks
 
----
+Media series like anime/comics should be tracked as **Notes** with appropriate Area relations. **Topics are optional — only add if the user explicitly mentions a topic or tag.**
 
-## Overview
+## Area Classification
 
-Track your media consumption with rich metadata including episode counts, seasons, release dates, and watch progress. Link entries to your projects, notes, and knowledge base.
+| Content Type | Where it goes | Area ID |
+|--------------|---------------|---------|
+| Anime (TV series, OVA, ONA) | Notes + **Anime** Area | `3284c337-6067-8132-a673-c014bf8ddba6` |
+| Manga/Webtoons/Comics | Notes + **Comic** Area | `3374c337-6067-81aa-939f-d127aa20bea8` |
+| Films/Movies | Notes + possibly Resources | - |
+| Books | Notes + appropriate Area | - |
+| TV Series | Notes + appropriate Area | - |
+| Article/Video | Resources or Notes | - |
 
----
+## Adding a New Media Entry
 
-## Anime Watchlist Database
+### Step 1: Create Note Entry
 
-### Properties
+Create the note in the Notes database with the correct Area and icon (from Notes Template):
 
-| Property | Type | Notes |
-|----------|------|-------|
-| Title (Japanese) | title | Original Japanese title |
-| Title (English) | rich_text | English/localized title |
-| Status | select | Plan to Watch, Watching, Completed, On Hold, Dropped |
-| Format | select | TV, Movie, OVA, ONA, Special |
-| Seasons | number | Number of seasons |
-| Total Episodes | number | Total episode count |
-| Episodes Watched | number | Your progress |
-| Progress % | formula | `prop("Episodes Watched") / prop("Total Episodes") * 100` |
-| Score | select | 1-10 rating |
-| Genres | multi_select | Action, Adventure, Comedy, etc. |
-| Studio | rich_text | Animation studio |
-| Source | select | Manga, Light Novel, Original, etc. |
-| Aired | date | Release date range |
-| Related Notes | relation | Links to Notes database |
-| Cover Image | files | Poster/cover image |
-
-### Notion DDL
-
-```sql
-CREATE TABLE "Anime Watchlist" (
-  "Title (Japanese)" TITLE,
-  "Title (English)" RICH_TEXT,
-  "Status" SELECT('Plan to Watch', 'Watching', 'Completed', 'On Hold', 'Dropped'),
-  "Format" SELECT('TV', 'Movie', 'OVA', 'ONA', 'Special'),
-  "Seasons" NUMBER,
-  "Total Episodes" NUMBER,
-  "Episodes Watched" NUMBER,
-  "Progress %" FORMULA('prop("Episodes Watched") / prop("Total Episodes") * 100'),
-  "Score" SELECT('10 - Masterpiece', '9 - Great', '8 - Very Good', '7 - Good', '6 - Fine', '5 - Average', '4 - Bad', '3 - Very Bad', '2 - Horrible', '1 - Appalling'),
-  "Genres" MULTI_SELECT('Action', 'Adventure', 'Comedy', 'Drama', 'Fantasy', 'Sci-Fi', 'Slice of Life', 'Romance', 'Thriller', 'Mystery'),
-  "Studio" RICH_TEXT,
-  "Source" SELECT('Manga', 'Light Novel', 'Visual Novel', 'Original', 'Game', 'Other'),
-  "Aired" DATE,
-  "Related Notes" RELATION('notes-database-id'),
-  "Cover Image" FILES
-)
+```bash
+ntn api v1/pages -d '{
+  "parent": {"database_id": "4de4c337606782d4b9e381a96e9d5384"},
+  "icon": {"type": "icon", "icon": {"color": "gray", "name": "document"}},
+  "properties": {
+    "Name": {"title": [{"text": {"content": "Series Title"}}]},
+    "Areas": {"relation": [{"id": "AREA_ID"}]}
+  }
+}'
 ```
 
----
+### Step 2: Update Area Bidirectional Link
 
-## Film & Movie Database
-
-### Properties
-
-| Property | Type | Notes |
-|----------|------|-------|
-| Title | title | Movie title |
-| Original Title | rich_text | Original language title |
-| Status | select | Plan to Watch, Watching, Completed, Dropped |
-| Type | select | Movie, Documentary, Short Film |
-| Runtime | number | Duration in minutes |
-| Minutes Watched | number | Your progress |
-| Progress % | formula | `prop("Minutes Watched") / prop("Runtime") * 100` |
-| Release Year | number | Year of release |
-| Director | rich_text | Film director(s) |
-| Cast | rich_text | Main actors |
-| Genres | multi_select | Drama, Comedy, Action, etc. |
-| Score | select | 1-10 rating |
-| Platform | multi_select | Netflix, Crunchyroll, Theater, etc. |
-| Related Notes | relation | Links to Notes database |
-| Poster | files | Movie poster image |
-
-### Notion DDL
-
-```sql
-CREATE TABLE "Film & Movie Watchlist" (
-  "Title" TITLE,
-  "Original Title" RICH_TEXT,
-  "Status" SELECT('Plan to Watch', 'Watching', 'Completed', 'Dropped'),
-  "Type" SELECT('Movie', 'Documentary', 'Short Film'),
-  "Runtime" NUMBER,
-  "Minutes Watched" NUMBER,
-  "Progress %" FORMULA('prop("Minutes Watched") / prop("Runtime") * 100'),
-  "Release Year" NUMBER,
-  "Director" RICH_TEXT,
-  "Cast" RICH_TEXT,
-  "Genres" MULTI_SELECT('Action', 'Adventure', 'Animation', 'Comedy', 'Crime', 'Documentary', 'Drama', 'Fantasy', 'Horror', 'Mystery', 'Romance', 'Sci-Fi', 'Thriller'),
-  "Score" SELECT('10 - Masterpiece', '9 - Great', '8 - Very Good', '7 - Good', '6 - Fine', '5 - Average', '4 - Bad', '3 - Very Bad', '2 - Horrible', '1 - Appalling'),
-  "Platform" MULTI_SELECT('Netflix', 'Crunchyroll', 'Amazon Prime', 'Disney+', 'Hulu', 'HBO Max', 'Theater', 'Blu-ray/DVD', 'Other'),
-  "Related Notes" RELATION('notes-database-id'),
-  "Poster" FILES
-)
+```bash
+ntn api v1/pages/AREA_ID -X PATCH -d '{
+  "properties": {
+    "Notes": {"relation": [{"id": "NOTE_ID"}]}
+  }
+}'
 ```
 
----
+### Step 3 (Optional): Add Topic Only If User Explicitly Mentions It
 
-## Example: Dr. Stone (ドクターストーン)
+```bash
+# Only create a topic if user explicitly mentions a topic/tag
+ntn api v1/pages -d '{
+  "parent": {"database_id": "af74c3376067830f8e4401fbf30ac3ce"},
+  "properties": {
+    "Name": {"title": [{"text": {"content": "topic-name"}}]}
+  }
+}'
 
-### Anime Information (Auto-Lookup Results)
+# Then link Note → Topic and Topic → Note bidirectionally
+ntn api v1/pages/NOTE_ID -X PATCH -d '{
+  "properties": {
+    "Topics": {"relation": [{"id": "TOPIC_ID"}]}
+  }
+}'
 
-**Japanese Title:** ドクターストーン  
-**English Title:** Dr. Stone  
-**Format:** TV Series  
-**Total Seasons:** 4 (as of 2025)  
-**Total Episodes:** 61+ episodes (ongoing)
-
-#### Season Breakdown
-
-| Season | Title | Episodes | Aired |
-|--------|-------|----------|-------|
-| Season 1 | Dr. Stone | 24 | Jul 5 - Dec 13, 2019 |
-| Season 2 | Dr. Stone: Stone Wars | 11 | Jan 14 - Mar 25, 2021 |
-| Special | Dr. Stone: Ryusui | 1 | Jul 10, 2022 |
-| Season 3 | Dr. Stone: New World | 22 | Apr 6 - Dec 21, 2023 |
-| Season 4 | Dr. Stone: Science Future | 3+ cours | Jan 2025 - ongoing |
-
-**Studio:** TMS Entertainment  
-**Source:** Manga (27 volumes)  
-**Genres:** Adventure, Comedy, Sci-Fi, Shounen  
-**Duration:** 24 min per episode  
-
-### Notion Entry Example
-
-```json
-{
-  "Title (Japanese)": "ドクターストーン",
-  "Title (English)": "Dr. Stone",
-  "Status": "Watching",
-  "Format": "TV",
-  "Seasons": 4,
-  "Total Episodes": 61,
-  "Episodes Watched": 24,
-  "Progress %": 39.3,
-  "Score": "8 - Very Good",
-  "Genres": ["Adventure", "Comedy", "Sci-Fi", "Shounen"],
-  "Studio": "TMS Entertainment",
-  "Source": "Manga",
-  "Aired": "2019-07-05 to 2025-ongoing"
-}
+ntn api v1/pages/TOPIC_ID -X PATCH -d '{
+  "properties": {
+    "Notes": {"relation": [{"id": "NOTE_ID"}]}
+  }
+}'
 ```
 
+### Step 4: Add Page Content (See Template Below)
+
+## Page Content Template
+
+Based on the user's 薬屋のひとりごと (The Apothecary Diaries) entry, use this exact structure.
+
+**IMPORTANT**: Only add Season/Volume headers if:
+- User explicitly mentions multiple seasons/volumes, OR
+- The series is known to have multiple seasons/volumes
+
+If not specified, use a simple chapter/episode list without season headers.
+
+### No Season Headers Template (Default - Use This When Not Mentioning Seasons)
+
+When the user does NOT mention seasons/volumes, list episodes/chapters directly with NO season labels:
+
+```
+## [Title] ([Native Title]) — [English Title]
+
+Genre: [Genre1, Genre2, Genre3]
+
 ---
 
-## Automated Metadata Lookup
+- [ ] [Episode/Chapter 1 Title]
+- [ ] [Episode/Chapter 2 Title]
+- [x] [Episode/Chapter 3 Title] (completed items are checked)
 
-When adding a new anime or film entry, the agent should:
+---
 
-### Step 1: Search for Metadata
+### Notes
 
-Use web search to find:
-- Official title (Japanese and English)
-- Episode count / runtime
-- Number of seasons
-- Studio/production company
-- Genres
-- Release dates
-- Source material
+- **Status:** Use checkboxes to mark episodes/chapters as watched
+- **Last Updated:** {{date}}
 
-### Step 2: Create Database Entry
+### Resources
 
-Populate the Notion database with discovered metadata:
-
-```json
-{
-  "query": "Dr. Stone anime episodes seasons count",
-  "numResults": 3
-}
+- [MyAnimeList](url)
+- [Official Website](url)
 ```
 
-### Step 3: Link to Related Content
+### Multi-Season/Volume Template
 
-After creating the entry:
-- Search for existing notes about this anime
-- Link to related projects (e.g., "Anime Review Project")
-- Create a note for episode tracking if needed
+Use ONLY when user mentions OR series is known to have multiple seasons/volumes:
 
-### Step 4: Update Progress
+```
+## [Title] ([Native Title]) — [English Title]
 
-As you watch:
-- Update "Episodes Watched" or "Minutes Watched"
-- Progress % calculates automatically
-- Change Status when complete
+Genre: [Genre1, Genre2, Genre3]
 
 ---
 
-## Template Setup Instructions
+### Season 1
 
-### Creating the Anime Watchlist
+- [ ] [Episode/Chapter 1 Title]
+- [ ] [Episode/Chapter 2 Title]
+- [x] [Episode/Chapter 3 Title] (completed items are checked)
 
-1. Create a new database in Notion
-2. Use the DDL above to set up properties
-3. Create views:
-   - **All Anime** (table view)
-   - **Currently Watching** (filter: Status = Watching)
-   - **Completed** (filter: Status = Completed)
-   - **Plan to Watch** (filter: Status = Plan to Watch)
-   - **By Genre** (board view, group by Genres)
-   - **By Score** (gallery view, sort by Score)
+### Season 2
 
-### Creating the Film Database
-
-1. Create a new database in Notion
-2. Use the DDL above to set up properties
-3. Create views:
-   - **All Films** (table view)
-   - **Watchlist** (filter: Status = Plan to Watch)
-   - **Watched** (filter: Status = Completed)
-   - **By Genre** (board view)
-   - **By Year** (calendar view, by Release Year)
-
-### Integration with Second Brain
-
-Link watchlist entries to:
-- **Projects:** "Anime Review Blog", "Film Analysis Project"
-- **Notes:** Episode reviews, character analysis, theories
-- **Knowledge:** Scientific concepts from Dr. Stone, historical references
-- **Areas:** Entertainment, Learning, Hobbies
+- [ ] [Episode/Chapter 1 Title]
+- [ ] [Episode/Chapter 2 Title]
 
 ---
 
-## Quick Reference: Common Anime Metadata Sources
+### Notes
+
+- **Status:** Use checkboxes to mark episodes/chapters as watched
+- **Last Updated:** {{date}}
+
+### Resources
+
+- [MyAnimeList](url)
+- [Official Website](url)
+```
+
+### Key Formatting Rules
+
+1. **Title**: Japanese/English format with native script first
+2. **Genre**: Listed as comma-separated paragraph after title
+3. **Divider**: `---` separator after header info
+4. **Season/Chapter Headers**: Only use `heading_2` if MULTIPLE seasons/volumes exist or user specifies
+5. **Episode/Chapter List**: Use `to_do` blocks (checkbox unchecked = not watched, checked = completed)
+6. **Notes Section**: heading_2 with bullet points for meta info
+7. **Resources Section**: heading_2 with bullet points containing links
+
+## Manga/Webtoon Series Entry Example
+
+For webtoons like Nano Machine (no season labels by default, no topic unless user mentions one):
+
+```
+## Nano Machine (나노 머신)
+
+Genre: Action, Martial Arts, Sci-Fi, Fantasy
+
+---
+
+- [ ] Chapter 1
+- [ ] Chapter 2
+- [ ] Chapter 3
+
+---
+
+### Notes
+
+- **Status:** Use checkboxes to mark chapters as read
+- **Last Updated:** {{date}}
+
+### Resources
+
+- [Webtoon](url)
+```
+
+## Known Area IDs
+
+| Area Name | Area ID | Content Type |
+|-----------|---------|--------------|
+| Anime アニメ | `3284c337-6067-8132-a673-c014bf8ddba6` | Anime (TV, OVA, ONA) |
+| Comic | `3374c337-6067-81aa-939f-d127aa20bea8` | Manga, Webtoons, Comics |
+| Language | `3254c337-6067-8173-a514-d0dad6f110b7` | Language learning |
+| Programming | `3254c337-6067-819f-aba6-d0ca073d1dda` | Programming projects |
+
+## Common Metadata Sources
 
 | Source | URL | Best For |
 |--------|-----|----------|
-| MyAnimeList | myanimelist.net | Episode counts, scores, genres |
+| MyAnimeList | myanimelist.net | Anime info, episodes |
 | AniDB | anidb.net | Detailed episode lists |
-| Wikipedia | wikipedia.org | Season information, air dates |
-| Fandom Wiki | fandom.com | Character info, plot summaries |
-| Crunchyroll | crunchyroll.com | Streaming availability |
-
----
+| Webtoon | webtoons.com | Webtoon series |
+| Wikipedia | wikipedia.org | General info |
+| MangaDex | mangadex.org | Manga chapters |
 
 ## Related Files
 
 - [database-patterns.md](database-patterns.md) - General database schemas
 - [action-templates.md](action-templates.md) - How to add and update entries
-- [linking-strategy.md](linking-strategy.md) - Connect watchlist to other content
+- [linking-strategy.md](linking-strategy.md) - Connect entries to other content

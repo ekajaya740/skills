@@ -2,6 +2,18 @@
 
 This reference documents the standard database schemas for a Notion second brain.
 
+> **IMPORTANT**: These are TEMPLATE schemas. The user's actual database structure MUST be discovered by querying the databases directly. Do NOT assume these patterns match - always verify by fetching the actual schema.
+
+## Quick Discovery Commands
+
+```bash
+# Get database schema
+ntn api v1/databases/<database-id> -X GET
+
+# Query to get data_source_id (needed for queries)
+ntn api v1/data_sources/<data-source-id>/query -d '{"page_size": 5}'
+```
+
 ## Table of Contents
 
 1. [Overview](#overview)
