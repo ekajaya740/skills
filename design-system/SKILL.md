@@ -1,5 +1,5 @@
 ---
-name: workofekajaya-design-system
+name: design-system
 description: The design system for workofekajaya.com (Work of Ekajaya) — an Astro 6 + React 19 + Tailwind v4 dark portfolio. Use when building, editing, reviewing, or extending any UI on this site: new sections, components, pages, OG images, or visual polish. Provides the exact tokens, typography roles, section anatomy, component patterns, motion rules, and anti-patterns that keep new work indistinguishable from the existing site.
 version: 1.0.0
 ---
