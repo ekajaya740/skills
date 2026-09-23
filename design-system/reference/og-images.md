@@ -57,8 +57,8 @@ Per-page variants, dispatched on `pathname`:
 
 | Route | Variant | Composition |
 |---|---|---|
-| `/` | **Heat portrait** | Full-bleed `logo.webp` heat treatment as the field; identity block anchored bottom-left |
-| `/blog/<id>/` | **Typographic** | Near-black field, eyebrow, post title in Goldman, description, tag chips |
+| `/` | **Heat portrait** | Full-bleed `logo-mark.png` heat treatment as the field; identity block anchored bottom-left |
+| `/blog/<id>/` | **Typographic** | Near-black field, eyebrow, post title in Goldman, description |
 | `/404`, `/blog/` | Typographic (default) | Falls back to the typographic variant |
 
 ### Shared card grammar
@@ -107,12 +107,12 @@ beyond). Never let the title wrap past three lines — truncate instead.
 
 ## Images
 
-Local assets (e.g. `public/logo.webp`) are passed as pre-supplied `images` sources in the
+Local assets (e.g. `public/logo-mark.png`) are passed as pre-supplied `images` sources in the
 integration options and referenced by their `src`. Remote URLs are fetched and cached across
 pages by the integration's shared `fetchCache`.
 
 ```js
-images: [{ src: '/logo.webp', data: fs.readFileSync('public/logo.webp') }],
+images: [{ src: '/logo-mark.png', data: fs.readFileSync('public/logo-mark.png') }],
 ```
 
 ## Config
@@ -125,7 +125,7 @@ astroTakumi({
     quality: 90,
     width: 1200,
     height: 630,
-    images: [{ src: '/logo.webp', data: fs.readFileSync('public/logo.webp') }],
+    images: [{ src: '/logo-mark.png', data: fs.readFileSync('public/logo-mark.png') }],
   },
   render: ogRenderer,
 });
