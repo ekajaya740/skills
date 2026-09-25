@@ -67,10 +67,24 @@ Both variants use the same 1200x630 grammar so they read as one family:
 
 - Field: `#141414`
 - Eyebrow: `Share Tech Mono`, uppercase, `letterSpacing` ~`0.3em`, `#ff5a5a` (lifted from `#dd0303` for contrast)
+- Eyebrow marker (home only): leading word on a solid `#dd0303` marker, off-white type (4.71:1)
 - Display type: `Goldman`, tight leading, off-white `#f5f5f5`
 - Metadata: `Share Tech Mono`, `#a0a0a0`
 - Accent hairline: heat card 120x3 `#ff5a5a`; typographic divider 1px `#2e2e2e` (border, not accent)
 - Red occupies well under 10% of the card.
+
+### Eyebrow marker (home)
+
+The home eyebrow (`Full-Stack Engineer`) carries the only highlight in the system: the leading
+word sits on a solid `#dd0303` marker while the remainder stays in the lifted `#ff5a5a`.
+
+The site accent is too low-contrast as 22px type on the card (3.59:1) but is fine as a fill
+behind off-white type (4.71:1), so the role reads at full accent strength without enlarging the
+red area. The marker's 14px left padding is cancelled by a `-14px` margin so the marked word
+starts flush with the name below it.
+
+The blog/404 eyebrow has no highlight — it is a short label, not a role.
+
 
 ### Heat portrait (home)
 
@@ -139,5 +153,5 @@ change the `format` passed to `getImagePath`, or the build will fail its path ch
 - Never hand-write an `og:image` path. Always derive it from `getImagePath`.
 - Never use a gradient background wash (anti-reference: generic SaaS gradient card).
 - Never render text in a gradient fill.
-- Keep the red accent rare — a hairline and an eyebrow at most.
+- Keep the red accent rare — a hairline plus at most one eyebrow (the home marker).
 - Always run a production build to verify; a mismatch fails the build rather than shipping.
