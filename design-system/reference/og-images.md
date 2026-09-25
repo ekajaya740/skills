@@ -66,10 +66,10 @@ Per-page variants, dispatched on `pathname`:
 Both variants use the same 1200x630 grammar so they read as one family:
 
 - Field: `#141414`
-- Eyebrow: `Share Tech Mono`, uppercase, `letterSpacing` ~`0.3em`, `#dd0303`
+- Eyebrow: `Share Tech Mono`, uppercase, `letterSpacing` ~`0.3em`, `#ff5a5a` (lifted from `#dd0303` for contrast)
 - Display type: `Goldman`, tight leading, off-white `#f5f5f5`
 - Metadata: `Share Tech Mono`, `#a0a0a0`
-- Accent hairline: 1px `#dd0303`
+- Accent hairline: heat card 120x3 `#ff5a5a`; typographic divider 1px `#2e2e2e` (border, not accent)
 - Red occupies well under 10% of the card.
 
 ### Heat portrait (home)
@@ -91,12 +91,12 @@ Both variants use the same 1200x630 grammar so they read as one family:
 <div style={{ width:'100%', height:'100%', display:'flex', flexDirection:'column',
               justifyContent:'space-between', backgroundColor:'#141414', padding:'72px' }}>
   <div style={{ display:'flex', flexDirection:'column' }}>
-    <div style={{ fontFamily:'Share Tech Mono', fontSize:22, letterSpacing:'0.3em', color:'#dd0303' }}>BLOG</div>
+    <div style={{ fontFamily:'Share Tech Mono', fontSize:22, letterSpacing:'0.3em', color:'#ff5a5a' }}>BLOG</div>
     <div style={{ fontFamily:'Goldman', fontSize: title.length > 60 ? 60 : 76, color:'#f5f5f5', lineHeight:1.08 }}>{title}</div>
   </div>
   <div style={{ display:'flex', flexDirection:'column' }}>
     <div style={{ fontFamily:'Sansation', fontSize:28, color:'#a0a0a0' }}>{description}</div>
-    <div style={{ display:'flex', height:1, backgroundColor:'#dd0303' }} />
+    <div style={{ display:'flex', height:1, backgroundColor:'#2e2e2e' }} />
     <div style={{ fontFamily:'Share Tech Mono', fontSize:22, color:'#a0a0a0' }}>workofekajaya.com</div>
   </div>
 </div>
