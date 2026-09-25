@@ -67,7 +67,7 @@ Both variants use the same 1200x630 grammar so they read as one family:
 
 - Field: `#141414`
 - Eyebrow: `Share Tech Mono`, uppercase, `letterSpacing` ~`0.3em`, `#ff5a5a` (lifted from `#dd0303` for contrast)
-- Eyebrow marker (home only): leading word on a solid `#dd0303` marker, off-white type (4.71:1)
+- Eyebrow marker (home only): the whole label on a solid `#dd0303` block, off-white type (4.71:1)
 - Display type: `Goldman`, tight leading, off-white `#f5f5f5`
 - Metadata: `Share Tech Mono`, `#a0a0a0`
 - Accent hairline: heat card 120x3 `#ff5a5a`; typographic divider 1px `#2e2e2e` (border, not accent)
@@ -75,16 +75,22 @@ Both variants use the same 1200x630 grammar so they read as one family:
 
 ### Eyebrow marker (home)
 
-The home eyebrow (`Full-Stack Engineer`) carries the only highlight in the system: the leading
-word sits on a solid `#dd0303` marker while the remainder stays in the lifted `#ff5a5a`.
+The home eyebrow (`Full-Stack Engineer`) carries the only highlight in the system: the entire
+role sits on a solid `#dd0303` block, off-white type, so it reads at full accent strength over
+the busy mark field. The blog/404 eyebrow stays plain — it is a short label, not a role.
 
-The site accent is too low-contrast as 22px type on the card (3.59:1) but is fine as a fill
-behind off-white type (4.71:1), so the role reads at full accent strength without enlarging the
-red area. The marker's 14px left padding is cancelled by a `-14px` margin so the marked word
-starts flush with the name below it.
+The marker is a deliberate exception to "hierarchy comes from scale and weight, not boxes"
+(`.impeccable.md` principle 3). It earns the exception because the eyebrow sits over the mark's
+hottest band, where plain accent type cannot hold legibility. It is confined to this one label,
+and the red stays inside the accent's ~10% weight budget.
 
-The blog/404 eyebrow has no highlight — it is a short label, not a role.
+Contrast: off-white `#f5f5f5` on `#dd0303` is 4.71:1 (AA). Note the block uses the true brand
+red, not the lifted `#ff5a5a` — off-white on `#ff5a5a` is only 2.81:1 and fails.
 
+Layout: the block's 14px left padding is cancelled by a `-14px` margin so the marked text starts
+flush with the name below it (both at x=80, the identity column's padding). The background lives
+on an inner span inside the eyebrow's flex row, so the block hugs the label (379px) instead of
+stretching the full column width — no `alignSelf` needed.
 
 ### Heat portrait (home)
 
