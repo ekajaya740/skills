@@ -10,9 +10,9 @@ never be committed by accident.
 
 ## Published skills
 
-| Skill | Description |
-|-------|-------------|
-| [design-system](./design-system) | The design system for workofekajaya.com — an Astro 6 + React 19 + Tailwind v4 dark portfolio. Use when building, editing or reviewing any UI on that site. |
+| Skill | Version | Description |
+|-------|---------|-------------|
+| [design-system](./design-system) | 1.0.0 | The design system for workofekajaya.com — an Astro 6 + React 19 + Tailwind v4 dark portfolio. Use when building, editing or reviewing any UI on that site. |
 
 ## Third-party skills
 
@@ -48,6 +48,28 @@ create the directory and then un-ignore it in `.gitignore`:
 ```
 
 Nothing else needs changing: everything not explicitly allowed stays untracked.
+
+## Versioning
+
+Each published skill carries a `version` field in the frontmatter of its
+`SKILL.md`, and follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html):
+
+- **MAJOR** — a change that invalidates how the skill was previously used
+  (renamed files, removed sections, changed required inputs).
+- **MINOR** — new guidance, references or capabilities that are additive.
+- **PATCH** — corrections, clarifications and typo fixes.
+
+Releases are tagged `‹skill›-v‹version›`, for example `design-system-v1.0.0`.
+The tag and the frontmatter `version` are kept in step, so a consumer such as
+the `ekajaya740.github.io` submodule can pin an exact revision:
+
+```sh
+git -C .agents/skills fetch --tags
+git -C .agents/skills checkout design-system-v1.0.0
+```
+
+Each skill keeps its own `CHANGELOG.md`, newest first, with the released version
+and date as headings.
 
 ## Notes
 

@@ -42,11 +42,14 @@ SOURCES=(
   "jakubkrehel/make-interfaces-feel-better|make-interfaces-feel-better"
   "browser-use/browser-use|browser-use"
   "blader/humanizer|humanizer"
-  "CaesiumY/notion-cli-skill|notion-cli"
+  "makenotion/skills|notion-cli"
   "intellectronica/agent-skills|raindrop-api"
   "PleasePrompto/notebooklm-skill|notebooklm"
-  "kerpopule/hermes-jev-skills|jev-browser-use,jev-computer-use,jev-frontier-work,jev-mailbox,jev-memory,jev-model-routing,jev-search,jev-setup,jev-skill-select"
 )
+
+# The Jev skills ship their own installer and are handled separately below,
+# because `npx skills add` skips the whole repo over one malformed file.
+JEV_REPO="https://github.com/kerpopule/hermes-jev-skills"
 
 run() {
   if [ "$DRY_RUN" -eq 1 ]; then
@@ -59,6 +62,16 @@ run() {
 if [ "$UPDATE" -eq 1 ]; then
   echo "Updating installed skills from their upstream sources…"
   run npx --yes skills@latest update -g -y || true
+
+  echo
+  echo "• kerpopule/hermes-jev-skills (via its own installer)"
+  run bash -c '
+    set -e
+    src="${XDG_CACHE_HOME:-$HOME/.cache}/hermes-jev-skills"
+    [ -d "$src/.git" ] || git clone --depth 1 "$1" "$src"
+    git -C "$src" pull --ff-only
+    python3 "$src/install.py"
+  ' _ "$JEV_REPO" || echo "  ! jev installer reported an error (see above)"
   exit 0
 fi
 
@@ -85,6 +98,18 @@ for entry in "${SOURCES[@]}"; do
   run "${args[@]}" || echo "  ! $repo reported an error (see above)"
   echo
 done
+
+# Jev skills: use their own installer rather than `npx skills add`, which skips
+# the repository entirely because one of its files has malformed frontmatter.
+echo "• kerpopule/hermes-jev-skills (via its own installer)"
+run bash -c '
+  set -e
+  src="${XDG_CACHE_HOME:-$HOME/.cache}/hermes-jev-skills"
+  [ -d "$src/.git" ] || git clone --depth 1 "$1" "$src"
+  git -C "$src" pull --ff-only
+  python3 "$src/install.py"
+' _ "$JEV_REPO" || echo "  ! jev installer reported an error (see above)"
+echo
 
 echo "Done. Skills that upstream has renamed or withdrawn are listed under"
 echo "\"notAvailableUpstream\" in skills.json."

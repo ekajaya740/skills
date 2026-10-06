@@ -17,7 +17,7 @@
         "critique", "delight", "distill", "layout", "optimize",
         "overdrive", "polish", "quieter", "shape", "typeset"
       ],
-      "notes": "Upstream now ships a single 'impeccable' skill with these as sub-commands. The local copies are older standalone skills and are no longer installable by name."
+      "notes": "Upstream ships a single 'impeccable' skill (v4.5.0 locally) that covers these as sub-commands, in reference/*.md. The standalone sibling directories are leftovers from an older layout and are no longer installable by name; impeccable supersedes them."
     },
     {
       "repo": "mattpocock/skills",
@@ -83,7 +83,7 @@
         "jev-setup", "jev-skill-select"
       ],
       "notAvailableUpstream": ["jev-compaction"],
-      "notes": "jev-compaction is skipped by the installer: its frontmatter has a YAML parse error upstream. Local copies of jev-memory, jev-setup, jev-skill-select, jev-model-routing, jev-computer-use and jev-frontier-work are older than upstream (e.g. local jev-setup 0.2.0)."
+      "notes": "These skills are installed by the repository's own installer (python3 install.py), which targets ~/.claude/skills, ~/.codex/skills and ~/.agents/skills. Prefer that over 'npx skills add'. jev-compaction is skipped by the CLI because its frontmatter has a YAML parse error upstream; install.py copies it fine. 'npx skills add' also skips the whole repo when it hits that file."
     },
     {
       "repo": "browser-use/browser-use",
@@ -98,11 +98,11 @@
       "skills": ["humanizer"]
     },
     {
-      "repo": "CaesiumY/notion-cli-skill",
+      "repo": "makenotion/skills",
       "license": "MIT",
-      "author": "Notion CLI Skill contributors",
+      "author": "Notion Labs, Inc.",
       "skills": ["notion-cli"],
-      "notes": "The local copy is a modified version of the upstream skill."
+      "notes": "Official Notion skills repository. The local copy was an older revision. A same-named but unrelated community repo (CaesiumY/notion-cli-skill) also exists."
     },
     {
       "repo": "intellectronica/agent-skills",
