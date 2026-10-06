@@ -26,12 +26,13 @@
       "skills": [
         "grill-me", "grill-with-docs", "handoff",
         "improve-codebase-architecture", "prototype",
-        "setup-matt-pocock-skills", "tdd", "triage"
+        "setup-matt-pocock-skills", "tdd", "triage",
+        "codebase-design", "domain-modeling", "grilling"
       ],
       "notAvailableUpstream": [
         "caveman", "diagnose", "to-issues", "to-prd", "write-a-skill", "zoom-out"
       ],
-      "notes": "Renamed upstream: diagnose -> diagnosing-bugs, to-issues/to-prd -> to-tickets/to-spec. caveman, write-a-skill and zoom-out have no successor."
+      "notes": "Renamed upstream, so these no longer install by their local names: diagnose -> diagnosing-bugs, to-issues -> to-tickets, to-prd -> to-spec, write-a-skill -> writing-for-agents (via writing-great-skills). caveman and zoom-out were removed outright with no successor. codebase-design, domain-modeling and grilling are dependencies the newer tdd / triage / grill-with-docs / improve-codebase-architecture / setup-matt-pocock-skills skills expect to find installed alongside them."
     },
     {
       "repo": "obra/superpowers",

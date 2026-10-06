@@ -35,7 +35,7 @@ TARGET="${SKILLS_DIR:-$HOME/.agents/skills}"
 # repo|skill1,skill2,...   (empty skill list = nothing installable upstream)
 SOURCES=(
   "pbakaus/impeccable|impeccable"
-  "mattpocock/skills|grill-me,grill-with-docs,handoff,improve-codebase-architecture,prototype,setup-matt-pocock-skills,tdd,triage"
+  "mattpocock/skills|grill-me,grill-with-docs,handoff,improve-codebase-architecture,prototype,setup-matt-pocock-skills,tdd,triage,codebase-design,domain-modeling,grilling"
   "obra/superpowers|using-git-worktrees,using-superpowers"
   "vercel-labs/agent-browser|agent-browser"
   "vercel-labs/skills|find-skills"
