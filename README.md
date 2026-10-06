@@ -12,7 +12,7 @@ never be committed by accident.
 
 | Skill | Version | Description |
 |-------|---------|-------------|
-| [design-system](./design-system) | 1.0.0 | The design system for workofekajaya.com — an Astro 6 + React 19 + Tailwind v4 dark portfolio. Use when building, editing or reviewing any UI on that site. |
+| [design-system](./design-system) | 1.0.1 | The design system for workofekajaya.com — an Astro 6 + React 19 + Tailwind v4 dark portfolio. Use when building, editing or reviewing any UI on that site. |
 
 ## Third-party skills
 

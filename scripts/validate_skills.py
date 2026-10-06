@@ -93,6 +93,21 @@ def changelog_versions(path: Path) -> list[str]:
     return re.findall(r"^##\s+\[?(\d+\.\d+\.\d+)\]?", path.read_text(), re.M)
 
 
+def readme_versions(text: str) -> dict[str, str]:
+    """Map skill name -> version from the README's published skills table.
+
+    Rows look like `| [name](./name) | 1.2.3 | Description |`.
+    """
+    found: dict[str, str] = {}
+    for line in text.splitlines():
+        match = re.match(
+            r"^\|\s*\[([^\]]+)\]\([^)]*\)\s*\|\s*(\d+\.\d+\.\d+)\s*\|", line
+        )
+        if match:
+            found[match.group(1)] = match.group(2)
+    return found
+
+
 def main() -> int:
     files = tracked_files()
 
@@ -151,6 +166,25 @@ def main() -> int:
                     f"CHANGELOG.md (found: {', '.join(versions) or 'none'})"
                 )
             validated.append(f"{name} {version}")
+
+    # 3. The README's version table must agree with the frontmatter, so the
+    #    published table cannot quietly go stale after a release.
+    readme = REPO / "README.md"
+    if readme.exists():
+        documented = readme_versions(readme.read_text())
+        for name in skills:
+            declared = parse_frontmatter((REPO / name / "SKILL.md").read_text()).get(
+                "version"
+            )
+            if name not in documented:
+                errors.append(
+                    f"{name}: not listed in the README's published skills table"
+                )
+            elif declared and documented[name] != declared:
+                errors.append(
+                    f"{name}: README says version {documented[name]} but SKILL.md "
+                    f"says {declared}"
+                )
 
     for entry in validated:
         print(f"  ok    {entry}")
