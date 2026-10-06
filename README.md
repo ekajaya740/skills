@@ -1,0 +1,63 @@
+# Skills
+
+My own agent skills, published for use across machines and agents.
+
+This directory is also the live skill store on my machine (`~/.agents/skills`
+points here), so it holds skills written by other people too. Those are **not**
+published here — see [Third-party skills](#third-party-skills) — and the
+`.gitignore` is written as an allowlist so that a newly downloaded skill can
+never be committed by accident.
+
+## Published skills
+
+| Skill | Description |
+|-------|-------------|
+| [design-system](./design-system) | The design system for workofekajaya.com — an Astro 6 + React 19 + Tailwind v4 dark portfolio. Use when building, editing or reviewing any UI on that site. |
+
+## Third-party skills
+
+Around fifty skills in this directory were written by other people and
+installed from their upstream repositories. They stay on disk for local use but
+are deliberately excluded from this repository: the copyright is theirs, and
+copying them here would mean maintaining stale forks instead of tracking
+upstream.
+
+[`skills.json`](./skills.json) records where each one comes from, who wrote it
+and under which licence. [`install-skills.sh`](./install-skills.sh) installs
+them:
+
+```sh
+./install-skills.sh            # install anything missing
+./install-skills.sh --update   # update everything already installed
+./install-skills.sh --dry-run  # print the commands, run nothing
+```
+
+Some skills I have locally are no longer published upstream (renamed, bundled
+into a larger skill, or withdrawn). Those are listed under
+`notAvailableUpstream` in `skills.json`; the installer skips them.
+
+## Adding a skill
+
+A skill is a directory containing a `SKILL.md`. To publish a new one of my own,
+create the directory and then un-ignore it in `.gitignore`:
+
+```gitignore
+# Your own skills
+!/design-system/
+!/my-new-skill/
+```
+
+Nothing else needs changing: everything not explicitly allowed stays untracked.
+
+## Notes
+
+- `~/.agents/skills` is a symlink to this directory, so editing files here
+  changes the skills every agent on the machine sees.
+- `ekajaya740.github.io` consumes this repository as a git submodule at
+  `.agents/skills`. Changes to `design-system/` therefore need a submodule
+  pointer bump in that repository to take effect.
+
+## Licence
+
+My own skills are MIT licensed — see [LICENSE](./LICENSE). Third-party skills
+are covered by their own licences, recorded in [`skills.json`](./skills.json).

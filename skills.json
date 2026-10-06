@@ -1,0 +1,122 @@
+{
+  "version": 1,
+  "description": "Third-party agent skills used locally alongside the skills published in this repo. They are NOT vendored here: each belongs to its original author, so this file records where to get it and how to update it.",
+  "installer": {
+    "tool": "npx skills add",
+    "defaultArgs": ["-g", "-y"],
+    "note": "Installs into ~/.agents/skills. Each source below lists the skill names to pass via repeated -s flags."
+  },
+  "sources": [
+    {
+      "repo": "pbakaus/impeccable",
+      "license": "Apache-2.0",
+      "author": "Paul Bakaus",
+      "skills": ["impeccable"],
+      "notAvailableUpstream": [
+        "adapt", "animate", "audit", "bolder", "clarify", "colorize",
+        "critique", "delight", "distill", "layout", "optimize",
+        "overdrive", "polish", "quieter", "shape", "typeset"
+      ],
+      "notes": "Upstream now ships a single 'impeccable' skill with these as sub-commands. The local copies are older standalone skills and are no longer installable by name."
+    },
+    {
+      "repo": "mattpocock/skills",
+      "license": "MIT",
+      "author": "Matt Pocock",
+      "skills": [
+        "grill-me", "grill-with-docs", "handoff",
+        "improve-codebase-architecture", "prototype",
+        "setup-matt-pocock-skills", "tdd", "triage"
+      ],
+      "notAvailableUpstream": [
+        "caveman", "diagnose", "to-issues", "to-prd", "write-a-skill", "zoom-out"
+      ],
+      "notes": "Renamed upstream: diagnose -> diagnosing-bugs, to-issues/to-prd -> to-tickets/to-spec. caveman, write-a-skill and zoom-out have no successor."
+    },
+    {
+      "repo": "obra/superpowers",
+      "license": "MIT",
+      "author": "Jesse Vincent",
+      "skills": ["using-git-worktrees", "using-superpowers"]
+    },
+    {
+      "repo": "vercel-labs/agent-browser",
+      "license": "Apache-2.0",
+      "author": "Vercel Inc.",
+      "skills": ["agent-browser"]
+    },
+    {
+      "repo": "vercel-labs/skills",
+      "license": "MIT",
+      "author": "Vercel, Inc.",
+      "skills": ["find-skills"]
+    },
+    {
+      "repo": "jakubkrehel/make-interfaces-feel-better",
+      "license": "MIT",
+      "author": "Jakub Krehel",
+      "skills": ["make-interfaces-feel-better"]
+    },
+    {
+      "repo": "supabase/agent-skills",
+      "license": "MIT",
+      "author": "Supabase",
+      "skills": [],
+      "notAvailableUpstream": ["skill-creator"],
+      "notes": "skill-creator was installed from this repo in Jan 2026 but is no longer published there; upstream now offers 'supabase' and 'supabase-postgres-best-practices'."
+    },
+    {
+      "repo": "figma/mcp-server-guide",
+      "license": "none",
+      "author": "Figma",
+      "skills": [],
+      "notAvailableUpstream": ["implement-design"],
+      "notes": "No license file in the repository, so treat as all-rights-reserved. implement-design is no longer published; the closest successor is 'figma-design-to-code'."
+    },
+    {
+      "repo": "kerpopule/hermes-jev-skills",
+      "license": "MIT",
+      "author": "Steve Darlow",
+      "skills": [
+        "jev-browser-use", "jev-computer-use", "jev-frontier-work",
+        "jev-mailbox", "jev-memory", "jev-model-routing", "jev-search",
+        "jev-setup", "jev-skill-select"
+      ],
+      "notAvailableUpstream": ["jev-compaction"],
+      "notes": "jev-compaction is skipped by the installer: its frontmatter has a YAML parse error upstream. Local copies of jev-memory, jev-setup, jev-skill-select, jev-model-routing, jev-computer-use and jev-frontier-work are older than upstream (e.g. local jev-setup 0.2.0)."
+    },
+    {
+      "repo": "browser-use/browser-use",
+      "license": "MIT",
+      "author": "Gregor Zunic",
+      "skills": ["browser-use"]
+    },
+    {
+      "repo": "blader/humanizer",
+      "license": "MIT",
+      "author": "Siqi Chen",
+      "skills": ["humanizer"]
+    },
+    {
+      "repo": "CaesiumY/notion-cli-skill",
+      "license": "MIT",
+      "author": "Notion CLI Skill contributors",
+      "skills": ["notion-cli"],
+      "notes": "The local copy is a modified version of the upstream skill."
+    },
+    {
+      "repo": "intellectronica/agent-skills",
+      "license": "CC0-1.0",
+      "author": "intellectronica",
+      "skills": ["raindrop-api"],
+      "notes": "Large multi-skill repo; only raindrop-api is used locally."
+    },
+    {
+      "repo": "PleasePrompto/notebooklm-skill",
+      "license": "MIT",
+      "author": "Please Prompto!",
+      "skills": ["notebooklm"],
+      "notes": "The local notebooklm directory is empty."
+    }
+  ]
+}

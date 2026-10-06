@@ -1,0 +1,21 @@
+# ─────────────────────────────────────────────────────────────────────
+# Deny by default.
+#
+# This directory is the live skill store (~/.agents/skills points here),
+# so it also holds skills downloaded from third parties. Those stay on
+# disk for local use but are deliberately NOT published here: they belong
+# to their original authors and are re-installed from source instead.
+#
+# To publish one of your own skills, add it under "Your own skills".
+# ─────────────────────────────────────────────────────────────────────
+/*
+
+# Repository files
+!/.gitignore
+!/LICENSE
+!/README.md
+!/skills.json
+!/install-skills.sh
+
+# Your own skills
+!/design-system/
