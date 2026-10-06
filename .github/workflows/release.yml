@@ -28,23 +28,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           # Full history and all tags: the script decides what to release by
           # comparing frontmatter versions against existing tags, so a shallow
           # clone or a missing tag would cause a duplicate release.
           fetch-depth: 0
 
-      # An annotated tag records a tagger, and a fresh runner has no identity
-      # configured, so `git tag -a` fails with "empty ident name". Attribute
-      # the release to the repository owner rather than the runner.
-      - name: Configure git identity
-        run: |
-          git config user.name "${{ github.repository_owner }}"
-          git config user.email "${{ github.repository_owner }}@users.noreply.github.com"
-
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 

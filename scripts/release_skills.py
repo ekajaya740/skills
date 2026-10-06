@@ -39,6 +39,27 @@ def git(*args: str, check: bool = True) -> str:
         raise SystemExit(f"git {' '.join(args)} failed:\n{result.stderr}")
     return result.stdout
 
+
+def tag_identity() -> list[str]:
+    """`-c` overrides for tagging, so this works without a configured identity.
+
+    An annotated tag records a tagger, and a CI runner has no user.name or
+    user.email set, so `git tag -a` fails with "empty ident name". Supplying
+    the identity inline means the release does not depend on the caller having
+    configured one. An existing local identity is still honoured.
+    """
+    name = git("config", "user.name", check=False).strip()
+    email = git("config", "user.email", check=False).strip()
+    if name and email:
+        return []
+    return [
+        "-c",
+        "user.name=github-actions[bot]",
+        "-c",
+        "user.email=41898282+github-actions[bot]@users.noreply.github.com",
+    ]
+
+
 def published_skills() -> list[str]:
     files = git("ls-files").splitlines()
     return sorted(
@@ -160,9 +181,11 @@ def main() -> int:
             return 1
         return 0
 
+    identity = tag_identity()
     for skill, version, notes in due:
         tag = tag_name(skill, version)
         git(
+            *identity,
             "tag",
             "-a",
             tag,
