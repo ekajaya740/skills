@@ -16,7 +16,7 @@ never be committed by accident.
 
 ## Third-party skills
 
-Around fifty skills in this directory were written by other people and
+Around eighty skills in this directory were written by other people and
 installed from their upstream repositories. They stay on disk for local use but
 are deliberately excluded from this repository: the copyright is theirs, and
 copying them here would mean maintaining stale forks instead of tracking
@@ -117,8 +117,12 @@ release by hand.
 
 ## Notes
 
+- [`AGENTS.md`](./AGENTS.md) documents how to install, update and re-link the
+  third-party skills, and what agents working in this repository must not do.
 - `~/.agents/skills` is a symlink to this directory, so editing files here
-  changes the skills every agent on the machine sees.
+  changes the skills every agent on the machine sees. `~/.claude/skills` and
+  `~/.codex/skills` hold one symlink per skill pointing back here; a skill with
+  no link in a harness is invisible to it.
 - `ekajaya740.github.io` consumes this repository as a git submodule at
   `.agents/skills`. Changes to `design-system/` therefore need a submodule
   pointer bump in that repository to take effect.

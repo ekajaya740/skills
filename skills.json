@@ -24,15 +24,22 @@
       "license": "MIT",
       "author": "Matt Pocock",
       "skills": [
-        "grill-me", "grill-with-docs", "handoff",
-        "improve-codebase-architecture", "prototype",
-        "setup-matt-pocock-skills", "tdd", "triage",
-        "codebase-design", "domain-modeling", "grilling"
+        "ask-matt", "chief-of-staff", "claude-handoff", "code-review",
+        "codebase-design", "diagnosing-bugs", "domain-modeling",
+        "git-guardrails-claude-code", "grill-me", "grill-with-docs",
+        "grilling", "handoff", "implement", "implement-spec",
+        "improve-codebase-architecture", "loop-me", "migrate-to-shoehorn",
+        "pr", "prototype", "research", "retro", "scaffold-exercises",
+        "setup-matt-pocock-skills", "setup-pre-commit",
+        "setup-ts-deep-modules", "tdd", "teach", "to-questionnaire",
+        "to-spec", "to-tickets", "triage", "wait-what", "wayfinder",
+        "wizard", "writing-beats", "writing-for-agents", "writing-fragments",
+        "writing-shape"
       ],
       "notAvailableUpstream": [
         "caveman", "diagnose", "to-issues", "to-prd", "write-a-skill", "zoom-out"
       ],
-      "notes": "Renamed upstream, so these no longer install by their local names: diagnose -> diagnosing-bugs, to-issues -> to-tickets, to-prd -> to-spec, write-a-skill -> writing-for-agents (via writing-great-skills). caveman and zoom-out were removed outright with no successor. codebase-design, domain-modeling and grilling are dependencies the newer tdd / triage / grill-with-docs / improve-codebase-architecture / setup-matt-pocock-skills skills expect to find installed alongside them."
+      "notes": "All 38 upstream skills are installed. Six local names are outdated because upstream renamed or withdrew them: diagnose -> diagnosing-bugs, to-issues -> to-tickets, to-prd -> to-spec, write-a-skill -> writing-for-agents (via writing-great-skills). caveman and zoom-out were removed outright with no successor; the local copies still work but will not update. Update with 'npx skills@latest update -g -y', then re-link the harnesses. See AGENTS.md."
     },
     {
       "repo": "obra/superpowers",
