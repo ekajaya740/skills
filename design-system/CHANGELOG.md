@@ -5,6 +5,12 @@ All notable changes to the `design-system` skill are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 The version in this file matches the `version` field in `SKILL.md`.
 
+## [1.0.1] - 2026-10-06
+
+### Fixed
+
+- Verify the automated release path end to end.
+
 ## [1.0.0] - 2026-09-25
 
 First stable release. The skill documents the Work of Ekajaya design system:
