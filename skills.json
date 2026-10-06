@@ -118,6 +118,13 @@
       "author": "Please Prompto!",
       "skills": ["notebooklm"],
       "notes": "The local notebooklm directory is empty."
+    },
+    {
+      "repo": "omacom/omarchy",
+      "license": "MIT",
+      "author": "David Heinemeier Hansson",
+      "skills": ["omarchy", "diagnose-crash", "omarchy-app"],
+      "notes": "Skills that ship with the Omarchy Linux distribution (package: omarchy). Locally they are symlinked from /usr/share/omarchy/default/agents/skills into this store, so `omarchy update` keeps them current; the CLI install below is the portable path for machines without Omarchy. Upstream lives at github.com/basecamp/omarchy (the GitHub owner is omacom)."
     }
   ]
 }

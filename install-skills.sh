@@ -45,6 +45,7 @@ SOURCES=(
   "makenotion/skills|notion-cli"
   "intellectronica/agent-skills|raindrop-api"
   "PleasePrompto/notebooklm-skill|notebooklm"
+  "omacom/omarchy|omarchy,diagnose-crash,omarchy-app"
 )
 
 # The Jev skills ship their own installer and are handled separately below,

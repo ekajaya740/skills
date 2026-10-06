@@ -36,6 +36,13 @@ Some skills I have locally are no longer published upstream (renamed, bundled
 into a larger skill, or withdrawn). Those are listed under
 `notAvailableUpstream` in `skills.json`; the installer skips them.
 
+Some of these ship with a system package rather than a Git repository. The
+Omarchy desktop's skills (`omarchy`, `diagnose-crash`, `omarchy-app`) are
+recorded under [`omacom/omarchy`](./skills.json): on an Omarchy machine the
+first two are symlinked from `/usr/share/omarchy/default/agents/skills`, so
+`omarchy update` keeps them current, while the installer installs all three
+from upstream on any other machine.
+
 ## Adding a skill
 
 A skill is a directory containing a `SKILL.md`. To publish a new one of my own,
