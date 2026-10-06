@@ -71,6 +71,43 @@ git -C .agents/skills checkout design-system-v1.0.0
 Each skill keeps its own `CHANGELOG.md`, newest first, with the released version
 and date as headings.
 
+## Releasing
+
+Releases are automated. To ship a new version of a skill, bump the `version`
+field in its `SKILL.md` and add a matching section to its `CHANGELOG.md`:
+
+```md
+## [1.1.0] - 2026-10-06
+
+### Added
+
+- What changed.
+```
+
+Pushing that to `main` is the whole procedure. The Release workflow in
+`.github/workflows/release.yml` compares each skill's version against the tags
+that already exist; anything untagged is released as `‹skill›-v‹version›`, with
+the release notes taken from the CHANGELOG section and a GitHub Release created.
+Skills whose version has not changed are left alone, so several skills can be
+released in one push.
+
+The Validate workflow in `.github/workflows/validate.yml` runs on every push and
+pull request. Its most important job is the leak check: it fails if anything
+outside the `.gitignore` allowlist is tracked, which is what stops a downloaded
+skill from reaching this public repository. It also checks that every published
+skill has valid frontmatter and a CHANGELOG entry for its version, that
+`skills.json` is valid JSON, and that the installer still parses.
+
+Both scripts run locally:
+
+```sh
+python3 scripts/validate_skills.py          # checks; exits non-zero on problems
+python3 scripts/release_skills.py --check   # what would be released
+```
+
+`release_skills.py --tag` creates the tags without pushing, if you ever need to
+release by hand.
+
 ## Notes
 
 - `~/.agents/skills` is a symlink to this directory, so editing files here

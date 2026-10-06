@@ -1,0 +1,47 @@
+name: Validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate published skills
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # The load-bearing check. This repository is also the live skill store
+      # (~/.agents/skills points here), so ~50 skills written by other people
+      # sit alongside the published ones. The .gitignore allowlist is what
+      # keeps them out of this public repository; this fails if anything
+      # outside it is ever tracked, and also checks that every published
+      # skill has valid frontmatter and a matching CHANGELOG entry.
+      - name: Validate published skills
+        run: python3 scripts/validate_skills.py
+
+      - name: skills.json is valid JSON
+        run: python3 -m json.tool skills.json > /dev/null
+
+      - name: Installer parses and its commands are well formed
+        run: ./install-skills.sh --dry-run
+
+      # Informational: reports which skills are tagged and which are due for a
+      # release. The Release workflow is what actually tags.
+      - name: Report release status
+        run: python3 scripts/release_skills.py --check || true

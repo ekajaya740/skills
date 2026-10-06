@@ -1,0 +1,77 @@
+name: Release
+
+# Releases are driven by the version in each skill's SKILL.md frontmatter, so
+# shipping a release means bumping that version and adding a matching
+# '## [x.y.z]' section to the skill's CHANGELOG.md. There is no separate step
+# to run: this workflow notices the bump and tags it.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "*/SKILL.md"
+      - "*/CHANGELOG.md"
+      - "scripts/release_skills.py"
+      - ".github/workflows/release.yml"
+  workflow_dispatch:
+
+# Required to push tags and create releases.
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Tag version bumps
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Full history and all tags: the script decides what to release by
+          # comparing frontmatter versions against existing tags, so a shallow
+          # clone or a missing tag would cause a duplicate release.
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Refuse to release invalid skills
+        run: python3 scripts/validate_skills.py
+
+      - name: Create tags for version bumps
+        id: tag
+        run: |
+          set -o pipefail
+          python3 scripts/release_skills.py --tag | tee /tmp/release.log
+
+          # Which tags did we create? Anything the script reported as created.
+          tags=$(sed -n 's/^  created //p' /tmp/release.log | tr '\n' ' ')
+          echo "tags=$tags" >> "$GITHUB_OUTPUT"
+          if [ -z "${tags// /}" ]; then
+            echo "Nothing to release."
+          fi
+
+      - name: Push tags
+        if: steps.tag.outputs.tags != ''
+        run: git push origin ${{ steps.tag.outputs.tags }}
+
+      - name: Publish GitHub releases
+        if: steps.tag.outputs.tags != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Notes come from the annotated tag, whose message the release
+          # script builds from the skill's CHANGELOG section. --verify-tag
+          # guards against announcing a tag that never reached the remote.
+          for tag in ${{ steps.tag.outputs.tags }}; do
+            echo "Releasing $tag"
+            gh release create "$tag" \
+              --verify-tag \
+              --notes-from-tag \
+              --title "$tag"
+          done

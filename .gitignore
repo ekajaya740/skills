@@ -17,5 +17,9 @@
 !/skills.json
 !/install-skills.sh
 
+# Release tooling and CI
+!/scripts/
+!/.github/
+
 # Your own skills
 !/design-system/
