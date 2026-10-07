@@ -38,16 +38,29 @@ dozens of unwanted skills. `-g` installs into `~/.agents/skills`.
 After either command, re-link the harnesses so the new skills become visible:
 
 ```sh
-python3 ~/.local/tmpwork/consolidate2.py --apply
+python3 scripts/link_harnesses.py --apply
 ```
 
 Claude Code and Codex read `~/.claude/skills` and `~/.codex/skills`, which
 contain one symlink per skill. A skill that exists in `~/.agents/skills` but has
 no link in a harness is invisible to that harness, and a newly installed skill
-has no link until this step runs.
+has no link until this step runs. Restart the harness afterwards: skills are
+discovered at session start.
 
-Then restart the harness. Skills are discovered at session start, so a running
-session will not see them.
+## One route in, not two
+
+`mattpocock/skills` can be taken two ways, and upstream says to pick one:
+
+- the **Claude Code plugin** (`mattpocock-skills`), a managed read-only bundle
+  that updates itself, or
+- the **skills.sh install**, editable files in this store, updated by hand.
+
+**This machine uses skills.sh.** The plugin must stay disabled, because
+enabling it as well loads every skill twice. `~/.claude/settings.json` is
+managed by the `ekajaya740/dotfiles` repository; if `enabledPlugins` there ever
+contains `mattpocock-skills@mattpocock`, remove that entry rather than dropping
+the skills.sh copies, so the skills stay editable and tracked by this repo.
+
 
 ## Recording a new source
 
