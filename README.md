@@ -13,6 +13,40 @@ never be committed by accident.
 | Skill | Version | Description |
 |-------|---------|-------------|
 | [design-system](./design-system) | 1.0.1 | The design system for workofekajaya.com — an Astro 6 + React 19 + Tailwind v4 dark portfolio. Use when building, editing or reviewing any UI on that site. |
+| [conversation-distillation](./conversation-distillation) | 1.0.0 | Review a finished conversation to extract durable lessons into a reusable skill — and decide whether a lesson is worth saving at all. Covers the reflection pass, memory-vs-skill, create-vs-update, ownership rules, and failure modes. Use after work is done, or when a session produced a correction the user had to repeat. |
+| [anti-bot-scraping](./anti-bot-scraping) | 1.0.0 | Bypass Cloudflare WAF with cloudscraper. |
+| [apple-apps](./apple-apps) | 1.0.0 | Manage Apple Notes, Reminders, and iMessage/SMS on macOS via CLI tools (memo, remindctl, imsg). |
+| [arxiv](./arxiv) | 1.0.0 | Search arXiv papers by keyword, author, category, or ID. |
+| [arxiv-mcp](./arxiv-mcp) | 1.0.0 | Use when searching or reading arXiv papers via MCP. |
+| [building-mcp-servers](./building-mcp-servers) | 1.0.0 | Build custom MCP (Model Context Protocol) servers in Python with stdio transport, PostgreSQL, and domain-specific tools. |
+| [cloudflare-fullstack](./cloudflare-fullstack) | 1.0.0 | Build full-stack apps on Cloudflare: Astro SSR + Hono API on Workers, R2 storage, Neon Postgres via Hyperdrive, Drizzle ORM, shadcn/ui. |
+| [cloudflare-worker-mcp](./cloudflare-worker-mcp) | 1.0.0 | Host MCP servers on Cloudflare Workers (D1, KV, R2, DO). |
+| [codebase-retrospective](./codebase-retrospective) | 1.0.0 | Analyze a project's commit history, architecture, and code quality to give structured, honest feedback on what was done well, what was done wrong, and what to improve. |
+| [coding-agents](./coding-agents) | 1.0.0 | Delegate coding tasks to AI coding agent CLIs: Claude Code, Codex, or OpenCode — orchestrate via Hermes terminal/process tools. |
+| [daily-global-news-briefing](./daily-global-news-briefing) | 1.1.0 | Use when compiling or automating a multi-source daily global news briefing. |
+| [design-md](./design-md) | 1.0.0 | Author/validate/export Google's DESIGN.md token spec files. |
+| [email-to-vault-resource](./email-to-vault-resource) | 2.0.0 | Pull a document-bearing email (ticket, policy, receipt, contract) from Gmail and file it into the second brain as a Notion Notes row (Type=Reference) with a Drive link, related to the owning Project/Area — or deliver its attachments straight to chat ('pull all X invoices and send it here'). |
+| [excalidraw](./excalidraw) | 1.0.0 | Hand-drawn Excalidraw JSON diagrams (arch, flow, seq). |
+| [gif-search](./gif-search) | 1.1.0 | Search/download GIFs from Tenor via curl + jq. |
+| [gitea](./gitea) | 1.0.0 | Gitea API access — read-only interface to Gitea instances via the REST API. |
+| [github-workflow](./github-workflow) | 1.0.0 | Full GitHub CLI workflow: auth, repo management, PR lifecycle, code review, issues, and codebase inspection via gh and git+curl. |
+| [godmode](./godmode) | 1.0.0 | Jailbreak LLMs: Parseltongue, GODMODE, ULTRAPLINIAN. |
+| [idx-company-profile-scraper](./idx-company-profile-scraper) | 1.0.0 | Scrape IDX company profiles via ai-cloudscraper. |
+| [japan-transit](./japan-transit) | 1.0.0 | Use for Japanese train schedule lookups (jadwal kereta). |
+| [jupyter-live-kernel](./jupyter-live-kernel) | 1.0.0 | Iterative Python via live Jupyter kernel (hamelnb). |
+| [kanban-operations](./kanban-operations) | 1.0.0 | Use for ALL Kanban work: creating, routing, assigning, blocking, unblocking, reviewing or completing a task; choosing a board; decomposing work into a graph; handling handoffs and evidence; and any question about how Hermes kanban operates. |
+| [linear](./linear) | 1.0.0 | Linear: manage issues, projects, teams via GraphQL + curl. |
+| [llm-wiki](./llm-wiki) | 2.1.0 | Karpathy's LLM Wiki: build/query interlinked markdown KB. |
+| [native-mcp](./native-mcp) | 1.0.0 | MCP client: connect servers, register tools (stdio/HTTP). |
+| [ocr-and-documents](./ocr-and-documents) | 2.3.0 | Extract text from PDFs, scans, and standalone images (photos/receipts/screenshots) — pymupdf, marker-pdf, tesseract. |
+| [polymarket](./polymarket) | 1.0.0 | Query Polymarket: markets, prices, orderbooks, history. |
+| [pretext](./pretext) | 1.0.0 | Use when building creative browser demos with @chenglou/pretext — DOM-free text layout for ASCII art, typographic flow around obstacles, text-as-geometry games, kinetic typography, and text-powered generative art. |
+| [project-code-review](./project-code-review) | 1.0.0 | Systematic code review and project analysis — explore a codebase, analyze git history, identify issues, and write structured takeaways as second brain (Notion) Notes rows. |
+| [self-hosted-webapps](./self-hosted-webapps) | 1.4.0 | Deploy web apps (Python systemd services OR Docker containers) behind nginx reverse proxy with custom domains and SSL. |
+| [spa-data-extraction](./spa-data-extraction) | 1.0.0 | Extract structured data from modern JS-heavy SPAs (Inertia.js, Next.js, Nuxt) by discovering hidden API endpoints in server-rendered HTML state, then paginating and enriching from detail pages. |
+| [split-bill](./split-bill) | 1.1.0 | Split bills with friends/roommates/groups — unequal splits, partial payments, multi-currency with auto rates, image receipt scanning, JSON backend. |
+| [spotify](./spotify) | 1.0.0 | Spotify: play, search, queue, manage playlists and devices. |
+| [youtube-playlist-management](./youtube-playlist-management) | 1.0.0 | Reorder or list YouTube playlists via the Data API v3. |
 
 ## Third-party skills
 

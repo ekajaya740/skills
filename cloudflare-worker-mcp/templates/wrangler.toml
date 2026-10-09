@@ -1,0 +1,35 @@
+# Investment Vault D1 — Worker wrangler.toml template
+# Replace the three IDs after running:
+#   npx wrangler d1 create investment-vault      # → database_id
+#   npx wrangler kv namespace create CACHE       # → id
+#   npx wrangler r2 bucket create investment-vault
+
+name = "investment-vault-d1"
+main = "src/index.ts"
+compatibility_date = "2026-08-19"
+compatibility_flags = ["nodejs_compat"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "investment-vault"
+database_id = "REPLACE_WITH_DATABASE_ID"
+
+[[kv_namespaces]]
+binding = "CACHE"
+id = "REPLACE_WITH_KV_ID"
+
+[[r2_buckets]]
+binding = "FILES"
+bucket_name = "investment-vault"
+preview_bucket_name = "investment-vault"
+
+[[durable_objects.bindings]]
+name = "MCP_SESSIONS"
+class_name = "McpSessionStore"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["McpSessionStore"]
+
+# NOTE: `wrangler deploy --dry-run` works with placeholder IDs (dummy uuid /
+# 32-zeros) — useful to verify binding wiring before real provisioning.
