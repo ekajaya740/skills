@@ -29,7 +29,7 @@
         "git-guardrails-claude-code", "grill-me", "grill-with-docs",
         "grilling", "handoff", "implement", "implement-spec",
         "improve-codebase-architecture", "loop-me", "migrate-to-shoehorn",
-        "pr", "prototype", "research", "retro", "scaffold-exercises",
+        "pr", "research", "retro", "scaffold-exercises",
         "setup-matt-pocock-skills", "setup-pre-commit",
         "setup-ts-deep-modules", "tdd", "teach", "to-questionnaire",
         "to-spec", "to-tickets", "triage", "wait-what", "wayfinder",
@@ -39,7 +39,7 @@
       "notAvailableUpstream": [
         "caveman", "diagnose", "to-issues", "to-prd", "write-a-skill", "zoom-out"
       ],
-      "notes": "All 38 upstream skills are installed. Six local names are outdated because upstream renamed or withdrew them: diagnose -> diagnosing-bugs, to-issues -> to-tickets, to-prd -> to-spec, write-a-skill -> writing-for-agents (via writing-great-skills). caveman and zoom-out were removed outright with no successor; the local copies still work but will not update. Update with 'npx skills@latest update -g -y', then re-link the harnesses. See AGENTS.md."
+      "notes": "All upstream skills are installed except 'prototype', whose name is now owned by emilkowalski/skills (see that entry); install mattpocock's copy only if you intend to displace Emil's. Six local names are outdated because upstream renamed or withdrew them: diagnose -> diagnosing-bugs, to-issues -> to-tickets, to-prd -> to-spec, write-a-skill -> writing-for-agents (via writing-great-skills). caveman and zoom-out were removed outright with no successor; the local copies still work but will not update. Update with 'npx skills@latest update -g -y', then re-link the harnesses. See AGENTS.md."
     },
     {
       "repo": "obra/superpowers",
@@ -132,6 +132,19 @@
       "author": "David Heinemeier Hansson",
       "skills": ["omarchy", "diagnose-crash", "omarchy-app"],
       "notes": "Skills that ship with the Omarchy Linux distribution (package: omarchy). Locally they are symlinked from /usr/share/omarchy/default/agents/skills into this store, so `omarchy update` keeps them current; the CLI install below is the portable path for machines without Omarchy. Upstream lives at github.com/basecamp/omarchy (the GitHub owner is omacom)."
+    },
+    {
+      "repo": "emilkowalski/skills",
+      "license": "MIT",
+      "author": "Emil Kowalski",
+      "skills": [
+        "emil-design-eng", "animate", "animate-expo", "review-animations",
+        "improve-animations", "find-animation-opportunities",
+        "animation-vocabulary", "apple-design", "write-swift",
+        "pick-ui-library", "prototype", "mobile-native", "break-ui",
+        "ask-sonner"
+      ],
+      "notes": "All 14 upstream skills are installed. 'animate' and 'prototype' share their names with skills from other sources and were deliberately overwritten with Emil's versions: the local animate no longer tracks pbakaus/impeccable (which only ever shipped it as a superseded leftover) and prototype no longer tracks mattpocock/skills."
     }
   ]
 }
