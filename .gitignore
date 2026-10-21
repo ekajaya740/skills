@@ -14,6 +14,8 @@
 !/AGENTS.md
 !/.gitignore
 !/LICENSE
+!/notion-second-brain/
+!/second-brain-action-items/
 !/README.md
 !/skills.json
 !/install-skills.sh
@@ -51,6 +53,17 @@
 !/native-mcp/
 !/ocr-and-documents/
 !/polymarket/
+!/second-brain-clipping-processor/
+!/second-brain-cross-linker/
+!/second-brain-daily-note-curation/
+!/second-brain-decision-manager/
+!/second-brain-inbox-curation/
+!/second-brain-operations/
+!/second-brain-project-area-creator/
+!/second-brain-skills-autofix/
+!/second-brain-summary/
+!/second-brain-synthesis/
+!/second-brain-weekly-review/
 !/pretext/
 !/project-code-review/
 !/self-hosted-webapps/
