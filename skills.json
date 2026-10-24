@@ -3,7 +3,10 @@
   "description": "Third-party agent skills used locally alongside the skills published in this repo. They are NOT vendored here: each belongs to its original author, so this file records where to get it and how to update it.",
   "installer": {
     "tool": "npx skills add",
-    "defaultArgs": ["-g", "-y"],
+    "defaultArgs": [
+      "-g",
+      "-y"
+    ],
     "note": "Installs into ~/.agents/skills. Each source below lists the skill names to pass via repeated -s flags."
   },
   "sources": [
@@ -11,11 +14,26 @@
       "repo": "pbakaus/impeccable",
       "license": "Apache-2.0",
       "author": "Paul Bakaus",
-      "skills": ["impeccable"],
+      "skills": [
+        "impeccable"
+      ],
       "notAvailableUpstream": [
-        "adapt", "animate", "audit", "bolder", "clarify", "colorize",
-        "critique", "delight", "distill", "layout", "optimize",
-        "overdrive", "polish", "quieter", "shape", "typeset"
+        "adapt",
+        "animate",
+        "audit",
+        "bolder",
+        "clarify",
+        "colorize",
+        "critique",
+        "delight",
+        "distill",
+        "layout",
+        "optimize",
+        "overdrive",
+        "polish",
+        "quieter",
+        "shape",
+        "typeset"
       ],
       "notes": "Upstream ships a single 'impeccable' skill (v4.5.0 locally) that covers these as sub-commands, in reference/*.md. The standalone sibling directories are leftovers from an older layout and are no longer installable by name; impeccable supersedes them."
     },
@@ -24,20 +42,51 @@
       "license": "MIT",
       "author": "Matt Pocock",
       "skills": [
-        "ask-matt", "chief-of-staff", "claude-handoff", "code-review",
-        "codebase-design", "diagnosing-bugs", "domain-modeling",
-        "git-guardrails-claude-code", "grill-me", "grill-with-docs",
-        "grilling", "handoff", "implement", "implement-spec",
-        "improve-codebase-architecture", "loop-me", "migrate-to-shoehorn",
-        "pr", "research", "retro", "scaffold-exercises",
-        "setup-matt-pocock-skills", "setup-pre-commit",
-        "setup-ts-deep-modules", "tdd", "teach", "to-questionnaire",
-        "to-spec", "to-tickets", "triage", "wait-what", "wayfinder",
-        "wizard", "writing-beats", "writing-for-agents", "writing-fragments",
+        "ask-matt",
+        "chief-of-staff",
+        "claude-handoff",
+        "code-review",
+        "codebase-design",
+        "diagnosing-bugs",
+        "domain-modeling",
+        "git-guardrails-claude-code",
+        "grill-me",
+        "grill-with-docs",
+        "grilling",
+        "handoff",
+        "implement",
+        "implement-spec",
+        "improve-codebase-architecture",
+        "loop-me",
+        "migrate-to-shoehorn",
+        "pr",
+        "research",
+        "retro",
+        "scaffold-exercises",
+        "setup-matt-pocock-skills",
+        "setup-pre-commit",
+        "setup-ts-deep-modules",
+        "tdd",
+        "teach",
+        "to-questionnaire",
+        "to-spec",
+        "to-tickets",
+        "triage",
+        "wait-what",
+        "wayfinder",
+        "wizard",
+        "writing-beats",
+        "writing-for-agents",
+        "writing-fragments",
         "writing-shape"
       ],
       "notAvailableUpstream": [
-        "caveman", "diagnose", "to-issues", "to-prd", "write-a-skill", "zoom-out"
+        "caveman",
+        "diagnose",
+        "to-issues",
+        "to-prd",
+        "write-a-skill",
+        "zoom-out"
       ],
       "notes": "All upstream skills are installed except 'prototype', whose name is now owned by emilkowalski/skills (see that entry); install mattpocock's copy only if you intend to displace Emil's. Six local names are outdated because upstream renamed or withdrew them: diagnose -> diagnosing-bugs, to-issues -> to-tickets, to-prd -> to-spec, write-a-skill -> writing-for-agents (via writing-great-skills). caveman and zoom-out were removed outright with no successor; the local copies still work but will not update. Update with 'npx skills@latest update -g -y', then re-link the harnesses. See AGENTS.md."
     },
@@ -45,32 +94,43 @@
       "repo": "obra/superpowers",
       "license": "MIT",
       "author": "Jesse Vincent",
-      "skills": ["using-git-worktrees", "using-superpowers"]
+      "skills": [
+        "using-git-worktrees",
+        "using-superpowers"
+      ]
     },
     {
       "repo": "vercel-labs/agent-browser",
       "license": "Apache-2.0",
       "author": "Vercel Inc.",
-      "skills": ["agent-browser"]
+      "skills": [
+        "agent-browser"
+      ]
     },
     {
       "repo": "vercel-labs/skills",
       "license": "MIT",
       "author": "Vercel, Inc.",
-      "skills": ["find-skills"]
+      "skills": [
+        "find-skills"
+      ]
     },
     {
       "repo": "jakubkrehel/make-interfaces-feel-better",
       "license": "MIT",
       "author": "Jakub Krehel",
-      "skills": ["make-interfaces-feel-better"]
+      "skills": [
+        "make-interfaces-feel-better"
+      ]
     },
     {
       "repo": "supabase/agent-skills",
       "license": "MIT",
       "author": "Supabase",
       "skills": [],
-      "notAvailableUpstream": ["skill-creator"],
+      "notAvailableUpstream": [
+        "skill-creator"
+      ],
       "notes": "skill-creator was installed from this repo in Jan 2026 but is no longer published there; upstream now offers 'supabase' and 'supabase-postgres-best-practices'."
     },
     {
@@ -78,7 +138,9 @@
       "license": "none",
       "author": "Figma",
       "skills": [],
-      "notAvailableUpstream": ["implement-design"],
+      "notAvailableUpstream": [
+        "implement-design"
+      ],
       "notes": "No license file in the repository, so treat as all-rights-reserved. implement-design is no longer published; the closest successor is 'figma-design-to-code'."
     },
     {
@@ -86,51 +148,73 @@
       "license": "MIT",
       "author": "Steve Darlow",
       "skills": [
-        "jev-browser-use", "jev-computer-use", "jev-frontier-work",
-        "jev-mailbox", "jev-memory", "jev-model-routing", "jev-search",
-        "jev-setup", "jev-skill-select"
+        "jev-browser-use",
+        "jev-computer-use",
+        "jev-frontier-work",
+        "jev-mailbox",
+        "jev-memory",
+        "jev-model-routing",
+        "jev-search",
+        "jev-setup",
+        "jev-skill-select"
       ],
-      "notAvailableUpstream": ["jev-compaction"],
+      "notAvailableUpstream": [
+        "jev-compaction"
+      ],
       "notes": "These skills are installed by the repository's own installer (python3 install.py), which targets ~/.claude/skills, ~/.codex/skills and ~/.agents/skills. Prefer that over 'npx skills add'. jev-compaction is skipped by the CLI because its frontmatter has a YAML parse error upstream; install.py copies it fine. 'npx skills add' also skips the whole repo when it hits that file."
     },
     {
       "repo": "browser-use/browser-use",
       "license": "MIT",
       "author": "Gregor Zunic",
-      "skills": ["browser-use"]
+      "skills": [
+        "browser-use"
+      ]
     },
     {
       "repo": "blader/humanizer",
       "license": "MIT",
       "author": "Siqi Chen",
-      "skills": ["humanizer"]
+      "skills": [
+        "humanizer"
+      ]
     },
     {
       "repo": "makenotion/skills",
       "license": "MIT",
       "author": "Notion Labs, Inc.",
-      "skills": ["notion-cli"],
+      "skills": [
+        "notion-cli"
+      ],
       "notes": "Official Notion skills repository. The local copy was an older revision. A same-named but unrelated community repo (CaesiumY/notion-cli-skill) also exists."
     },
     {
       "repo": "intellectronica/agent-skills",
       "license": "CC0-1.0",
       "author": "intellectronica",
-      "skills": ["raindrop-api"],
+      "skills": [
+        "raindrop-api"
+      ],
       "notes": "Large multi-skill repo; only raindrop-api is used locally."
     },
     {
       "repo": "PleasePrompto/notebooklm-skill",
       "license": "MIT",
       "author": "Please Prompto!",
-      "skills": ["notebooklm"],
+      "skills": [
+        "notebooklm"
+      ],
       "notes": "The local notebooklm directory is empty."
     },
     {
       "repo": "omacom/omarchy",
       "license": "MIT",
       "author": "David Heinemeier Hansson",
-      "skills": ["omarchy", "diagnose-crash", "omarchy-app"],
+      "skills": [
+        "omarchy",
+        "diagnose-crash",
+        "omarchy-app"
+      ],
       "notes": "Skills that ship with the Omarchy Linux distribution (package: omarchy). Locally they are symlinked from /usr/share/omarchy/default/agents/skills into this store, so `omarchy update` keeps them current; the CLI install below is the portable path for machines without Omarchy. Upstream lives at github.com/basecamp/omarchy (the GitHub owner is omacom)."
     },
     {
@@ -138,13 +222,32 @@
       "license": "MIT",
       "author": "Emil Kowalski",
       "skills": [
-        "emil-design-eng", "animate", "animate-expo", "review-animations",
-        "improve-animations", "find-animation-opportunities",
-        "animation-vocabulary", "apple-design", "write-swift",
-        "pick-ui-library", "prototype", "mobile-native", "break-ui",
-        "ask-sonner"
+        "animate",
+        "animate-expo",
+        "animation-performance",
+        "animation-vocabulary",
+        "apple-design",
+        "ask-sonner",
+        "break-ui",
+        "emil-design-eng",
+        "find-animation-opportunities",
+        "improve-animations",
+        "mobile-native",
+        "pick-ui-library",
+        "prototype",
+        "review-animations",
+        "write-swift"
       ],
-      "notes": "All 14 upstream skills are installed. 'animate' and 'prototype' share their names with skills from other sources and were deliberately overwritten with Emil's versions: the local animate no longer tracks pbakaus/impeccable (which only ever shipped it as a superseded leftover) and prototype no longer tracks mattpocock/skills."
+      "notes": "All 14 upstream skills are installed. 'animate' and 'prototype' share their names with skills from other sources and were deliberately overwritten with Emil's versions: the local animate no longer tracks pbakaus/impeccable (which only ever shipped it as a superseded leftover) and prototype no longer tracks mattpocock/skills. Upstream also ships 'animation-performance' (added 2026-10-25): keeps web animations inside the frame budget."
+    },
+    {
+      "repo": "alejandrobailo/no-use-effect",
+      "license": "MIT",
+      "author": "Alejandro Bailo",
+      "skills": [
+        "no-use-effect"
+      ],
+      "notes": "Enforces a strict no-direct-useEffect rule in React/React Native. A local copy existed under the PROFILL workspace's `.agents/skills` but was not tracked as a source here, so a fresh machine would not get it."
     }
   ]
 }
