@@ -2,7 +2,7 @@
 name: skills-install
 description: Install, update, relink, or vet third-party agent skills from the internet. Use when the user asks to install a skill, a skill is missing or stale, a harness cannot see a skill, or a new source needs recording.
 disable-model-invocation: true
-version: 0.2.0
+version: 0.2.1
 ---
 
 # Skills Install

@@ -106,13 +106,17 @@ PY
 # A skill is instructions the agent will follow, fetched from a stranger's
 # repository and then loaded by every harness on the machine. That is not
 # something to do on the user's behalf without showing them the list first.
-# --dry-run and --yes are the two ways past this prompt; a non-interactive
-# shell must pass --yes rather than block forever.
+#
+# --dry-run and --yes are the two ways past this prompt. A non-interactive
+# shell gets an error rather than a prompt, because an agent that answers its
+# own question has not asked the user anything.
 confirm() {
   [ "$DRY_RUN" -eq 1 ] && return 0
   [ "$ASSUME_YES" -eq 1 ] && return 0
   if [ ! -t 0 ]; then
-    echo "error: no terminal to confirm on. Re-run with --yes, or --dry-run to preview." >&2
+    echo "error: this install needs a human. Ask the user to run it in a" >&2
+    echo "terminal themselves — or pass --yes only if they have already" >&2
+    echo "approved these exact sources. --dry-run prints the list first." >&2
     exit 1
   fi
   printf '\nProceed? [y/N] '
@@ -149,15 +153,46 @@ preview() {
   echo "Authors and licences for all of them: ATTRIBUTION.md"
 }
 
+# What `update` will actually touch, read from the lock file that `npx skills`
+# keeps. The update branch has no SOURCES list of its own — it rewrites every
+# source already installed, which is a different and often larger set than the
+# one this script installs. Without this the prompt asks about nothing.
+preview_update() {
+  local lock="${XDG_STATE_HOME:-$HOME/.agents}/.skill-lock.json"
+  [ -f "$lock" ] || lock="$HOME/.agents/.skill-lock.json"
+  if [ ! -f "$lock" ]; then
+    echo "  no lock file at ~/.agents/.skill-lock.json — nothing recorded to update"
+    return
+  fi
+  python3 - "$lock" <<'PY'
+import collections, json, sys
+try:
+    data = json.load(open(sys.argv[1]))
+except Exception:
+    print("  lock file unreadable; skipping preview")
+    raise SystemExit(0)
+skills = data.get("skills", {})
+counts = collections.Counter(
+    v.get("source", "?") for v in skills.values() if isinstance(v, dict)
+)
+for repo, n in sorted(counts.items()):
+    print(f"• {repo} — {n} skill(s)")
+print()
+print(f"{len(skills)} skill(s) from {len(counts)} source(s) will be fetched and rewritten")
+PY
+}
+
 if [ "$UPDATE" -eq 1 ]; then
   echo "Updating installed skills from their upstream sources…"
-  echo "(every source in ~/.agents/.skill-lock.json is fetched and rewritten)"
+  echo
+  preview_update
+  echo
+  echo "• kerpopule/hermes-jev-skills (via its own installer)"
+  credit "kerpopule/hermes-jev-skills"
   confirm
   run npx --yes skills@latest update -g -y || true
 
   echo
-  echo "• kerpopule/hermes-jev-skills (via its own installer)"
-  credit "kerpopule/hermes-jev-skills"
   run bash -c '
     set -e
     src="${XDG_CACHE_HOME:-$HOME/.cache}/hermes-jev-skills"

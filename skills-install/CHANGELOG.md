@@ -5,6 +5,17 @@ All notable changes to the `skills-install` skill are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 The version in this file matches the `version` field in `SKILL.md`.
 
+## [0.2.1] - 2026-10-31
+
+### Fixed
+
+- The no-terminal error told the caller to "re-run with --yes", which is exactly
+  the move that defeats the gate. It now says the install needs a human, and that
+  `--yes` is for sources the user has already approved.
+- `--update` prompted before printing a single source: the jev credit and the whole
+  lock file came after the question. It now lists every source and count from
+  `.skill-lock.json` first, then asks.
+
 ## [0.2.0] - 2026-10-31
 
 ### Added
