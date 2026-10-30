@@ -14,8 +14,13 @@ teammates and to CI, and a project that depends on it is a project that works on
 
 ```bash
 cd <repo-root>
-npx skills@latest add <owner>/<repo> -s <skill> -s <other> -y
+npx skills@latest add <owner>/<repo> -s <skill> -s <other>
 ```
+
+**No `-y` until the user has approved these sources.** The pin set is other people's work, fetched
+from the internet and loaded by every session in this repo — show the repo, author, licence and
+skill count first, then ask. `-y` answers that question for them. In a non-interactive shell with
+nobody present, stop; do not add `-y` to get past the prompt.
 
 Omit `-g`. Without it the CLI writes `.agents/skills/<name>/`, symlinks each harness's directory,
 and records every install in `skills-lock.json` — the pin file that makes the set reproducible.

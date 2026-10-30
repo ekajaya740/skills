@@ -88,7 +88,7 @@
         "write-a-skill",
         "zoom-out"
       ],
-      "notes": "All upstream skills are installed except 'prototype', whose name is now owned by emilkowalski/skills (see that entry); install mattpocock's copy only if you intend to displace Emil's. Six local names are outdated because upstream renamed or withdrew them: diagnose -> diagnosing-bugs, to-issues -> to-tickets, to-prd -> to-spec, write-a-skill -> writing-for-agents (via writing-great-skills). caveman and zoom-out were removed outright with no successor; the local copies still work but will not update. Update with 'npx skills@latest update -g -y', then re-link the harnesses. See AGENTS.md."
+      "notes": "All upstream skills are installed except 'prototype', whose name is now owned by emilkowalski/skills (see that entry); install mattpocock's copy only if you intend to displace Emil's. Six local names are outdated because upstream renamed or withdrew them: diagnose -> diagnosing-bugs, to-issues -> to-tickets, to-prd -> to-spec, write-a-skill -> writing-for-agents (via writing-great-skills). caveman and zoom-out were removed outright with no successor; the local copies still work but will not update. Update with 'npx skills@latest update -g', then re-link the harnesses. See AGENTS.md."
     },
     {
       "repo": "obra/superpowers",

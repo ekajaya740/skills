@@ -5,6 +5,20 @@ All notable changes to the `repo-init` skill are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 The version in this file matches the `version` field in `SKILL.md`.
 
+## [0.2.0] - 2026-10-31
+
+### Added
+
+- `SKILL.md` § Stop here if the folder is empty: an empty folder has no build command, green
+  command or branch, so the honest output is a question, not a shorter document. Says when to
+  hand off to `project-scaffold`, and gives a partial `AGENTS.md` that lists what is not yet
+  known instead of filling it with plausible defaults.
+
+### Fixed
+
+- `INIT.md` and `SKILLS.md` no longer pass `-y` to `npx skills@latest add`. It answered the
+  consent question on the user's behalf, contradicting `skills-install` 0.2.x.
+
 ## [0.1.0] - 2026-10-31
 
 ### Added

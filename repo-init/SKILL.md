@@ -2,7 +2,7 @@
 name: repo-init
 description: Bootstrap a repo's agent layer from nothing — AGENTS.md, detail tier, harness shims, and the green-command table. Use only when a repo has no AGENTS.md at all. For a repo that already has one, use repo-align.
 disable-model-invocation: true
-version: 0.1.0
+version: 0.2.0
 ---
 
 # Repo Init
@@ -15,6 +15,76 @@ that matter live in a skill the agent never opens.
 
 Read [`INIT.md`](INIT.md) and run it. This file is only the entry point: what the job is, what it
 produces, and how to know it is done.
+
+## Stop here if the folder is empty
+
+An empty folder cannot produce an `AGENTS.md`, because every section of one is a fact about code
+that does not exist yet. Step 1 asks you to read the build command, the green command and the
+primary branch from files. On an empty folder there are no files, so the honest output is not a
+shorter document — it is a question.
+
+Check first:
+
+```bash
+ls -A | head           # nothing but .git → the folder is empty
+git branch -r 2>/dev/null | head
+```
+
+**If there is no code, no manifest, and no CI**, do not write `AGENTS.md`. Say what is missing and
+ask what the folder will hold:
+
+> This folder has no code, manifest or CI, so I can't write the stack, the green command or the
+> branch — the three things `AGENTS.md` is mostly made of. What will it hold: code, or something
+> else? If code, `project-scaffold` picks the stack first and lays down the agent layer after,
+> which is the order that avoids inventing facts.
+
+Two outcomes:
+
+| The user says | Do |
+| --- | --- |
+| "Scaffold it too" / names a stack | Skill `project-scaffold` — it creates the project *and* the agent layer, with real commands to record |
+| "Just the AGENTS.md, I'll add code later" | Write a **partial** file, below |
+
+### The partial file
+
+Only two things are true before any code exists, and neither comes from the folder:
+
+1. The three project-independent hard rules — never guess a spec, prove before done, one rule one
+   home.
+2. An explicit list of what is not yet known.
+
+```md
+# Agent Guide — «Project Name»
+
+## Status
+
+Scaffolded before any code. The sections below are deliberately incomplete; fill each one at the
+first commit that makes it answerable, then delete this section.
+
+## Hard rules
+
+- **Never guess a specification.** Underspecified scope → stop and ask.
+- **Prove it before calling it done.** A claim names the layer it was verified at.
+- **One rule, one home.** Stated once; every other mention points at the owner.
+
+## Not yet known — do not invent
+
+| Fact | Fill it when |
+| --- | --- |
+| Stack | The first dependency is added |
+| Build command | `package.json` / `pyproject.toml` / `Makefile` exists |
+| Green command | There is a test or typecheck to run |
+| Primary branch | The first push |
+| Out-of-bounds | The first path an agent should not touch |
+```
+
+**Never fill a row with a plausible default.** A green command that was guessed is worse than an
+empty one: the agent runs it, it fails, and the file teaches the agent to distrust the file. An
+`AGENTS.md` with four known-unknowns is honest and useful; one with `bun test` in a repo that has
+no `package.json` is a lie the next session will act on.
+
+**Done when** either the folder has enough evidence to run the seven steps, or the user has been
+asked and has chosen a path.
 
 ## What it produces
 

@@ -98,11 +98,13 @@ store goes in the repo too — `.agents/skills/` plus a committed `skills-lock.j
 
 ```bash
 cd <repo-root>
-npx skills@latest add mattpocock/skills -s grilling -s implement -s tdd -s code-review -s pr -y
+npx skills@latest add mattpocock/skills -s grilling -s implement -s tdd -s code-review -s pr
 ```
 
-Omit `-g`: a global install is invisible to a fresh clone. Then gitignore `.agents/` and commit
-`skills-lock.json`, so `npx skills@latest experimental_install` reproduces the set.
+No `-y`: it answers the consent question for the user. Show them the source, the author, the
+licence and the five skill names, then ask. Omit `-g` — a global install is invisible to a fresh
+clone. Then gitignore `.agents/` and commit `skills-lock.json`, so
+`npx skills@latest experimental_install` reproduces the set.
 
 Name the store in `AGENTS.md`, next to the green commands — a pointer the agent can follow.
 
