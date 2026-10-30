@@ -5,6 +5,14 @@ All notable changes to the `repo-init` skill are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 The version in this file matches the `version` field in `SKILL.md`.
 
+## [0.3.0] - 2026-10-31
+
+### Changed
+
+- Done-when names `Kind`, the proving command, and the branch — and accepts a knowledge repo
+  whose check is a link or schema lint, or an explicit `None yet` row with nothing invented.
+- `TEMPLATE-AGENTS.md` carries the `Kind:` line the audit reads.
+
 ## [0.2.0] - 2026-10-31
 
 ### Added

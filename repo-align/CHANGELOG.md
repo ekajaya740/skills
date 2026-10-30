@@ -5,6 +5,23 @@ All notable changes to the `repo-align` skill are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 The version in this file matches the `version` field in `SKILL.md`.
 
+## [0.2.0] - 2026-10-31
+
+### Added
+
+- `Kind: code` / `Kind: knowledge` is read from `AGENTS.md` and printed in the audit header.
+  Declared beats detected: the filesystem cannot tell a docs-heavy code repo from a vault, and
+  guessing alone silently dropped checks a code repo should run.
+
+### Fixed
+
+- `documented_commands` counted any row with a backticked second cell, so an AGENTS.md *index*
+  table (`| Writing code | `CODING_STANDARDS.md` |`) satisfied VERIFY-01 and `--run` tried to
+  execute a markdown filename. Now anchored to a commands table or a row stating its own
+  green condition.
+- `VERIFY-03` is `n/a` when nothing is documented for CI to run, for any repo kind — the gap is
+  already VERIFY-01's finding, not a second one.
+
 ## [0.1.0] - 2026-10-31
 
 ### Added

@@ -102,6 +102,13 @@ GREEN_WHEN = re.compile(r"\b(green when|passes when|green if|passes if)\b", re.I
 # The honest row for a repo with nothing mechanical to check.
 NO_CHECK_ROW = re.compile(r"^\|\s*none( yet)?\s*\|", re.I | re.M)
 
+# A repo may state what it is instead of making the audit guess. Declared beats
+# detected: the filesystem cannot tell a docs-heavy code repo from a vault.
+KIND_DECL = re.compile(
+    # Tolerate the markdown around it: `- **Kind:** `code``, `Kind: knowledge`, bare.
+    r"^\s*(?:[-*]\s+)?\*{0,2}kind\b[^\w\n]{0,6}(code|knowledge)\b", re.I | re.M
+)
+
 
 @dataclass
 class Finding:
@@ -135,6 +142,35 @@ class Context:
             return False
 
     @property
+    def declared_kind(self) -> str | None:
+        """`Kind: code` / `Kind: knowledge` from AGENTS.md, when stated.
+
+        A repo knows what it is; the filesystem only hints. Guessing alone
+        misreads a docs-heavy code repo and a code repo before its first
+        manifest, and both would silently lose checks they should run.
+        """
+        if not self.agents:
+            return None
+        m = KIND_DECL.search(self.agents)
+        return m.group(1).strip().lower() if m else None
+
+    @property
+    def kind(self) -> str:
+        """`code`, `knowledge`, or `empty` — declared when stated, else guessed."""
+        if self.is_empty:
+            return "empty"
+        declared = self.declared_kind
+        if declared in ("code", "knowledge"):
+            return declared
+        manifests = (
+            "package.json", "pyproject.toml", "Cargo.toml", "go.mod",
+            "Makefile", "justfile", "build.gradle", "pom.xml", "deno.json",
+        )
+        if any(self.path(m).is_file() for m in manifests):
+            return "code"
+        return "code" if self.path(".github/workflows").is_dir() else "knowledge"
+
+    @property
     def is_non_coding(self) -> bool:
         """Content exists, but nothing declares a build.
 
@@ -142,15 +178,7 @@ class Context:
         no Makefile, yet is a real repo with real conventions. Treating it as an
         empty folder, or demanding it compile, is wrong in both directions.
         """
-        if self.is_empty:
-            return False
-        manifests = (
-            "package.json", "pyproject.toml", "Cargo.toml", "go.mod",
-            "Makefile", "justfile", "build.gradle", "pom.xml", "deno.json",
-        )
-        if any(self.path(m).is_file() for m in manifests):
-            return False
-        return not self.path(".github/workflows").is_dir()
+        return self.kind == "knowledge"
 
     def read(self, rel: str) -> str | None:
         p = self.path(rel)
@@ -449,15 +477,36 @@ def check_rule_noop(ctx: Context) -> Finding:
 
 
 def documented_commands(ctx: Context) -> list[tuple[str, str]]:
+    """Rows of a commands table, and only those.
+
+    A backticked second cell is not enough: the AGENTS.md index table
+    (`| Area | Load it when |`) also has one, and counting it as a command made
+    VERIFY-01 report "ok" on a repo with no check at all — then `--run` tried to
+    execute a markdown filename. A commands table is identified by its header
+    (or by a row that states its own green condition), not by shape alone.
+    """
     if ctx.agents is None:
         return []
     out = []
+    in_commands = False
     for line in ctx.agents.splitlines():
+        if not line.lstrip().startswith("|"):
+            in_commands = False
+            continue
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        # A header row names the pass condition; the separator row follows it.
+        if any(GREEN_WHEN.search(c) for c in cells):
+            in_commands = True
         m = TABLE_COMMAND.match(line)
-        if m:
-            label, cmd = m.group(1).strip(), m.group(2).strip()
-            if cmd and not cmd.startswith("…"):
-                out.append((label, cmd))
+        if not m:
+            continue
+        label, cmd = m.group(1).strip(), m.group(2).strip()
+        if not cmd or cmd.startswith("…"):
+            continue
+        # In a commands table every row counts. Outside one, only a row that
+        # states its own green condition does.
+        if in_commands or any(GREEN_WHEN.search(c) for c in cells[2:]):
+            out.append((label, cmd))
     return out
 
 
@@ -521,14 +570,25 @@ def check_verify_runs(ctx: Context, run: bool) -> Finding:
 def check_verify_ci(ctx: Context) -> Finding:
     wf = sorted(ctx.path(".github/workflows").glob("*.y*ml")) if ctx.path(".github/workflows").is_dir() else []
     if not wf:
-        # A vault with no build has nothing for CI to run. Demanding a workflow
-        # there produces a green badge that checks nothing, which is worse than
-        # no badge: it looks like proof.
+        # CI's job is to run the commands table. With no commands there is
+        # nothing for it to run, and that gap is already VERIFY-01's finding —
+        # reporting it twice teaches the reader to skim. Holds for any repo
+        # kind: a code repo mid-setup has the same non-problem.
+        if not documented_commands(ctx):
+            return Finding(
+                "VERIFY-03", "verify", "n/a",
+                "no CI, and no documented command for it to run",
+                "Add the check first (VERIFY-01), then a job that runs it.",
+                strict=True,
+            )
+        # A repo with a check but no build: CI is cheap to add, not mandatory.
+        # Blocking here pushes a notes repo toward a badge that proves nothing,
+        # which reads as proof and is worse than none.
         if ctx.is_non_coding:
             return Finding(
                 "VERIFY-03", "verify", "manual",
-                "no CI, and this repo has no build to run",
-                "Leave it unless something becomes checkable; then add a job for that check.",
+                "no CI, and this repo has no build",
+                "Optional. If the documented check is cheap, one job is worth it.",
                 strict=True,
             )
         return Finding(
@@ -809,9 +869,10 @@ def run_checks(ctx: Context, sections: set[str], run: bool) -> list[Finding]:
 # ── output ───────────────────────────────────────────────────────────────────
 
 
-def print_report(findings: list[Finding], root: Path) -> None:
+def print_report(findings: list[Finding], root: Path, kind: str = "code") -> None:
     order = {"drift": 0, "missing": 1, "manual": 2, "ok": 3, "n/a": 4}
-    print(f"Auditing {root}\n")
+    # State the kind: a downgraded check that does not say why reads as a bug.
+    print(f"Auditing {root}  (kind: {kind})\n")
     for section in SECTIONS:
         group = [f for f in findings if f.section == section]
         if not group:
@@ -886,7 +947,7 @@ def main() -> int:
     if args.json:
         print(json.dumps([asdict(f) for f in findings], indent=2))
     else:
-        print_report(findings, root)
+        print_report(findings, root, ctx.kind)
 
     strict_bad = [f for f in findings if f.strict and f.bad]
     return 1 if (args.strict and strict_bad) else 0

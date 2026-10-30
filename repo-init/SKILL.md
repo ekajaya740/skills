@@ -2,7 +2,7 @@
 name: repo-init
 description: Bootstrap a repo's agent layer from nothing — AGENTS.md, detail tier, harness shims, and the commands table. Covers code repos, non-coding repos (docs vaults, research notes, writing) whose green check is a link or schema lint rather than a build, and empty folders that have no facts to record yet. Use only when a repo has no AGENTS.md at all. For a repo that already has one, use repo-align.
 disable-model-invocation: true
-version: 0.2.0
+version: 0.3.0
 ---
 
 # Repo Init
@@ -158,7 +158,7 @@ conventions that nothing else enforces are written down as hard rules.
 
 | Artifact | Tier | Holds |
 | --- | --- | --- |
-| `AGENTS.md` | Binding | Stack, hard rules, the green-command table, out-of-bounds. Under ~150 lines. |
+| `AGENTS.md` | Binding | What this repo is, hard rules, the commands table, out-of-bounds. Under ~150 lines. |
 | `docs/agents/` | Detail | One file per area. Created on the first detail rule that earns a file — not before. |
 | `CLAUDE.md`, `.cursor/rules/*.mdc`, … | Shim | A pointer to `AGENTS.md`. Never a second copy. |
 | `.agents/skills/` + `skills-lock.json` | Store | The pinned skills the repo's procedures live in. Lock committed, directory ignored. |
@@ -174,11 +174,13 @@ rule is violated — see skill `agent-rules` § One rule, one home.
 
 ## Done when
 
-1. `AGENTS.md` names the build command, the green command, and the primary branch — all copied
-   from files, not memory.
+1. `AGENTS.md` states the repo's kind (`Kind: code` or `Kind: knowledge`), the command that
+   proves it valid, and the primary branch — all copied from files, not memory.
 2. Every fact collected has exactly one destination, and nothing is in two.
 3. A harness opening the repo lands in `AGENTS.md` in one hop.
-4. The green command passes on a clean checkout, and you have pasted the line that proves it.
+4. That command passes on a clean checkout, and you have pasted the line that proves it. For a
+   knowledge repo that is the link check or schema lint; where none exists, the table says so and
+   the rule is that no command was invented.
 5. `skills-lock.json` is committed, and a clean checkout restores the set with `npx skills@latest
    experimental_install`.
 

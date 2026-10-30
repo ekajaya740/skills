@@ -16,10 +16,17 @@ each extra row costs one line and is reached only when it fires.
 «One paragraph, from the user's perspective. What the product does, who for, what breaks
 expensively. Not the tech stack — that is the next section.»
 
+- **Kind:** `code` or `knowledge`
+
+`code` — the repo builds and its check compiles or tests. `knowledge` — the repo holds docs,
+notes or prose, and its check is a link check, a schema lint or a render. The audit reads this
+line instead of guessing from the file list, so state it even when the answer seems obvious.
+
 ## Stack
 
-«Runtime · language · framework · database · host. One line. Include versions only where the
-version changes what an agent may write.»
+«For `code`: runtime · language · framework · database · host, one line. For `knowledge`: the
+tools that read the files — the vault app, the site generator, the query tool. Include versions
+only where the version changes what an agent may write.»
 
 ## The standard, by area
 

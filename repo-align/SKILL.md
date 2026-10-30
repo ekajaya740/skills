@@ -2,7 +2,7 @@
 name: repo-align
 description: Audit an existing repo against this standard and fix the drift — missing or duplicated rules, wrong tier, broken harness shims, undocumented green command, missing design docs. Use when a repo predates the standard, a rule has drifted, or an agent keeps making the same mistake in a repo that has an AGENTS.md.
 disable-model-invocation: true
-version: 0.1.0
+version: 0.2.0
 ---
 
 # Repo Align
@@ -11,6 +11,19 @@ Bring an existing repo in line with the standard. **Reports first, edits only wh
 
 Use `repo-init` when there is no `AGENTS.md`. Use this when there is one, and it has drifted —
 or when the repo predates the standard and you want to know how far off it is.
+
+## What kind of repo it thinks this is
+
+The audit reads `Kind: code` or `Kind: knowledge` from `AGENTS.md` and prints the answer in the
+first line, because two checks mean different things by repo kind:
+
+| Kind | `VERIFY-01` | `VERIFY-03` |
+| --- | --- | --- |
+| `code` | A commands table with a build or test | A repo with commands but no CI is `missing` |
+| `knowledge` | A link check or schema lint; a `None yet` row is `manual`, not a failure | Optional — a badge that runs nothing reads as proof |
+
+With no declared kind it guesses from the file list (a manifest or CI means `code`), which
+misreads a docs-heavy code repo and a code repo before its first manifest. Declare it.
 
 ## 1. Declare the scope
 
