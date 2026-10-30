@@ -26,7 +26,7 @@ history it never had.
 
 ### Fixed
 
-- `RULE-CAP-01` no longer treats its cap of 7 as a law. A flat cap contradicts the standard this
+- `RULE-CAP-01` does not treat its cap of 7 as a law. A flat cap contradicts the standard this
   skill enforces: `RULE-TIER-01` says a rule that governs *how to work* binds every session, so a
   repo whose rules each pass that test can legitimately exceed 7. The Docker-rule regression cited in
   `agent-rules` is the case the cap was meant to catch — a rule demoted out of the binding tier and
@@ -57,7 +57,7 @@ history it never had.
   `rglob("*")` walked `node_modules` and took 44s on a real repo; it now takes 6s. Bundler
   output (`.wrangler/`, `storybook-static/`, `.astro/`) is skipped too — that is vendored
   third-party code, and reading it reported library internals as the repo's own env vars.
-- `STRUCT-04` no longer reports vars the repo already provides: those set in a committed
+- `STRUCT-04` does not report vars the repo already provides: those set in a committed
   `wrangler.jsonc`/`turbo.json`/compose file or by a `scripts/*.sh`, those with a `||`/`??`
   fallback at the read site, those named only in a comment, and those read only by tests.
   On a real repo that turned 6 findings into 2 — the remaining two are genuine.

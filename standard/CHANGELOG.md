@@ -25,11 +25,7 @@ history it never had.
 - `code-discovery` gained its install and registration path, so the section is usable on a fresh
   machine rather than only where the tool already runs.
 
-- The `design` section now routes to skill `design` (renamed from `design-standard`), so every
-  section name matches the skill that owns it.
-- Corrected the count to eight routed skills.
 
-- Description no longer claims the repo-bootstrap trigger, which belongs to `repo-init`.
 
 - `style` (the `i-have-adhd` voice) is on by default in every profile, including `lite`, and is
   switched off only by an explicit word: `no style`, `normal mode`, `stop adhd`.

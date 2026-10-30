@@ -17,4 +17,4 @@ history it never had.
 
 ### Fixed
 
-- `--dry-run` under `set -u` no longer aborts on an empty scope array.
+- `--dry-run` under `set -u` does not abort on an empty scope array.
