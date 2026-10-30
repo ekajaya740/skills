@@ -2,7 +2,7 @@
 name: repo-align
 description: Audit an existing repo against this standard and fix the drift — missing or duplicated rules, wrong tier, broken harness shims, undocumented green command, missing design docs. Use when a repo predates the standard, a rule has drifted, or an agent keeps making the same mistake in a repo that has an AGENTS.md.
 disable-model-invocation: true
-version: 0.0.1
+version: 0.1.0
 ---
 
 # Repo Align

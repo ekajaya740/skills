@@ -98,6 +98,55 @@ Wire both into `.github/workflows/validate.yml`. The allowlist check is the leak
 if anything outside the allowlist is tracked, which catches an accidental `git add -A` before it
 reaches a public remote.
 
+
+## Non-code repos
+
+The same target covers a docs vault, a research corpus, a writing project, or a notes repo. The
+shape differs in three places only — do not copy the skill-repo tree above into a vault.
+
+| Concern | Skill repo | Non-code repo |
+| --- | --- | --- |
+| Product | `SKILL.md` files an agent loads | Notes a human reads |
+| Tree | One folder per skill | Whatever the content's own logic dictates — by topic, by date, by source |
+| Green command | `validate_skills.py` | A link check, a frontmatter schema lint, or a render |
+| Allowlist `.gitignore` | Required — the store holds other people's skills | Only if the folder also holds third-party material |
+
+### Pick the one real check
+
+A non-code repo proves itself by **staying valid**. Choose the check that matches the content, and
+put it in the commands table:
+
+| Content | Check | Command |
+| --- | --- | --- |
+| Markdown with cross-references | Every relative link resolves | `lychee --offline .` |
+| Notes with frontmatter | Required keys present, values in range | A small `scripts/check_*.py` |
+| Rendered output (site, PDF, slides) | The build emits, exit 0 | The renderer's build command |
+| Nothing mechanical | **None** — record that honestly | — |
+
+**The `None` case is a valid scaffold.** Write the row:
+
+```md
+| Check | Command | Passes when |
+| --- | --- | --- |
+| None yet | — | Manual read; no mechanical check exists |
+```
+
+Then add the first real check when the repo grows one. A guessed `npm test` in a notes vault is
+worse than an honest blank: it fails on the first run and teaches the agent to ignore the table.
+
+### What the agent layer must carry
+
+In a code repo the compiler enforces the conventions. Here nothing does, so they have to be written
+down or they do not exist:
+
+1. **Where a new file goes** — the one rule that stops a vault becoming a junk drawer.
+2. **The naming scheme** — dates, slugs, prefixes. Whatever it is, state it once.
+3. **The frontmatter contract** — the keys tooling reads, and what each accepts.
+4. **Read-only paths** — published output, archives, other people's notes, anything licensed.
+
+These are hard rules, not detail. They bind harder here than in code precisely because no build
+will fail when they are broken.
+
 ## Linking harnesses
 
 `~/.agents/skills` is the source of truth; each harness reads its own directory. A skill on disk

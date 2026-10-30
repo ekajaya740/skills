@@ -23,7 +23,8 @@ your mock, not your code.
 
 ## Rung 2 — command output
 
-The cheap proof for anything the toolchain understands.
+The cheap proof for anything a toolchain understands — including a link checker or a schema lint
+in a repo that has no compiler.
 
 | Change | Command | What green means |
 | --- | --- | --- |
@@ -32,9 +33,14 @@ The cheap proof for anything the toolchain understands.
 | Package boundaries | `turbo run build` | Every package builds in dependency order |
 | Container | `docker build .` | The image assembles |
 | Schema | `drizzle-kit generate` | The migration matches the schema |
+| Markdown links | `lychee --offline .` | Every relative link resolves to a real file |
+| Note frontmatter | A `scripts/check_*.py` schema lint | Required keys present, values in range |
+| Rendered docs | The site/PDF/slide build | The artifact emits, exit 0 |
+| Prose style | A lint for the repo's stated rules only | The style the repo claims still holds |
 
 **When it is a lie:** a dry-run resolves config but does not run the code. Passing `--dry-run`
-means "deployable", not "deployed and working".
+means "deployable", not "deployed and working". The same trap in a vault: a link check proves the
+path resolves, not that the note at the other end says what you claim it says.
 
 ## Rung 3 — real run
 

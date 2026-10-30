@@ -5,6 +5,20 @@ All notable changes to the `repo-align` skill are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 The version in this file matches the `version` field in `SKILL.md`.
 
+## [0.1.0] - 2026-10-31
+
+### Added
+
+- `Context.is_empty` and `Context.is_non_coding`: content without a manifest is a real repo, not an
+  empty folder.
+
+### Fixed
+
+- `VERIFY-01` accepts `Passes when` as well as `Green when`, and treats an explicit `None yet` row
+  as `manual` rather than `missing` — a repo with nothing to check is being honest, not failing.
+- `VERIFY-03` no longer demands a CI workflow from a repo with no build. A badge that checks
+  nothing reads as proof, which is worse than no badge.
+
 ## [0.0.1] - 2026-10-31
 
 First public version. Nothing was published before this, so the entire body of the

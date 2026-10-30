@@ -2,7 +2,7 @@
 name: workflow
 description: The route work takes, idea to shipped — sharpen, prototype, split, plan, build, review, ship, retro — with the done-criterion for each phase and which skill to run at each. Use when deciding what to do next, when a request is underspecified, when a task has grown past one session, or when work was finished but not proven.
 disable-model-invocation: true
-version: 0.0.1
+version: 0.1.0
 ---
 
 # Workflow
@@ -17,8 +17,8 @@ Phases are ordered. Skip one only when it has genuinely nothing to do — not be
 | 1 | **Sharpen** | Decisions, vocabulary, recorded constraints | No question on the design tree is silently assumed |
 | 2 | **Prototype** *(optional)* | A running answer to one design question | The question is settled and the answer is folded back into the thread |
 | 3 | **Split** *(multi-session only)* | Spec + tickets with blocking edges | Every ticket is independently grabbable |
-| 4 | **Plan** | A written scope before code exists | Scope, criteria, out-of-scope, and files are written down |
-| 5 | **Build** | Commits | The repo's green command passes |
+| 4 | **Plan** | A written scope before the work exists | Scope, criteria, out-of-scope, and files are written down |
+| 5 | **Build** | Commits, or the changed files | The repo's green command passes — or, with no build, its check does (link/schema lint) |
 | 6 | **Review** | Standards + spec findings | Every finding is fixed or consciously accepted |
 | 7 | **Ship** | A PR with evidence | The diff is pushed and the PR body carries proof |
 | 8 | **Retro** *(on request only)* | Steering-improvement candidates | Every candidate is applied or dropped, by the user |
@@ -33,7 +33,7 @@ Full per-phase detail, including the exit questions and the failure each phase p
    confirmed is not a decision.
 2. **Facts are the agent's job; decisions are the user's.** Look up what the code says. Ask what
    the human wants.
-3. **Plan before code.** A scope or approach change lands in writing before the implementing code.
+3. **Plan before the work.** A scope or approach change lands in writing before the work that implements it — code, prose, or a restructure.
 4. **Proof before "done".** Every completion claim names the layer it was verified at — see skill
    `verify-change`.
 5. **Retro is manual, and proposes only.** Phase 8 runs **on the user's request** — never

@@ -38,9 +38,9 @@ Ids are stable — cite them in the report so the user can say "fix 2 and 5".
 
 | Id | Detect | Drift when | Fix |
 | --- | --- | --- | --- |
-| `VERIFY-01` | `rg -n 'Green when\|## Commands' AGENTS.md` | No green-command table | Derive it from `package.json`/CI and add it |
+| `VERIFY-01` | `rg -n 'Green when\|Passes when\|## Commands' AGENTS.md` | No commands table at all. A row reading `None yet` is honest, not drift | Derive it from the manifest/CI; if nothing is checkable, write the `None yet` row rather than invent a command |
 | `VERIFY-02` | Run every command in the table | A documented command exits non-zero | Fix the command or delete the row — never leave a broken row |
-| `VERIFY-03` | `ls .github/workflows 2>/dev/null` | CI runs commands the developer cannot run locally | Make CI call the same scripts |
+| `VERIFY-03` | `ls .github/workflows 2>/dev/null` | A repo that builds has no CI, or CI runs commands the developer cannot run locally. A non-coding repo with no build is exempt — say so | Make CI call the same scripts |
 | `VERIFY-04` | `rg -n 'Loading\.\.\.\|TODO\|FIXME' --type-add 'src:*.{ts,tsx,py,go,rs}' -tsrc` | A placeholder the repo treats as done | Fix it or file it |
 | `VERIFY-05` | Look for test files asserting on mocks of the changed unit | A test that passes before and after the fix | Rewrite at the seam the behaviour lives at |
 

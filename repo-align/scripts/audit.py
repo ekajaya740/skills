@@ -95,6 +95,13 @@ FENCE = re.compile(r"^```")
 BULLET_RULE = re.compile(r"^-\s+\*\*")
 TABLE_COMMAND = re.compile(r"^\|\s*([^|]+?)\s*\|\s*`([^`]+)`\s*\|")
 
+# Either phrasing is a real green-check table. A non-coding repo naturally says
+# "passes when"; rejecting that would fail a repo for describing itself honestly.
+GREEN_WHEN = re.compile(r"\b(green when|passes when|green if|passes if)\b", re.I)
+
+# The honest row for a repo with nothing mechanical to check.
+NO_CHECK_ROW = re.compile(r"^\|\s*none( yet)?\s*\|", re.I | re.M)
+
 
 @dataclass
 class Finding:
@@ -118,6 +125,32 @@ class Context:
 
     def path(self, rel: str) -> Path:
         return self.root / rel
+
+    @property
+    def is_empty(self) -> bool:
+        """Nothing but .git. Distinct from a repo that simply has no manifest."""
+        try:
+            return not any(e.name != ".git" for e in self.root.iterdir())
+        except OSError:
+            return False
+
+    @property
+    def is_non_coding(self) -> bool:
+        """Content exists, but nothing declares a build.
+
+        A docs vault, a research corpus or a writing repo has no package.json and
+        no Makefile, yet is a real repo with real conventions. Treating it as an
+        empty folder, or demanding it compile, is wrong in both directions.
+        """
+        if self.is_empty:
+            return False
+        manifests = (
+            "package.json", "pyproject.toml", "Cargo.toml", "go.mod",
+            "Makefile", "justfile", "build.gradle", "pom.xml", "deno.json",
+        )
+        if any(self.path(m).is_file() for m in manifests):
+            return False
+        return not self.path(".github/workflows").is_dir()
 
     def read(self, rel: str) -> str | None:
         p = self.path(rel)
@@ -432,12 +465,24 @@ def check_verify_table(ctx: Context) -> Finding:
     if ctx.agents is None:
         return Finding("VERIFY-01", "verify", "n/a", "no AGENTS.md", strict=True)
     cmds = documented_commands(ctx)
-    if not cmds and "green when" not in ctx.agents.lower():
-        return Finding(
-            "VERIFY-01", "verify", "missing", "no green-command table in AGENTS.md",
-            "Add a `| Check | Command | Green when |` table; without it 'it works' is unfalsifiable.",
-            strict=True,
-        )
+    if not cmds:
+        # A non-coding repo may honestly have no mechanical check. That is a
+        # finding, not a failure: "None yet" is the repo saying how much proof
+        # exists, which is exactly what this table is for. Demanding a command
+        # would push the author to invent one.
+        if NO_CHECK_ROW.search(ctx.agents):
+            return Finding(
+                "VERIFY-01", "verify", "manual",
+                "commands table declares no mechanical check",
+                "Confirm that is true, then leave it; a guessed command is worse than none.",
+                strict=True,
+            )
+        if not GREEN_WHEN.search(ctx.agents):
+            return Finding(
+                "VERIFY-01", "verify", "missing", "no green-command table in AGENTS.md",
+                "Add a `| Check | Command | Green when |` table; without it 'it works' is unfalsifiable.",
+                strict=True,
+            )
     return Finding("VERIFY-01", "verify", "ok", f"{len(cmds)} documented command(s)", strict=True)
 
 
@@ -476,6 +521,16 @@ def check_verify_runs(ctx: Context, run: bool) -> Finding:
 def check_verify_ci(ctx: Context) -> Finding:
     wf = sorted(ctx.path(".github/workflows").glob("*.y*ml")) if ctx.path(".github/workflows").is_dir() else []
     if not wf:
+        # A vault with no build has nothing for CI to run. Demanding a workflow
+        # there produces a green badge that checks nothing, which is worse than
+        # no badge: it looks like proof.
+        if ctx.is_non_coding:
+            return Finding(
+                "VERIFY-03", "verify", "manual",
+                "no CI, and this repo has no build to run",
+                "Leave it unless something becomes checkable; then add a job for that check.",
+                strict=True,
+            )
         return Finding(
             "VERIFY-03", "verify", "missing", "no .github/workflows/*.yml",
             "Add one job that runs the same commands as local.", strict=True,

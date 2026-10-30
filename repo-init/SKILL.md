@@ -1,6 +1,6 @@
 ---
 name: repo-init
-description: Bootstrap a repo's agent layer from nothing — AGENTS.md, detail tier, harness shims, and the green-command table. Use only when a repo has no AGENTS.md at all. For a repo that already has one, use repo-align.
+description: Bootstrap a repo's agent layer from nothing — AGENTS.md, detail tier, harness shims, and the commands table. Covers code repos, non-coding repos (docs vaults, research notes, writing) whose green check is a link or schema lint rather than a build, and empty folders that have no facts to record yet. Use only when a repo has no AGENTS.md at all. For a repo that already has one, use repo-align.
 disable-model-invocation: true
 version: 0.2.0
 ---
@@ -16,27 +16,40 @@ that matter live in a skill the agent never opens.
 Read [`INIT.md`](INIT.md) and run it. This file is only the entry point: what the job is, what it
 produces, and how to know it is done.
 
-## Stop here if the folder is empty
+## First, what kind of repo is this
 
-An empty folder cannot produce an `AGENTS.md`, because every section of one is a fact about code
-that does not exist yet. Step 1 asks you to read the build command, the green command and the
-primary branch from files. On an empty folder there are no files, so the honest output is not a
-shorter document — it is a question.
-
-Check first:
+Three shapes reach this skill, and only one of them is the empty case. Tell them apart before
+reading anything else, because "no manifest" is not the same as "no content".
 
 ```bash
-ls -A | head           # nothing but .git → the folder is empty
-git branch -r 2>/dev/null | head
+ls -A | grep -v '^\.git$' | head    # any content at all?
+ls *.md docs/ content/ 2>/dev/null | head
+cat package.json pyproject.toml Cargo.toml go.mod Makefile 2>/dev/null | head -40
 ```
 
-**If there is no code, no manifest, and no CI**, do not write `AGENTS.md`. Say what is missing and
-ask what the folder will hold:
+| Shape | Test | What it is |
+| --- | --- | --- |
+| **Empty** | Nothing but `.git` | No content, no facts to record |
+| **Non-coding** | Files exist, but no manifest and no build | Docs vault, research notes, writing, a knowledge base |
+| **Code** | A manifest, or a build/CI config | Run the seven steps normally |
 
-> This folder has no code, manifest or CI, so I can't write the stack, the green command or the
-> branch — the three things `AGENTS.md` is mostly made of. What will it hold: code, or something
-> else? If code, `project-scaffold` picks the stack first and lays down the agent layer after,
-> which is the order that avoids inventing facts.
+A docs vault is **not** empty. It has a tree, conventions, a schema, and often a link graph — all
+of them facts `AGENTS.md` should carry. Treating it as empty would throw that away and tell the
+user their folder is blank when it is full of work.
+
+## Empty folder
+
+Every section of an `AGENTS.md` is a fact about a project, and an empty folder has none. Step 1
+asks you to read the build command, the green command and the primary branch from files. There are
+no files, so the honest output is not a shorter document — it is a question.
+
+**If nothing but `.git` is there**, do not write `AGENTS.md`. Say what is missing and ask what the
+folder will hold:
+
+> This folder is empty, so there is no stack, green command or branch to record — the three things
+> `AGENTS.md` is mostly made of. What will it hold: code, or something else? If code,
+> `project-scaffold` picks the stack first and lays down the agent layer after, which is the order
+> that avoids inventing facts.
 
 Two outcomes:
 
@@ -85,6 +98,61 @@ no `package.json` is a lie the next session will act on.
 
 **Done when** either the folder has enough evidence to run the seven steps, or the user has been
 asked and has chosen a path.
+
+## Non-coding repo
+
+Files exist but nothing builds. This is a real repo with real facts — do not downgrade it to the
+empty case, and do not pretend it has a `bun test`. It has a different green check, and finding
+that check is the whole job.
+
+### What replaces the green command
+
+A code repo proves itself by compiling. A non-coding repo proves itself by **staying valid**, and
+what "valid" means depends on what the files are:
+
+| Content | The green check | Catches |
+| --- | --- | --- |
+| Markdown docs, notes, a vault | A link check — every `[x](./y.md)` resolves | Rot: renamed files, dead cross-refs |
+| Structured notes (frontmatter, tags, dates) | A schema lint — required keys present, values in range | A note the tooling cannot read |
+| Anything rendered (site, PDF, slides) | A build that emits the artifact, exit 0 | A broken include, a missing asset |
+| Prose with a stated house style | A lint for the stated rules only (heading depth, tense, banned words) | Drift from the style the repo claims |
+| Nothing checkable | **None** — and say so | Nothing; do not invent one |
+
+Write the one that fits into the commands table, with its real invocation:
+
+```md
+| Check | Command | Passes when |
+| --- | --- | --- |
+| Links | `lychee --offline .` | exit 0, no broken relative link |
+| Frontmatter | `python3 scripts/check_frontmatter.py` | exit 0 |
+```
+
+If the repo has no tooling at all, the honest table is one row:
+
+```md
+| Check | Command | Passes when |
+| --- | --- | --- |
+| None yet | — | Manual read; no mechanical check exists |
+```
+
+That row is a finding, not a failure. It tells the next session exactly how much proof exists.
+
+### What the rest of the file becomes
+
+| Section | Non-coding equivalent |
+| --- | --- |
+| Stack | What the repo *is*: Obsidian vault, docs site, research corpus, slide deck. Name the tools that read it. |
+| Build command | Omit unless something renders. A vault has no build. |
+| Primary branch | Same question, same answer. |
+| Out-of-bounds | The paths an agent must not touch: published output, `_archive/`, other people's notes, anything with a licence. |
+| Hard rules | The repo's own conventions — filename scheme, frontmatter contract, where new notes go. These bind harder here than in code, because nothing else enforces them. |
+
+**The rules that matter most in a non-coding repo** are the ones a compiler would have caught:
+where a new file goes, what its name must look like, what frontmatter it must carry, and which
+files are read-only. Nothing else will fail loudly if they are broken.
+
+**Done when** the commands table names a real check or says plainly that none exists, and the
+conventions that nothing else enforces are written down as hard rules.
 
 ## What it produces
 

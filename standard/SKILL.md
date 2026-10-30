@@ -2,7 +2,7 @@
 name: standard
 description: Router for the engineering standard — choose the right rule, repo, scaffold, workflow, verify, or design skill, and see which sections are on.
 disable-model-invocation: true
-version: 0.0.1
+version: 0.1.0
 ---
 
 # The Standard
@@ -63,10 +63,10 @@ these summaries are orientation only.
 | ----------- | -------------------- | --------------------------------------------------------------------- | ------------------------------------------------------- |
 | `rules`     | `agent-rules`        | AGENTS.md tiers, rule ownership, when a rule is binding vs detail      | Writing or editing agent instructions, resolving a conflict |
 | `discovery` | `code-discovery`     | Code-graph queries, index freshness, grep-vs-graph, per-directory projects | A structural question about unfamiliar code              |
-| `structure` | `project-scaffold`   | Repo layout, stack defaults, the first green run                       | Starting a new project, or restructuring one             |
+| `structure` | `project-scaffold`   | Repo layout, stack defaults, the first green run — or, for a docs vault or writing repo, the first valid check | Starting a new project, code or not, or restructuring one |
 | `workflow`  | `workflow`           | The phase route, each phase's done-criterion, context hygiene          | Deciding what to do next; a task grew past one session    |
 | `skills`    | `skills-install`     | Installing, updating, relinking third-party skills; vetting a source    | "install a skill for X", a skill is missing or stale     |
-| `verify`    | `verify-change`      | The evidence ladder — what counts as proof a change works              | Before saying "done", "fixed", "works"                   |
+| `verify`    | `verify-change`      | The evidence ladder — what counts as proof a change works; link/schema checks when there is no build | Before saying "done", "fixed", "works"                   |
 | `design`    | `design`    | Craft bar, design docs, tokens, motion, UI review                      | Any visual or structural UI change                       |
 | `style`     | — (this file)        | Reply shape + voice. **On by default; off only on request.**            | Every reply, unconditionally unless switched off         |
 | `tests`     | `verify-change`      | What gets a test, what gets a manual check, what gets nothing          | Deciding how to pin a behaviour                          |

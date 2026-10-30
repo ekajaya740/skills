@@ -1,8 +1,8 @@
 ---
 name: verify-change
-description: Decide what counts as proof a change works, and say it correctly. Use before claiming done, fixed, or working, when choosing between a test and a manual check, or when a change touches UI, data, or a deploy.
+description: Decide what counts as proof a change works, and say it correctly. Use before claiming done, fixed, or working, when choosing between a test and a manual check, or when a change touches UI, data, or a deploy. Covers code repos and non-coding ones (docs, notes, writing) where the check is a link or schema lint instead of a build.
 disable-model-invocation: true
-version: 0.0.1
+version: 0.1.0
 ---
 
 # Verify Change
@@ -44,6 +44,33 @@ reachable — and then the claim is `unverified`, in those words.
 **When a test is cheap, write it.** A criterion that is cheap to pin gets a test, not a ticket.
 "When tests are off" (the `tests` section) means *do not build a suite the user did not ask for* —
 not *do not verify*.
+
+## When there is nothing to run
+
+A vault, a research corpus, a writing project, a slide deck — no build, no test suite. The ladder
+still applies, but rungs 1 and 2 mean something else: **a check that reads the artifact**, not a
+compiler that produces one.
+
+| The change is… | Rung | Evidence |
+| --- | --- | --- |
+| A note added or moved | 2 | The link check or schema lint exits 0 — `lychee --offline .`, a frontmatter validator |
+| A link or cross-reference edited | 2 | The checker reports that target resolves; paste the line |
+| Prose edited, no structure touched | 4 | The diff, quoted. This is honest here, not a cop-out |
+| A doc that renders (site, PDF, slides) | 3 | The rendered artifact, opened — the page or slide, not the source |
+| A note whose frontmatter drives tooling | 2 | The tool that reads it runs clean on the changed file |
+| A claim about how something *works* | 3 | Someone followed it and it held. A doc that lies is a runtime bug |
+
+**The trap in a non-coding repo:** rung 4 feels like enough because there is nothing to run. It is
+not enough when the change affects a reader's *action* — a wrong path, a stale command, a
+frontmatter key the query depends on. Those are behaviour, and behaviour needs rung 2 or 3.
+
+When no check exists at all, say exactly that:
+
+```
+Untested: the vault has no link checker. Read the diff only — rung 4.
+```
+
+That sentence is complete. It names the missing tool, which is the next thing to add.
 
 ## The sentence
 

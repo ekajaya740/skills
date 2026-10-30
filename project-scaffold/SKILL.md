@@ -2,7 +2,7 @@
 name: project-scaffold
 description: Scaffold a new project of any kind — pick the layout, stack defaults, and agent layer, and get to the first green run. Covers TypeScript/Node, Astro/Cloudflare, Python, monorepo, and agent-only/skill repos.
 disable-model-invocation: true
-version: 0.0.1
+version: 0.1.0
 ---
 
 # Project Scaffold
@@ -23,15 +23,21 @@ One question decides everything else: **what has to exist when the project is do
 | Multi-package repo, several deployables | Several URLs from one repo | [`targets/monorepo.md`](targets/monorepo.md) |
 | CLI, service, script, data work | A binary or a running process | [`targets/python.md`](targets/python.md) |
 | Skills, rules, prompts — no build | Files an agent reads | [`targets/agent-only.md`](targets/agent-only.md) |
+| Docs vault, research corpus, writing, notes | Files a human reads, that must stay valid | [`targets/agent-only.md`](targets/agent-only.md) § Non-code repos |
 | Astro SSR on Cloudflare Workers | A Worker + Pages | [`targets/cloudflare.md`](targets/cloudflare.md) |
 
 Ambiguous? Pick by *deployable count*, not by language. One deployable is a web app even if it has
 twenty folders. Several is a monorepo even if they share a language.
 
-**Done when** you can name the target file and the single command that will prove the project
-runs.
+**No deployable at all is not a lesser project.** A vault, a corpus or a book has the same three
+needs as a service — a stated structure, an agent layer, and one command that proves it is still
+valid. Only the third differs: a link check or schema lint instead of a build. Do not scaffold a
+`package.json` into a notes repo to satisfy a template.
 
-## 2. Write the structure before the code
+**Done when** you can name the target file and the single command that will prove the project
+is valid.
+
+## 2. Write the structure before the content
 
 Each target file gives the directory tree with a reason per folder. Copy it, then delete folders
 you cannot justify in one line. An unjustified folder becomes a home for nothing.
