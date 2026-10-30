@@ -35,7 +35,7 @@
         "shape",
         "typeset"
       ],
-      "notes": "Upstream ships a single 'impeccable' skill (v4.5.0 locally) that covers these as sub-commands, in reference/*.md. The standalone sibling directories are leftovers from an older layout and are no longer installable by name; impeccable supersedes them."
+      "notes": "Upstream ships a single 'impeccable' skill that covers the notAvailableUpstream names as sub-commands, in reference/*.md. Those standalone sibling directories are leftovers from an older layout and are no longer installable by name; impeccable supersedes them."
     },
     {
       "repo": "mattpocock/skills",
@@ -134,16 +134,6 @@
       "notes": "skill-creator was installed from this repo in Jan 2026 but is no longer published there; upstream now offers 'supabase' and 'supabase-postgres-best-practices'."
     },
     {
-      "repo": "figma/mcp-server-guide",
-      "license": "none",
-      "author": "Figma",
-      "skills": [],
-      "notAvailableUpstream": [
-        "implement-design"
-      ],
-      "notes": "No license file in the repository, so treat as all-rights-reserved. implement-design is no longer published; the closest successor is 'figma-design-to-code'."
-    },
-    {
       "repo": "kerpopule/hermes-jev-skills",
       "license": "MIT",
       "author": "Steve Darlow",
@@ -238,7 +228,7 @@
         "review-animations",
         "write-swift"
       ],
-      "notes": "All 14 upstream skills are installed. 'animate' and 'prototype' share their names with skills from other sources and were deliberately overwritten with Emil's versions: the local animate no longer tracks pbakaus/impeccable (which only ever shipped it as a superseded leftover) and prototype no longer tracks mattpocock/skills. Upstream also ships 'animation-performance' (added 2026-10-25): keeps web animations inside the frame budget."
+      "notes": "All 15 listed upstream skills are installed. 'animate' and 'prototype' share their names with skills from other sources and were deliberately overwritten with Emil's versions: the local animate does not track pbakaus/impeccable (which only ever shipped it as a superseded leftover), and prototype does not track mattpocock/skills. Upstream also ships 'animation-performance': keeps web animations inside the frame budget."
     },
     {
       "repo": "alejandrobailo/no-use-effect",
