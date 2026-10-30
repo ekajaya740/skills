@@ -37,6 +37,12 @@ jobs:
       - name: skills.json is valid JSON
         run: python3 -m json.tool skills.json > /dev/null
 
+      # Attribution cannot be allowed to drift from the record. A credits
+      # file that names the wrong author is worse than no credits file, so the
+      # generated document is checked rather than trusted.
+      - name: ATTRIBUTION.md matches skills.json
+        run: python3 scripts/attribution.py --check
+
       - name: Installer parses and its commands are well formed
         run: ./install-skills.sh --dry-run
 

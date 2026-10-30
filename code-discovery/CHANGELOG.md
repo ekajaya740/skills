@@ -5,6 +5,13 @@ All notable changes to the `code-discovery` skill are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 The version in this file matches the `version` field in `SKILL.md`.
 
+## [0.1.0] - 2026-10-31
+
+### Changed
+
+- Credits the upstream tool instead of referring to it bare: `codebase-memory-mcp` is
+  DeusData's MIT project, linked from the skill and recorded under `tools` in `skills.json`.
+
 ## [0.0.1] - 2026-10-31
 
 First public version. Nothing was published before this, so the entire body of the

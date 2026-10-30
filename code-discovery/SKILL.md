@@ -2,7 +2,7 @@
 name: code-discovery
 description: Answer structural code questions from a persistent code graph instead of reading files — who calls this, what does it call, what is the shape of this module — and decide whether the graph can be trusted before you query it. Use when exploring an unfamiliar codebase, tracing a call chain, planning a refactor, hunting dead code, or whenever a grep would fan out across hundreds of lines. Also covers installing and registering the MCP server, index freshness, per-directory project resolution, and reclaiming disk from stale indexes.
 disable-model-invocation: true
-version: 0.0.1
+version: 0.1.0
 ---
 
 # Code Discovery
@@ -10,9 +10,12 @@ version: 0.0.1
 **A graph query is an accelerator, not a gate.** If the index is absent or stale, read files. A
 wrong answer from a stale graph costs more than the tokens it saved.
 
-The tool is `codebase-memory-mcp`. It builds a persistent knowledge graph — functions, call
-chains, imports, HTTP routes — keyed by **directory**, so a structural question is one query
-instead of a dozen reads.
+The tool is [`codebase-memory-mcp`](https://github.com/DeusData/codebase-memory-mcp) — DeusData,
+MIT — which builds a persistent knowledge graph of functions, call chains, imports and HTTP
+routes, keyed by **directory**, so a structural question is one query instead of a dozen reads.
+
+It is a separate program, not part of this skill. Install and register it yourself; this skill
+documents how, and what to do with it once it is running.
 
 ## Install
 
@@ -24,8 +27,10 @@ codebase-memory-mcp --version          # already installed?
 codebase-memory-mcp update             # update in place
 ```
 
-If it is missing, install from the upstream release and put the binary somewhere on `PATH` —
-`~/.local/bin` is the conventional place, and the script falls back to it when `PATH` is not set up:
+If it is missing, install from the upstream release at
+<https://github.com/DeusData/codebase-memory-mcp/releases>, and put the binary somewhere on
+`PATH` — `~/.local/bin` is the conventional place, and the script falls back to it when `PATH`
+is not set up:
 
 ```bash
 install -d ~/.local/bin

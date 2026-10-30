@@ -92,3 +92,16 @@ that is a different file with a different job — `skills-install` owns it. The 
 - Installing, updating, and vetting a source → skill `skills-install`
 - Where the rule lives in the layer → [`INIT.md`](INIT.md) § 6
 - Auditing an existing repo for a missing or stale store → skill `repo-align`
+
+## Attribution
+
+A pinned skill is someone else's work sitting in your repository, so the repo owes it a
+credit. Two rules:
+
+- **Pin by reference, not by copy.** The lock file names a source and a version; the skill
+  itself stays upstream. A vendored copy drops the author's licence and goes stale silently.
+- **Name the author where a reader will look.** The README's "Skills" section, or an
+  `ATTRIBUTION.md` if the set is large. A table of `repo | author | licence` is enough.
+
+If the repo carries the standard's `install-skills.sh`, `ATTRIBUTION.md` is generated from
+`skills.json` and checked in CI, so a new pin cannot land without its credit.

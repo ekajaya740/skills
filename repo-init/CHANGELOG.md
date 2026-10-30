@@ -5,6 +5,13 @@ All notable changes to the `repo-init` skill are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 The version in this file matches the `version` field in `SKILL.md`.
 
+## [0.1.0] - 2026-10-31
+
+### Added
+
+- `SKILLS.md` § Attribution: a pinned skill keeps its upstream licence, so the repo names the
+  author by reference rather than vendoring a copy.
+
 ## [0.0.1] - 2026-10-31
 
 First public version. Nothing was published before this, so the entire body of the

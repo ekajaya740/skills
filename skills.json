@@ -258,5 +258,23 @@
       ],
       "notes": "Output-style skill: action-first replies, numbered steps, no preamble or closers. The standard's `style` section inlines the rules as a fallback, so this is optional."
     }
+  ],
+  "tools": [
+    {
+      "name": "codebase-memory-mcp",
+      "url": "https://github.com/DeusData/codebase-memory-mcp",
+      "author": "DeusData",
+      "license": "MIT",
+      "usedBy": "`code-discovery` — the code graph it queries, and `scripts/cbm-here.sh`",
+      "notes": "Installed separately by its own installer; it is a binary, not a skill, so it is not in `sources`. The skill only documents how to install and register it."
+    },
+    {
+      "name": "skills",
+      "url": "https://github.com/vercel-labs/skills",
+      "author": "Vercel, Inc.",
+      "license": "MIT",
+      "usedBy": "`install-skills.sh` (`npx skills@latest add`), and `skills-install`",
+      "notes": "The CLI that resolves and installs every `sources` entry. It is run via npx, never vendored."
+    }
   ]
 }

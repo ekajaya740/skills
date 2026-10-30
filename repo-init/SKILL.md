@@ -2,7 +2,7 @@
 name: repo-init
 description: Bootstrap a repo's agent layer from nothing — AGENTS.md, detail tier, harness shims, and the green-command table. Use only when a repo has no AGENTS.md at all. For a repo that already has one, use repo-align.
 disable-model-invocation: true
-version: 0.0.1
+version: 0.1.0
 ---
 
 # Repo Init

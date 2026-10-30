@@ -2,7 +2,7 @@
 name: skills-install
 description: Install, update, relink, or vet third-party agent skills from the internet. Use when the user asks to install a skill, a skill is missing or stale, a harness cannot see a skill, or a new source needs recording.
 disable-model-invocation: true
-version: 0.0.1
+version: 0.1.0
 ---
 
 # Skills Install
@@ -84,9 +84,17 @@ A skill installed by hand is a skill lost on the next machine. Record it:
 
 1. Add the source to `skills.json`: `repo`, `author`, `license`, `skills[]`.
 2. Add the same source to the `SOURCES` array in `install-skills.sh`.
-3. Run `python3 scripts/validate_skills.py` and `./install-skills.sh --dry-run`.
+3. Regenerate the credits: `python3 scripts/attribution.py`.
+4. Run `python3 scripts/validate_skills.py` and `./install-skills.sh --dry-run`.
 
-**Done when** a fresh machine running `./install-skills.sh` gets the same set.
+**Done when** a fresh machine running `./install-skills.sh` gets the same set, and
+`ATTRIBUTION.md` names the author and licence it installed.
+
+**Attribution is not optional.** An uncredited install takes someone's work and hands
+it to an agent as if it were anonymous. `author` and `license` are required fields for
+exactly this reason; `license: none` means all rights reserved, not "no answer needed".
+`ATTRIBUTION.md` is generated from `skills.json`, and CI fails when the two disagree —
+so a source cannot be added without a credit.
 
 ## Vetting a source before you install
 
@@ -94,7 +102,7 @@ Not every skill on the internet is safe to load — a skill is instructions the 
 
 | Check | Fail signal |
 | --- | --- |
-| Does the repo have a licence? | No licence → cannot install into anything published |
+| Does the repo have a licence? | No licence → all rights reserved; do not install into anything published |
 | Is `SKILL.md` readable and specific? | Vague description, no examples → it will not fire |
 | Does it run commands on install? | A postinstall touching `~/.claude` or `~/.ssh` → stop |
 | Does it ask for credentials or network writes? | A skill should not exfiltrate; read the scripts |

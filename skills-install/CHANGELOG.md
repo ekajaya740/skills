@@ -5,6 +5,13 @@ All notable changes to the `skills-install` skill are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 The version in this file matches the `version` field in `SKILL.md`.
 
+## [0.1.0] - 2026-10-31
+
+### Added
+
+- Attribution as a required step of an install: `author` and `license` in `skills.json`, a
+  generated `ATTRIBUTION.md`, and a credit line printed at install time.
+
 ## [0.0.1] - 2026-10-31
 
 First public version. Nothing was published before this, so the entire body of the

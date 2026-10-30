@@ -74,12 +74,37 @@ run() {
   fi
 }
 
+# Credit the author of a source, read from skills.json.
+#
+# Printing only the repository name attributes the work to nobody, and a user
+# who cannot see the licence at install time cannot know what they just agreed
+# to. ATTRIBUTION.md is generated from this same record, so the credit here and
+# the credits file cannot disagree.
+credit() {
+  python3 - "$1" <<'PY' 2>/dev/null || true
+import json, sys
+repo = sys.argv[1]
+try:
+    data = json.load(open("skills.json"))
+except Exception:
+    sys.exit(0)
+for source in data.get("sources", []):
+    if source.get("repo") == repo:
+        lic = (source.get("license") or "").strip()
+        if lic.lower() in ("", "none", "unknown"):
+            lic = "no licence — all rights reserved"
+        print(f"  by {source.get('author', 'unknown')} · {lic}")
+        break
+PY
+}
+
 if [ "$UPDATE" -eq 1 ]; then
   echo "Updating installed skills from their upstream sources…"
   run npx --yes skills@latest update -g -y || true
 
   echo
   echo "• kerpopule/hermes-jev-skills (via its own installer)"
+credit "kerpopule/hermes-jev-skills"
   run bash -c '
     set -e
     src="${XDG_CACHE_HOME:-$HOME/.cache}/hermes-jev-skills"
@@ -100,10 +125,12 @@ for entry in "${SOURCES[@]}"; do
 
   if [ -z "$skills" ]; then
     echo "• $repo — nothing installable upstream, skipping"
+    credit "$repo"
     continue
   fi
 
   echo "• $repo"
+  credit "$repo"
   args=(npx --yes skills@latest add "$repo" ${SCOPE_FLAG[@]+"${SCOPE_FLAG[@]}"} -y)
   IFS=',' read -r -a names <<< "$skills"
   for name in "${names[@]}"; do
@@ -117,6 +144,7 @@ done
 # Jev skills: use their own installer rather than `npx skills add`, which skips
 # the repository entirely because one of its files has malformed frontmatter.
 echo "• kerpopule/hermes-jev-skills (via its own installer)"
+credit "kerpopule/hermes-jev-skills"
 run bash -c '
   set -e
   src="${XDG_CACHE_HOME:-$HOME/.cache}/hermes-jev-skills"
@@ -128,3 +156,4 @@ echo
 
 echo "Done. Skills that upstream has renamed or withdrawn are listed under"
 echo "\"notAvailableUpstream\" in skills.json."
+echo "Authors and licences for everything installed: ATTRIBUTION.md"
