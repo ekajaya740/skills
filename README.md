@@ -17,10 +17,70 @@ is an allowlist, so a downloaded skill can never be committed by accident.
 | [project-scaffold](./project-scaffold) | 0.0.1 | Scaffold a new project of any kind — pick the layout, stack defaults, and agent layer, and get to the first green run. Covers TypeScript/Node, Astro/Cloudflare, Python, monorepo, and agent-only/skill repos. |
 | [repo-align](./repo-align) | 0.0.1 | Audit an existing repo against this standard and fix the drift — missing or duplicated rules, wrong tier, broken harness shims, undocumented green command, missing design docs. Ships `scripts/audit.py`, which decides the mechanical checks deterministically and prints the judgement ones as `manual`. Use when a repo predates the standard, a rule has drifted, or an agent keeps making the same mistake in a repo that has an AGENTS.md. |
 | [repo-init](./repo-init) | 0.1.0 | Bootstrap a repo's agent layer from nothing — AGENTS.md, detail tier, harness shims, and the green-command table. Use only when a repo has no AGENTS.md at all. For a repo that already has one, use repo-align. |
-| [skills-install](./skills-install) | 0.1.0 | Install, update, relink, or vet third-party agent skills from the internet. Use when the user asks to install a skill, a skill is missing or stale, a harness cannot see a skill, or a new source needs recording. |
+| [skills-install](./skills-install) | 0.2.0 | Install, update, relink, or vet third-party agent skills from the internet. Use when the user asks to install a skill, a skill is missing or stale, a harness cannot see a skill, or a new source needs recording. |
 | [standard](./standard) | 0.0.1 | Router over the engineering standard — choose the right rule, repo, scaffold, workflow, verify, or design skill, and see which sections are on. Shapes every reply to Answer / Why / Steps / Evidence / Next. |
 | [verify-change](./verify-change) | 0.0.1 | Decide what counts as proof a change works, and say it correctly. Use before claiming done, fixed, or working, when choosing between a test and a manual check, or when a change touches UI, data, or a deploy. |
 | [workflow](./workflow) | 0.0.1 | The route work takes, idea to shipped — sharpen, prototype, split, plan, build, review, ship, retro — with the done-criterion for each phase and which skill to run at each. Use when deciding what to do next, when a request is underspecified, when a task has grown past one session, or when work was finished but not proven. |
+
+
+## Install
+
+Two routes, and they differ in what they touch. Neither one vendors anything.
+
+### As a human
+
+```sh
+git clone https://github.com/ekajaya740/skills ~/skills
+ln -sfn ~/skills ~/.agents/skills        # the store every harness reads
+python3 ~/skills/scripts/link_harnesses.py --apply
+```
+
+That links the ten skills into `~/.claude/skills`, `~/.codex/skills`, and any
+other harness the script knows. Restart the harness afterwards — skills are
+discovered at session start, so a new link is invisible until then.
+
+To add the third-party skills as well:
+
+```sh
+cd ~/skills
+./install-skills.sh --dry-run    # print the 68 commands, run nothing
+./install-skills.sh              # shows every source, then asks once
+```
+
+### As an agent
+
+Read the list before you run anything, and **get the user's consent first.**
+Installing a skill is not a file copy: it is instructions the agent will follow,
+written by someone the user has not vetted, loaded by every harness on the
+machine.
+
+```sh
+./install-skills.sh --dry-run    # always this first; safe, touches nothing
+```
+
+Then show the user the source list and ask. Only after they say yes:
+
+```sh
+./install-skills.sh --yes
+```
+
+`--yes` is for when the user has already agreed in this conversation. It is not
+a way to skip asking them. The script refuses to run in a non-interactive shell
+without it, so an unattended agent cannot install by accident.
+
+## Installing something new
+
+Every install carries the same three questions, and a `no` to any of them is a
+`no` to the install:
+
+| Question | Why it stops the install |
+| --- | --- |
+| **Who wrote it, and under what licence?** | No licence means all rights reserved, not "free to take". `ATTRIBUTION.md` records the answer. |
+| **What will it run?** | A skill can add hooks, edit harness config, or shell out on load. Read `SKILL.md` and any script before it lands. |
+| **Do you already have this trigger?** | Two skills on one trigger fight, and the agent sees both. |
+
+Report a failure as one line in the reply. Do not install it and mention it
+afterwards.
 
 ## Third-party skills
 
@@ -36,10 +96,15 @@ disagree.
 [`install-skills.sh`](./install-skills.sh) does the installing:
 
 ```sh
-./install-skills.sh            # install anything missing
+./install-skills.sh            # show every source, ask once, then install
 ./install-skills.sh --update   # update everything already installed
 ./install-skills.sh --dry-run  # print the commands, run nothing
+./install-skills.sh --yes      # skip the prompt (only after the user agreed)
 ```
+
+Without `--yes`, the installer prints every source with its author and licence
+and asks once before running anything. It exits rather than guess when there is
+no terminal, so a script or an unattended agent cannot install by accident.
 
 Some skills are no longer published upstream (renamed, bundled into a larger
 skill, or withdrawn). Those are listed under `notAvailableUpstream` in

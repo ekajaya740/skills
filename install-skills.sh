@@ -12,16 +12,19 @@
 #   ./install-skills.sh --project  # install into ./.agents/skills for this repo
 #   ./install-skills.sh --update   # update everything already installed
 #   ./install-skills.sh --dry-run  # print the commands, run nothing
+#   ./install-skills.sh --yes      # skip the confirmation prompt
 # ─────────────────────────────────────────────────────────────────────
 set -euo pipefail
 
 UPDATE=0
 DRY_RUN=0
 PROJECT=0
+ASSUME_YES=0
 for arg in "$@"; do
   case "$arg" in
     --update)  UPDATE=1 ;;
     --dry-run) DRY_RUN=1 ;;
+    --yes|-y)  ASSUME_YES=1 ;;
     --project) PROJECT=1 ;;
     -h|--help)
       sed -n '2,14p' "$0" | sed 's/^# \{0,1\}//'
@@ -98,13 +101,63 @@ for source in data.get("sources", []):
 PY
 }
 
+# Gate every install behind an explicit yes.
+#
+# A skill is instructions the agent will follow, fetched from a stranger's
+# repository and then loaded by every harness on the machine. That is not
+# something to do on the user's behalf without showing them the list first.
+# --dry-run and --yes are the two ways past this prompt; a non-interactive
+# shell must pass --yes rather than block forever.
+confirm() {
+  [ "$DRY_RUN" -eq 1 ] && return 0
+  [ "$ASSUME_YES" -eq 1 ] && return 0
+  if [ ! -t 0 ]; then
+    echo "error: no terminal to confirm on. Re-run with --yes, or --dry-run to preview." >&2
+    exit 1
+  fi
+  printf '\nProceed? [y/N] '
+  # EOF is a no, not a crash. Under `set -e` a bare `read` that hits EOF
+  # aborts the script, so the user gets a stack of nothing instead of the
+  # one line that says why nothing was installed.
+  if ! read -r reply; then
+    echo
+    echo "Nothing installed (no answer read)."
+    exit 0
+  fi
+  case "$reply" in
+    y|Y|yes|YES) return 0 ;;
+  esac
+  echo "Nothing installed."
+  exit 0
+}
+
+# One line per source: repo, author, licence, and how many skills it installs.
+preview() {
+  local total=0
+  for entry in "${SOURCES[@]}"; do
+    local repo="${entry%%|*}" skills="${entry#*|}" n=0
+    if [ -n "$skills" ]; then
+      IFS=',' read -r -a _names <<< "$skills"
+      n=${#_names[@]}
+    fi
+    total=$((total + n))
+    echo "• $repo"
+    credit "$repo"
+  done
+  echo
+  echo "$total skill(s) from ${#SOURCES[@]} source(s) → $TARGET"
+  echo "Authors and licences for all of them: ATTRIBUTION.md"
+}
+
 if [ "$UPDATE" -eq 1 ]; then
   echo "Updating installed skills from their upstream sources…"
+  echo "(every source in ~/.agents/.skill-lock.json is fetched and rewritten)"
+  confirm
   run npx --yes skills@latest update -g -y || true
 
   echo
   echo "• kerpopule/hermes-jev-skills (via its own installer)"
-credit "kerpopule/hermes-jev-skills"
+  credit "kerpopule/hermes-jev-skills"
   run bash -c '
     set -e
     src="${XDG_CACHE_HOME:-$HOME/.cache}/hermes-jev-skills"
@@ -116,7 +169,9 @@ credit "kerpopule/hermes-jev-skills"
 fi
 
 echo "Installing third-party skills into: $TARGET"
-echo "(skills.json in this repository describes each source and its licence)"
+echo
+preview
+confirm
 echo
 
 for entry in "${SOURCES[@]}"; do

@@ -15,10 +15,16 @@ never vendored**. They are excluded from this repository by the `.gitignore`
 allowlist, because the copyright is someone else's and a vendored copy goes
 stale.
 
+**Ask the user before you install.** A skill is instructions the agent will
+follow, written by someone they have not vetted, loaded by every harness. Show
+the source, the author, the licence, and what it runs — then wait for a yes.
+An instruction to install one skill is not consent for the whole source list.
+
 To update the installed skills:
 
 ```sh
-npx skills@latest update -g -y
+./install-skills.sh --dry-run   # what would change; touches nothing
+./install-skills.sh --update    # shows each source, asks once, then updates
 ```
 
 This reads `~/.agents/.skill-lock.json`, fetches each source repository, and
@@ -29,12 +35,18 @@ removed.
 To install a skill that is missing:
 
 ```sh
-npx skills@latest add <owner>/<repo> -g -y -s <skill-name> -s <other-skill>
+./install-skills.sh --dry-run            # the full list, nothing fetched
+npx skills@latest add <owner>/<repo> -g -s <skill-name> -s <other-skill>
 ```
 
 Pass every skill by name with repeated `-s` flags. Do **not** omit them: without
 `-s`, the installer takes the whole repository, which for a large repo means
 dozens of unwanted skills. `-g` installs into `~/.agents/skills`.
+
+`-y` answers "yes, install this" for the user. Add it only after they have
+agreed to these exact sources. In a non-interactive shell with no user present,
+stop instead — the installer refuses to run unattended without `--yes`, and
+that refusal is the point.
 
 After either command, re-link the harnesses so the new skills become visible:
 

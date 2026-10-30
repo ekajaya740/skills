@@ -5,6 +5,15 @@ All notable changes to the `skills-install` skill are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 The version in this file matches the `version` field in `SKILL.md`.
 
+## [0.2.0] - 2026-10-31
+
+### Added
+
+- Step 0: get consent before fetching anything. A skill is instructions the agent
+  follows, so the source, author, licence and what it runs go to the user first, and
+  an instruction to install one skill is not consent for a fifteen-source list.
+- `-y` is described as a decision, not a shortcut: only after the user has agreed.
+
 ## [0.1.0] - 2026-10-31
 
 ### Added

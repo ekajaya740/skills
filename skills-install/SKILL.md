@@ -2,7 +2,7 @@
 name: skills-install
 description: Install, update, relink, or vet third-party agent skills from the internet. Use when the user asks to install a skill, a skill is missing or stale, a harness cannot see a skill, or a new source needs recording.
 disable-model-invocation: true
-version: 0.1.0
+version: 0.2.0
 ---
 
 # Skills Install
@@ -12,6 +12,31 @@ machine can reproduce it. Three steps that fail on their own if skipped.
 
 The rule that governs all of it: **install from upstream, never vendor.** A copied skill goes
 stale, loses its licence, and steals attribution from its author.
+
+## Step 0 — Get consent before you fetch anything
+
+A skill is not a file. It is **instructions the agent will follow**, written by someone the user
+has not met, loaded by every harness on the machine. Fetching one on the user's behalf without
+telling them is the mistake this step exists to prevent.
+
+Three things go to the user *before* the install runs, as one message:
+
+1. **What** — repo, skill names, and how many.
+2. **Who** — the author and the licence. `license: none` means all rights reserved.
+3. **What it will do** — hooks, config edits, or commands it runs on load.
+
+Then ask. A yes is required, and it has to be about *this* install.
+
+| You have | Do |
+| --- | --- |
+| Nothing yet | Run `--dry-run`, show the list, ask. |
+| The user said yes in this conversation | Proceed; say which sources you are installing. |
+| A non-interactive shell, no user present | **Stop.** Do not pass `--yes` to get past the prompt. |
+
+**Never** treat "install this skill" as consent for a list the user has not seen. That instruction
+covers one skill; the installer may fetch fifteen sources.
+
+**Done when** the user has seen the sources and said yes, or you have stopped.
 
 ## Step 1 — Check before installing
 
@@ -36,10 +61,15 @@ three outcomes have different paths — see the table in step 2.
 
 | Situation | Command |
 | --- | --- |
-| New skill from a known repo | `npx skills@latest add <owner>/<repo> -g -y -s <skill> -s <other>` |
-| Already installed, upstream changed | `npx skills@latest update -g -y` |
+| First, always | `./install-skills.sh --dry-run` — prints every source and command, touches nothing |
+| New skill from a known repo | `npx skills@latest add <owner>/<repo> -g -s <skill> -s <other>` — **no `-y` until the user has agreed** |
+| Already installed, upstream changed | `npx skills@latest update -g` — same rule |
 | Nothing upstream fits | Write it — skill `writing-for-agents`, then target `project-scaffold/targets/agent-only.md` |
 | Skill is a whole plugin/bundle | Follow that project's own installer, not `npx skills add` |
+
+**`-y` is not a shortcut, it is a decision.** It answers "yes, install this" on the user's behalf.
+Pass it only when they have already said yes to these exact sources in this conversation. Step 0
+is not optional paperwork before it.
 
 **Pass every skill by name with repeated `-s` flags.** Omitting `-s` installs the entire
 repository — for a large repo that is dozens of unwanted skills, each one competing for the
