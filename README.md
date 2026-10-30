@@ -1,0 +1,131 @@
+# Skills
+
+My own agent skills, published for use across machines and agents.
+
+This repo holds the ten skills of the engineering standard — the profile,
+voice, workflow, and repo skills I wrote myself. Third-party skills live in
+`~/skills`, the live skill store, and are not vendored here. The `.gitignore`
+is an allowlist, so a downloaded skill can never be committed by accident.
+
+## Published skills
+
+| Skill | Version | Description |
+|-------|---------|-------------|
+| [agent-rules](./agent-rules) | 0.0.1 | Writing and maintaining the agent instruction layer — AGENTS.md tiers, one-rule-one-home ownership, resolving a rule that drifted or collided, and the issue-first/plan-first tracker gates. |
+| [code-discovery](./code-discovery) | 0.0.1 | Answer structural code questions from a persistent code graph instead of reading files — who calls this, what does it call, the shape of a module — and prove the index is current before trusting it. Covers index freshness, the grep-vs-graph cost order, per-directory project resolution, and reclaiming disk. |
+| [design](./design) | 0.0.1 | The craft bar for UI work — tokens, layout, motion, states, and the design doc that must match the code. Use when building, editing, or reviewing any interface, or when deciding whether a UI change is finished. |
+| [project-scaffold](./project-scaffold) | 0.0.1 | Scaffold a new project of any kind — pick the layout, stack defaults, and agent layer, and get to the first green run. Covers TypeScript/Node, Astro/Cloudflare, Python, monorepo, and agent-only/skill repos. |
+| [repo-align](./repo-align) | 0.0.1 | Audit an existing repo against this standard and fix the drift — missing or duplicated rules, wrong tier, broken harness shims, undocumented green command, missing design docs. Ships `scripts/audit.py`, which decides the mechanical checks deterministically and prints the judgement ones as `manual`. Use when a repo predates the standard, a rule has drifted, or an agent keeps making the same mistake in a repo that has an AGENTS.md. |
+| [repo-init](./repo-init) | 0.0.1 | Bootstrap a repo's agent layer from nothing — AGENTS.md, detail tier, harness shims, and the green-command table. Use only when a repo has no AGENTS.md at all. For a repo that already has one, use repo-align. |
+| [skills-install](./skills-install) | 0.0.1 | Install, update, relink, or vet third-party agent skills from the internet. Use when the user asks to install a skill, a skill is missing or stale, a harness cannot see a skill, or a new source needs recording. |
+| [standard](./standard) | 0.0.1 | Router over the engineering standard — choose the right rule, repo, scaffold, workflow, verify, or design skill, and see which sections are on. Shapes every reply to Answer / Why / Steps / Evidence / Next. |
+| [verify-change](./verify-change) | 0.0.1 | Decide what counts as proof a change works, and say it correctly. Use before claiming done, fixed, or working, when choosing between a test and a manual check, or when a change touches UI, data, or a deploy. |
+| [workflow](./workflow) | 0.0.1 | The route work takes, idea to shipped — sharpen, prototype, split, plan, build, review, ship, retro — with the done-criterion for each phase and which skill to run at each. Use when deciding what to do next, when a request is underspecified, when a task has grown past one session, or when work was finished but not proven. |
+
+## Third-party skills
+
+Third-party skills are **not** in this repo. They live in `~/skills`, the live
+skill store that `~/.agents/skills` points at, and are installed from their
+upstream repositories there.
+
+[`skills.json`](./skills.json) still records every source — repository, author,
+licence — so a fresh machine can reproduce the store.
+[`install-skills.sh`](./install-skills.sh) does the installing:
+
+```sh
+./install-skills.sh            # install anything missing
+./install-skills.sh --update   # update everything already installed
+./install-skills.sh --dry-run  # print the commands, run nothing
+```
+
+Some skills are no longer published upstream (renamed, bundled into a larger
+skill, or withdrawn). Those are listed under `notAvailableUpstream` in
+`skills.json`; the installer skips them.
+
+## Adding a skill
+
+A skill is a directory containing a `SKILL.md`. To publish a new one of my own,
+create the directory and then un-ignore it in `.gitignore`:
+
+```gitignore
+# Published skills
+!/standard/
+!/my-new-skill/
+
+Nothing else needs changing: everything not explicitly allowed stays untracked.
+
+## Versioning
+
+Each published skill carries a `version` field in the frontmatter of its
+`SKILL.md`, and follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html):
+
+- **MAJOR** — a change that invalidates how the skill was previously used
+  (renamed files, removed sections, changed required inputs).
+- **MINOR** — new guidance, references or capabilities that are additive.
+- **PATCH** — corrections, clarifications and typo fixes.
+
+Releases are tagged `‹skill›-v‹version›`, for example `repo-align-v0.0.1`.
+The tag and the frontmatter `version` are kept in step, so a consumer such as
+the `ekajaya740.github.io` submodule can pin an exact revision:
+
+```sh
+git -C .agents/skills fetch --tags
+git -C .agents/skills checkout repo-align-v0.0.1
+```
+
+Each skill keeps its own `CHANGELOG.md`, newest first, with the released version
+and date as headings.
+
+## Releasing
+
+Releases are automated. To ship a new version of a skill, bump the `version`
+field in its `SKILL.md` and add a matching section to its `CHANGELOG.md`:
+
+```md
+## [0.0.1] - 2026-10-31
+
+### Added
+
+- What changed.
+```
+
+Pushing that to `main` is the whole procedure. The Release workflow in
+`.github/workflows/release.yml` compares each skill's version against the tags
+that already exist; anything untagged is released as `‹skill›-v‹version›`, with
+the release notes taken from the CHANGELOG section and a GitHub Release created.
+Skills whose version has not changed are left alone, so several skills can be
+released in one push.
+
+The Validate workflow in `.github/workflows/validate.yml` runs on every push and
+pull request. Its most important job is the leak check: it fails if anything
+outside the `.gitignore` allowlist is tracked, which is what stops a downloaded
+skill from reaching this public repository. It also checks that every published
+skill has valid frontmatter and a CHANGELOG entry for its version, that
+`skills.json` is valid JSON, and that the installer still parses.
+
+Both scripts run locally:
+
+```sh
+python3 scripts/validate_skills.py          # checks; exits non-zero on problems
+python3 scripts/release_skills.py --check   # what would be released
+```
+
+`release_skills.py --tag` creates the tags without pushing, if you ever need to
+release by hand.
+
+## Notes
+
+- [`AGENTS.md`](./AGENTS.md) documents how to install, update and re-link the
+  third-party skills, and what agents working in this repository must not do.
+- The live skill store is `~/skills`. `~/.agents/skills` points there, and
+  `~/.claude/skills` and `~/.codex/skills` hold one symlink per skill pointing
+  back into it. This repository is separate: the ten skills here are linked
+  into that store, so editing one changes what every harness loads.
+- `ekajaya740.github.io` consumes this repository as a git submodule at
+  `.agents/skills`. Changes to a skill therefore need a submodule pointer bump
+  in that repository to take effect.
+
+## Licence
+
+My own skills are MIT licensed — see [LICENSE](./LICENSE). Third-party skills
+are covered by their own licences, recorded in [`skills.json`](./skills.json).

@@ -1,0 +1,95 @@
+---
+name: project-scaffold
+description: Scaffold a new project of any kind — pick the layout, stack defaults, and agent layer, and get to the first green run. Covers TypeScript/Node, Astro/Cloudflare, Python, monorepo, and agent-only/skill repos.
+disable-model-invocation: true
+version: 0.0.1
+---
+
+# Project Scaffold
+
+Start a project that is already shaped the way an agent can work in it. The goal is not a
+template — it is a **first green run** you can hand to `verify-change` as evidence.
+
+Read [`DEFAULTS.md`](DEFAULTS.md) before choosing anything. It holds the stack choices and why
+they are defaults rather than preferences.
+
+## 1. Classify the project
+
+One question decides everything else: **what has to exist when the project is done?**
+
+| Kind | Answer | Target |
+| --- | --- | --- |
+| Web app, one deployable | A URL | [`targets/web-app.md`](targets/web-app.md) |
+| Multi-package repo, several deployables | Several URLs from one repo | [`targets/monorepo.md`](targets/monorepo.md) |
+| CLI, service, script, data work | A binary or a running process | [`targets/python.md`](targets/python.md) |
+| Skills, rules, prompts — no build | Files an agent reads | [`targets/agent-only.md`](targets/agent-only.md) |
+| Astro SSR on Cloudflare Workers | A Worker + Pages | [`targets/cloudflare.md`](targets/cloudflare.md) |
+
+Ambiguous? Pick by *deployable count*, not by language. One deployable is a web app even if it has
+twenty folders. Several is a monorepo even if they share a language.
+
+**Done when** you can name the target file and the single command that will prove the project
+runs.
+
+## 2. Write the structure before the code
+
+Each target file gives the directory tree with a reason per folder. Copy it, then delete folders
+you cannot justify in one line. An unjustified folder becomes a home for nothing.
+
+Three folders every non-trivial project gets, whatever the stack:
+
+| Folder | Holds | Why it exists |
+| --- | --- | --- |
+| `docs/` | Decisions, architecture, environment, testing | The place `AGENTS.md` points at instead of growing |
+| `scripts/` | Repeatable commands a human or CI runs | Anything run twice stops being a one-liner in a README |
+| `.github/workflows/` | CI | The green check `verify-change` reads |
+
+**Done when** the tree has a stated reason for every top-level folder and no folder is empty.
+
+## 3. Lay down the agent layer
+
+Per skill `repo-init`. Minimum, in this order:
+
+1. `AGENTS.md` — stack, the green-command table, hard rules, out-of-bounds.
+2. `CLAUDE.md` → `@AGENTS.md` (and any other harness shim the user needs).
+3. `.agents/skills/` + `skills-lock.json` — the project-local skill store, pinned and reproducible.
+4. `docs/architecture.md` — only if the project has more than one module.
+5. `.gitignore` — before the first commit, never after. Ignore `.agents/` and `.claude/skills/`;
+   track `skills-lock.json`, which no rule ignores.
+
+**Done when** a fresh agent could run the project from `AGENTS.md` alone, and a clean checkout
+restores its skills with one command.
+
+## 4. Get green once, deliberately
+
+Install, build, typecheck, test, lint — whatever the target's table lists. Fix what fails **now**,
+while the project is small enough to understand completely. A scaffold that ships yellow becomes a
+repo where yellow is normal and nobody can tell a new break from the old one.
+
+Record the exact commands and their output in the reply. That is the evidence `verify-change`
+will accept later.
+
+**Done when** a clean checkout runs the green command to exit 0, and you have pasted the line
+that proves it.
+
+## 5. Commit the baseline
+
+One commit, message stating the stack and that it is a working baseline. Not "initial commit" —
+a year later that tells nobody what a working baseline was.
+
+## What not to scaffold
+
+- **No placeholder files.** An empty `utils.ts` is a promise nobody keeps. Delete it; adding a file
+  later is one command.
+- **No example code.** A sample route nobody asked for is code that has to be maintained and
+  reviewed and teaches the wrong shape.
+- **No test file with a fake assertion.** `expect(true).toBe(true)` is worse than no test: it makes
+  the suite green while proving nothing.
+- **No license, README badges, or CI matrix** the user did not ask for. Ask once, in the reply,
+  then drop it.
+
+## Related
+
+- Stack choices and their reasons → [`DEFAULTS.md`](DEFAULTS.md)
+- The agent layer in detail → skill `repo-init`, and its [`SKILLS.md`](../repo-init/SKILLS.md) for the pin set
+- Proving the result → skill `verify-change`

@@ -1,0 +1,51 @@
+# ─────────────────────────────────────────────────────────────────────
+# Deny by default.
+#
+# This repo publishes the ten skills of the engineering standard. The
+# live skill store is ~/skills (via ~/.agents/skills); third-party skills
+# are installed there, never vendored here.
+#
+# To publish another skill of your own, add it under "Published skills".
+# ─────────────────────────────────────────────────────────────────────
+/*
+
+# Repository files
+!/AGENTS.md
+!/.gitignore
+!/LICENSE
+!/README.md
+!/skills.json
+!/install-skills.sh
+
+# Release tooling and CI
+!/scripts/
+!/.github/
+
+# Published skills
+!/agent-rules/
+!/code-discovery/
+!/design/
+!/project-scaffold/
+!/repo-align/
+!/repo-init/
+!/skills-install/
+!/standard/
+!/verify-change/
+!/workflow/
+
+# Junk that must never enter a published skill.
+#
+# The allowlist above un-ignores each skill directory whole, which also
+# un-ignores everything inside it. These rules go last so they win.
+.DS_Store
+Thumbs.db
+*.log
+*.pyc
+__pycache__/
+.venv/
+node_modules/
+.env
+.env.*
+!.env.example
+*.swp
+*~
