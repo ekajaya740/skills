@@ -1,7 +1,7 @@
 # ─────────────────────────────────────────────────────────────────────
 # Deny by default.
 #
-# This repo publishes the ten skills of the engineering standard. The
+# This repo publishes the eleven skills of the engineering standard. The
 # live skill store is ~/skills (via ~/.agents/skills); third-party skills
 # are installed there, never vendored here.
 #

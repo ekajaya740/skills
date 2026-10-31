@@ -219,8 +219,9 @@ release by hand.
   third-party skills, and what agents working in this repository must not do.
 - The live skill store is `~/skills`. `~/.agents/skills` points there, and
   `~/.claude/skills` and `~/.codex/skills` hold one symlink per skill pointing
-  back into it. This repository is separate: the eleven skills here are linked
-  into that store, so editing one changes what every harness loads.
+  back into it. **The store is a separate clone of this repository**, not a link
+  to it: an edit here reaches no harness until it is pushed, pulled there, and
+  re-linked, and a skill that is new is invisible until the re-link runs.
 - `ekajaya740.github.io` consumes this repository as a git submodule at
   `.agents/skills`. Changes to a skill therefore need a submodule pointer bump
   in that repository to take effect.
