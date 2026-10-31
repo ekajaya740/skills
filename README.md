@@ -36,8 +36,16 @@ python3 ~/skills/scripts/link_harnesses.py --apply
 ```
 
 That links the ten skills into `~/.claude/skills`, `~/.codex/skills`, and any
-other harness the script knows. Restart the harness afterwards — skills are
-discovered at session start, so a new link is invisible until then.
+other harness the script knows. A harness that is installed but has no `skills/`
+directory gets one created; a harness whose whole directory is absent is skipped,
+because that harness is not installed. Restart afterwards — skills are discovered
+at session start, so a new link is invisible until then.
+
+Proof it worked, before you restart anything:
+
+```sh
+ls -l ~/.claude/skills | head
+```
 
 To add the third-party skills as well:
 
@@ -49,12 +57,28 @@ cd ~/skills
 
 ### As an agent
 
-Read the list before you run anything, and **get the user's consent first.**
-Installing a skill is not a file copy: it is instructions the agent will follow,
-written by someone the user has not vetted, loaded by every harness on the
-machine.
+**Route 1 — the published skills.** Paste this one command. It clones, points
+the store all harnesses read, links the ten skills, and stops. Nothing
+third-party is installed by it:
 
 ```sh
+git clone https://github.com/ekajaya740/skills ~/skills &&
+ln -sfn ~/skills ~/.agents/skills &&
+python3 ~/skills/scripts/link_harnesses.py --apply
+```
+
+That is the whole install for the ten published skills. Prove it with
+`ls -l ~/.claude/skills | head` — you want one symlink per skill — then restart
+the harness; skills are discovered at session start.
+
+**Route 2 — the third-party skills**, 62 of them from 11 sources, a separate
+list. Read it before you run anything, and **get the user's consent first.**
+Installing a skill is not a file copy: it is instructions the agent will
+follow, written by someone the user has not vetted, loaded by every harness on
+the machine.
+
+```sh
+cd ~/skills
 ./install-skills.sh --dry-run    # always this first; safe, touches nothing
 ```
 
@@ -67,6 +91,12 @@ Then show the user the source list and ask. Only after they say yes:
 `--yes` is for when the user has already agreed in this conversation. It is not
 a way to skip asking them. The script refuses to run in a non-interactive shell
 without it, so an unattended agent cannot install by accident.
+
+The installer resolves `skills.json` from its own directory, so it can be called
+from anywhere, by absolute path included.
+
+Handing `--yes` to an agent that has not asked a human is the one thing this
+section exists to stop. Without a human in the loop, stop after route 1.
 
 ## Installing something new
 
@@ -119,6 +149,7 @@ create the directory and then un-ignore it in `.gitignore`:
 # Published skills
 !/standard/
 !/my-new-skill/
+```
 
 Nothing else needs changing: everything not explicitly allowed stays untracked.
 

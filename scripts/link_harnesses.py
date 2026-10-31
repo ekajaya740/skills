@@ -107,8 +107,17 @@ def main() -> int:
 
     for harness in harnesses:
         if not harness.is_dir():
-            log(f"{harness}: not present, skipping")
-            continue
+            # The parent existing means the harness is installed and only its
+            # skills/ directory is missing — create it, or a fresh machine gets
+            # zero links and a "not present, skipping" line that reads as fine.
+            # A harness whose parent is absent is not installed; leave it alone.
+            if harness.parent.is_dir():
+                log(f"{harness}: skills/ missing, creating")
+                if apply:
+                    harness.mkdir(parents=True, exist_ok=True)
+            else:
+                log(f"{harness}: not present, skipping")
+                continue
         log(f"\n{harness}")
 
         # Skills that live only in a harness are moved into the source of

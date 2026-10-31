@@ -16,6 +16,14 @@
 # ─────────────────────────────────────────────────────────────────────
 set -euo pipefail
 
+# Resolve the record from this script's own directory, never the caller's cwd.
+# `credit` printed no author or licence when the script was invoked by absolute
+# path, because `open("skills.json")` looked in the wrong directory and the
+# `|| true` swallowed the error — silently dropping the attribution the prompt
+# exists to show.
+SELFDIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+RECORD="$SELFDIR/skills.json"
+
 UPDATE=0
 DRY_RUN=0
 PROJECT=0
@@ -76,11 +84,11 @@ run() {
 # to. ATTRIBUTION.md is generated from this same record, so the credit here and
 # the credits file cannot disagree.
 credit() {
-  python3 - "$1" <<'PY' 2>/dev/null || true
+  python3 - "$1" "$RECORD" <<'PY' 2>/dev/null || true
 import json, sys
-repo = sys.argv[1]
+repo, record = sys.argv[1], sys.argv[2]
 try:
-    data = json.load(open("skills.json"))
+    data = json.load(open(record))
 except Exception:
     sys.exit(0)
 for source in data.get("sources", []):
