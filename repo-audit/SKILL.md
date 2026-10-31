@@ -2,7 +2,7 @@
 name: repo-audit
 description: Report where an existing repo has drifted from this standard — duplicated or wrongly-tiered rules, harness shims that copy AGENTS.md instead of pointing at it, no command that proves the repo green, commit hooks that would be bypassed, unjustified folders, an undocumented environment, an unstated branch topology. Read-only: it changes nothing, so it runs before anyone has agreed to a fix, in CI, or on a repo you were only asked to inspect. Use when someone asks "how far off is this repo", or when the answer has to be a report rather than an edit.
 disable-model-invocation: true
-version: 0.1.1
+version: 0.1.2
 ---
 
 # Repo Audit

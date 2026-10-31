@@ -178,38 +178,38 @@ def check_env_example(ctx: Context) -> Finding:
 
 
 def check_store_ignored(ctx: Context) -> Finding:
-    """Third-party skills are never committed. The lock has two valid policies.
+    """Third-party skills are never committed. Three coherent policies, not two.
 
     A repo may commit `skills-lock.json` so a fresh clone reinstalls the exact
-    set, or ignore it along with the store and treat the whole layer as
-    machine-local. Both are coherent; only a store committed *without* a lock is
-    not. A lock that is neither tracked nor ignored is just forgotten.
+    set; it may ignore the lock along with the store and treat the layer as
+    machine-local; or it may pin the store as a submodule, which is itself a
+    version record — the pointer names an exact commit, so no lock is needed.
+    What is never coherent is a store whose *files* are committed with no
+    record of where they came from. A lock that is neither tracked nor ignored
+    is just forgotten.
     """
     if not ctx.git("rev-parse", "--is-inside-work-tree").strip():
         return Finding("STRUCT-09", "structure", "n/a", "not a git repo", strict=True)
     if not ctx.path(".agents").is_dir():
         return Finding("STRUCT-09", "structure", "n/a", "no .agents/ store", strict=True)
     # `ls-files` alone counts a submodule as a tracked file. A gitlink is a
-    # pin — `.agents/skills` pointing at ekajaya740/skills so a fresh clone
-    # gets the standard — and it was the only entry making this check red on
-    # a repo that does the right thing. Drop mode-160000, keep the rest: a
-    # leaked file inside the store still reports.
+    # pin — `.agents/skills` pointing at the standard's repository — and it was
+    # the only entry making this check red on a repo doing the right thing.
+    # Drop mode-160000 from the file list, keep the rest: a leaked file inside
+    # the store still reports.
+    listing = ctx.git("ls-files", "-s", ".agents").splitlines()
+    pinned = [l.split("\t", 1)[1] for l in listing if l.startswith("160000 ") and "\t" in l]
     tracked = [
-        line.split("\t", 1)[1]
-        for line in ctx.git("ls-files", "-s", ".agents").splitlines()
-        if "\t" in line and not line.startswith("160000 ")
-    ]
-    gitlinks = [
-        line.split("\t", 1)[1]
-        for line in ctx.git("ls-files", "-s", ".agents").splitlines()
-        if line.startswith("160000 ")
+        l.split("\t", 1)[1]
+        for l in listing
+        if "\t" in l and not l.startswith("160000 ")
     ]
     lock_tracked = ctx.git("ls-files", "skills-lock.json").strip()
     lock_ignored = bool(ctx.git("check-ignore", "skills-lock.json").strip())
     problems = []
     if tracked:
         problems.append(f"{len(tracked)} file(s) under .agents/ are tracked")
-    if not lock_tracked and not lock_ignored:
+    if not lock_tracked and not lock_ignored and not pinned:
         problems.append("skills-lock.json is neither tracked nor ignored")
     if problems:
         return Finding(
@@ -217,10 +217,10 @@ def check_store_ignored(ctx: Context) -> Finding:
             "Ignore .agents/, then either commit skills-lock.json or ignore it too.",
             strict=True,
         )
-    policy = "lock tracked" if lock_tracked else "store and lock machine-local"
-    if gitlinks:
-        policy += f"; {', '.join(gitlinks)} pinned as a submodule"
-
+    if pinned:
+        policy = f"{', '.join(pinned)} pinned as a submodule, which is the version record"
+    else:
+        policy = "lock tracked" if lock_tracked else "store and lock machine-local"
     return Finding("STRUCT-09", "structure", "ok", f"store ignored, {policy}", strict=True)
 
 

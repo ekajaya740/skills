@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import re
 import subprocess
+from pathlib import Path
 
 from audit_model import DANGEROUS, GREEN_WHEN, NO_CHECK_ROW, TABLE_COMMAND, Context, Finding
 
@@ -110,14 +111,36 @@ def check_verify_runs(ctx: Context, run: bool) -> Finding:
 def _runs(cmd: str, body: str) -> bool:
     """Is `cmd` actually invoked in the workflow bodies?
 
-    Plain substring is not enough in either direction. `bun run build` must not
-    be satisfied by `bun run build:ci`, a different script, and must be by
-    `bun run build --filter=portfolio`, the same script with a flag. So the
-    match has to end where the command ends: a space, a quote, or the end of
-    the file — never a character that continues the word.
+    A substring test is wrong in both directions. `bun run build` must not be
+    satisfied by `bun run build:ci` (a different script) or by a documented
+    `install` inside `bun install` (an argument, not a command), and it must be
+    by `bun run build --filter=portfolio` (the same script with a flag).
+
+    So both ends are bounded: before the command, no character that would make
+    it part of a longer word or path; after it, none that would continue it.
+    Whitespace is normalised on both sides, because a workflow wraps its `run:`
+    lines and a table cell is written on one.
     """
-    pattern = re.escape(" ".join(cmd.split())) + r"(?![\w:=\-./])"
+    pattern = r"(?<![\w./-])" + re.escape(" ".join(cmd.split())) + r"(?![\w:=\-./])"
     return re.search(pattern, body) is not None
+
+
+def _workflow_body(wf: list[Path]) -> str:
+    """Every workflow, with YAML comments dropped and whitespace collapsed.
+
+    A comment is not an execution: `# TODO: bun run build` used to satisfy
+    VERIFY-03 with no step running it. Only whole-line comments are removed —
+    a `#` mid-line is left alone, because it is as likely to be inside a quoted
+    string or a URL as to be a comment, and a false "CI never runs" is the
+    failure this check exists to avoid.
+    """
+    kept = []
+    for path in wf:
+        for line in path.read_text(errors="replace").splitlines():
+            if line.lstrip().startswith("#"):
+                continue
+            kept.append(line)
+    return " ".join(" ".join(kept).split())
 
 
 def check_verify_ci(ctx: Context) -> Finding:
@@ -148,16 +171,11 @@ def check_verify_ci(ctx: Context) -> Finding:
             "VERIFY-03", "verify", "missing", "no .github/workflows/*.yml",
             "Add one job that runs the same commands as local.", strict=True,
         )
-    body = " ".join(
-        " ".join(p.read_text(errors="replace").split()) for p in wf
-    )
-    # The whole command, not its first word. Matching `c.split()[0]` meant a
-    # workflow that mentions `bun` once satisfied every row whose command
-    # starts with `bun`, so `bun run build` passed on a CI that only ran
-    # `bun install --frozen-lockfile` — a green that proves nothing. Substring
-    # still allows extra arguments (`bun run build --filter=portfolio` covers
-    # `bun run build`), which is the difference between the same script with a
-    # flag and a different script.
+    body = _workflow_body(wf)
+    # The whole command, at a command boundary. Comparing `c.split()[0]` meant
+    # a workflow mentioning `bun` once satisfied every row starting with `bun`:
+    # `bun run build` passed on a CI that only ran `bun install`. A plain
+    # substring inherits the same class of false pass at the other end.
     missing = [c for _, c in documented_commands(ctx) if not _runs(c, body)]
     if missing:
         return Finding(

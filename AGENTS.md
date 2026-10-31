@@ -6,8 +6,8 @@ This repository publishes the eleven skills of the engineering standard. The
 live skill store on this machine is `~/skills`, which `~/.agents/skills` points
 at; `~/.claude/skills` and `~/.codex/skills` hold one symlink per skill into it.
 
-**The store is a separate clone, not a link.** `/Users/ekajaya740/skills` shares
-this repo's origin and no inodes, so an edit here reaches no harness until it is
+**The store is a separate clone, not a link.** `~/skills` shares this repo's
+origin and no inodes, so an edit here reaches no harness until it is
 pushed, pulled there, and linked with `python3 scripts/link_harnesses.py
 --apply` — which is also the only step that makes a *new* skill visible.
 

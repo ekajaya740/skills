@@ -5,6 +5,26 @@ All notable changes to the `repo-audit` skill are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 The version in this file matches the `version` field in `SKILL.md`.
 
+## [0.1.2] - 2026-11-01
+
+### Fixed
+
+- `STRUCT-09` still failed a **pure pin**. 0.1.1 stopped counting the gitlink as a leaked file, but
+  the lock requirement was untouched: a repo whose store *is* the submodule, with no
+  `skills-lock.json`, still reported "skills-lock.json is neither tracked nor ignored" and blocked
+  strict. A submodule pointer names an exact commit, which is what a lock is for, so a pin now
+  satisfies the lock requirement. Three policies are coherent — lock tracked, store and lock both
+  machine-local, store pinned — and only committed store *files* with no record are drift. Found by
+  building the case instead of assuming: `/tmp/pin` with `.agents/skills` and no lock.
+- `VERIFY-03` had a right boundary but no left one, so a one-word row matched inside a longer
+  command: documented `install` was satisfied by `bun install`, and `audit.py` by
+  `repo-audit/scripts/audit.py`. Both ends are bounded now.
+- Workflow **comments** counted as execution: `# TODO: bun run build` satisfied the check with no
+  step running it. Whole-line comments are dropped before matching. Mid-line `#` is left alone,
+  because it is as likely to be inside a quoted string, and a false "CI never runs" is the worse
+  error.
+- `pinned` and `tracked` each ran `git ls-files -s`; one call now feeds both.
+
 ## [0.1.1] - 2026-11-01
 
 ### Fixed
