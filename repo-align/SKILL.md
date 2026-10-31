@@ -27,17 +27,26 @@ is reading. So the installed store gets refreshed first — but **in the store, 
 aligned**: the scripts live with the skills, and a repo that merely adopts the standard has neither
 `install-skills.sh` nor `scripts/link_harnesses.py`.
 
+Two different refreshes, and they are not interchangeable:
+
 ```bash
 cd ~/skills                        # the store; `.agents/skills` where the repo pins its own set
-./install-skills.sh --dry-run      # every source it would touch; runs nothing
-./install-skills.sh --update       # shows each source, asks once, then updates
-python3 scripts/link_harnesses.py --apply
+
+git pull                           # 1. the standard's own skills — this clone, from origin
+python3 scripts/link_harnesses.py --apply   #    links any skill that is new; restart after
+
+./install-skills.sh --dry-run      # 2. third-party skills. Each fetch is a consent gate
+./install-skills.sh --update       #    shows each source, asks once, then updates
 ```
 
+`--update` walks third-party sources only. It will never deliver a skill published by the standard
+itself, which is why the `git pull` is first and separate: a store one commit behind loads an old
+`repo-align` and does not have `repo-audit` at all.
+
 **Stop when there is nothing to update.** No `~/.agents/.skill-lock.json` means no recorded
-sources, so `--update` would be an install from scratch — say that and move on to § 1. A repo that
-pins its own set (`skills-lock.json` committed, `.agents/` ignored) was aligned against that pin;
-refreshing the store does not move it, and the pin stays unless the user asks to bump it.
+third-party sources, so `--update` would be an install from scratch — say that and move on to § 1.
+A repo that pins its own set (`skills-lock.json` committed, `.agents/` ignored) was aligned against
+that pin; refreshing the store does not move it, and the pin stays unless the user asks to bump it.
 
 Three rules, and the third is the one that gets skipped:
 

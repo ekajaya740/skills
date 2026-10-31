@@ -60,12 +60,16 @@ knowing: a hook that is committed but not enabled in this clone is `manual`, not
 ## 2. Run the script
 
 ```bash
-python3 scripts/audit.py .              # report only, always exits 0
-python3 scripts/audit.py . --strict     # exit 1 on a strict finding — use in CI
-python3 scripts/audit.py . --json       # machine-readable
-python3 scripts/audit.py . --run        # also execute the green-command table
-python3 scripts/audit.py . --section rules,verify
+python3 <skill-store>/repo-audit/scripts/audit.py <repo>              # report only, always exits 0
+python3 <skill-store>/repo-audit/scripts/audit.py <repo> --strict     # exit 1 on a strict finding — use in CI
+python3 <skill-store>/repo-audit/scripts/audit.py <repo> --json       # machine-readable
+python3 <skill-store>/repo-audit/scripts/audit.py <repo> --run        # also execute the green-command table
+python3 <skill-store>/repo-audit/scripts/audit.py <repo> --section rules,verify
 ```
+
+`<skill-store>` is `~/skills` on a normal install, `.agents/skills` in a repo that pins the set.
+Run it from the repo's root with `.`, or from anywhere by path — never from inside the skill
+directory, where `.` is the skill and a clean report is about the wrong repo.
 
 `--run` executes the repo's documented commands, so it is the one flag that can have a side effect
 (destructive commands are refused, not run). Without it, the audit only reads.

@@ -5,8 +5,11 @@ Instructions for agents working in this repository.
 This repository publishes the eleven skills of the engineering standard. The
 live skill store on this machine is `~/skills`, which `~/.agents/skills` points
 at; `~/.claude/skills` and `~/.codex/skills` hold one symlink per skill into it.
-The skills here are linked into that store, so editing one changes what every
-harness loads.
+
+**The store is a separate clone, not a link.** `/Users/ekajaya740/skills` shares
+this repo's origin and no inodes, so an edit here reaches no harness until it is
+pushed, pulled there, and linked with `python3 scripts/link_harnesses.py
+--apply` — which is also the only step that makes a *new* skill visible.
 
 ## The update rule
 
@@ -27,16 +30,16 @@ To update the installed skills:
 ./install-skills.sh --update    # shows each source, asks once, then updates
 ```
 
-This reads `~/.agents/.skill-lock.json`, fetches each source repository, and
-rewrites the skills that changed. It skips deletions in non-interactive mode,
-so a skill that upstream has renamed or withdrawn is left in place rather than
-removed.
+This reads `~/.agents/.skill-lock.json` and rewrites the skills that changed,
+leaving a renamed or withdrawn upstream skill in place rather than removing it.
+Neither command installs the standard's own skills — those arrive by `git pull`
+in the store. Skill `skills-install` owns the full procedure.
 
 To install a skill that is missing:
 
 ```sh
 ./install-skills.sh --dry-run            # the full list, nothing fetched
-npx skills@latest add <owner>/<repo> -g -s <skill-name> -s <other-skill>
+npx skills@latest add <owner>/<repo> -g -s <skill-name>
 ```
 
 Pass every skill by name with repeated `-s` flags. Do **not** omit them: without
@@ -48,17 +51,8 @@ agreed to these exact sources. In a non-interactive shell with no user present,
 stop instead — the installer refuses to run unattended without `--yes`, and
 that refusal is the point.
 
-After either command, re-link the harnesses so the new skills become visible:
-
-```sh
-python3 scripts/link_harnesses.py --apply
-```
-
-Claude Code and Codex read `~/.claude/skills` and `~/.codex/skills`, which
-contain one symlink per skill. A skill that exists in `~/.agents/skills` but has
-no link in a harness is invisible to that harness, and a newly installed skill
-has no link until this step runs. Restart the harness afterwards: skills are
-discovered at session start.
+After either command, run `python3 scripts/link_harnesses.py --apply` and
+restart the harness, or a newly installed skill has no symlink and is invisible.
 
 ## One route in, not two
 
@@ -73,7 +67,6 @@ enabling it as well loads every skill twice. `~/.claude/settings.json` is
 managed by the `ekajaya740/dotfiles` repository; if `enabledPlugins` there ever
 contains `mattpocock-skills@mattpocock`, remove that entry rather than dropping
 the skills.sh copies, so the skills stay editable and tracked by this repo.
-
 
 ## Recording a new source
 

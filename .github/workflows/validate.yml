@@ -34,6 +34,12 @@ jobs:
       - name: Validate published skills
         run: python3 scripts/validate_skills.py
 
+      # The commit hook runs this on the staged set, so a file that grows past
+      # the budget in a merge, a web edit, or a clone with the hook uninstalled
+      # is caught by nothing. --all makes it a whole-repo check.
+      - name: File-size budget
+        run: python3 repo-audit/scripts/check_file_size.py --all
+
       - name: skills.json is valid JSON
         run: python3 -m json.tool skills.json > /dev/null
 

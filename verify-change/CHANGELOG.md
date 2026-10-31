@@ -15,7 +15,7 @@ The version in this file matches the `version` field in `SKILL.md`.
   generated categories are skipped without asking. The error message is treated as part of the
   rule: it names the seam-finding command and the split, because a gate that only says "too large"
   teaches the reader to raise the budget.
-- The worked example: this repo's `repo-align/scripts/audit.py`, 12,261 tokens, split into five
+- The worked example: this repo's `repo-audit/scripts/audit.py`, 12,261 tokens, split into five
   section modules behind a CLI with byte-identical output — the only proof that a split changed the
   file count and nothing else.
 - Two failure modes from doing it: testing the hook on a clean tree proves nothing, and a split
