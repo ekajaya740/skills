@@ -2,7 +2,7 @@
 name: project-scaffold
 description: Scaffold a new project of any kind — pick the layout, stack defaults, and agent layer, and get to the first green run. Covers TypeScript/Node, Astro/Cloudflare, Python, monorepo, and agent-only/skill repos.
 disable-model-invocation: true
-version: 0.1.0
+version: 0.2.0
 ---
 
 # Project Scaffold
@@ -54,7 +54,27 @@ Three folders every non-trivial project gets, whatever the stack:
 
 ## 3. Lay down the agent layer
 
-Per skill `repo-init`. Minimum, in this order:
+Per skill `repo-init`.
+
+### Ask about dotfiles first
+
+Ask this and wait for the answer before writing anything below:
+
+> Does this project use your `ekajaya740/dotfiles`? They are tuned for **omp** — omp-jev routing,
+> 9router model aliases, the `claude/` and `jev/` deploy scripts — so a repo on another harness
+> inherits wiring it will never read.
+
+Ask once and wait. `~/dotfiles` existing on the machine is not a yes.
+
+| Answer | What changes |
+| --- | --- |
+| **Yes** | Point at the machine layer, never copy it: `AGENTS.md` names `~/dotfiles` and `bash ~/dotfiles/bootstrap.sh` as the machine setup step, and the harness shims come from there. |
+| **No** | Write `CLAUDE.md` / `.cursor/rules` by hand, and record no dotfiles dependency. |
+
+**Done when** `AGENTS.md` carries one line under the stack section: either "machine layer:
+`ekajaya740/dotfiles` (omp-tuned)" or "self-contained, no dotfiles dependency".
+
+Then the layer itself, minimum, in this order:
 
 1. `AGENTS.md` — stack, the green-command table, hard rules, out-of-bounds.
 2. `CLAUDE.md` → `@AGENTS.md` (and any other harness shim the user needs).

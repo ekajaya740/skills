@@ -134,26 +134,6 @@
       "notes": "skill-creator was installed from this repo in Jan 2026 but is no longer published there; upstream now offers 'supabase' and 'supabase-postgres-best-practices'."
     },
     {
-      "repo": "kerpopule/hermes-jev-skills",
-      "license": "MIT",
-      "author": "Steve Darlow",
-      "skills": [
-        "jev-browser-use",
-        "jev-computer-use",
-        "jev-frontier-work",
-        "jev-mailbox",
-        "jev-memory",
-        "jev-model-routing",
-        "jev-search",
-        "jev-setup",
-        "jev-skill-select"
-      ],
-      "notAvailableUpstream": [
-        "jev-compaction"
-      ],
-      "notes": "These skills are installed by the repository's own installer (python3 install.py), which targets ~/.claude/skills, ~/.codex/skills and ~/.agents/skills. Prefer that over 'npx skills add'. jev-compaction is skipped by the CLI because its frontmatter has a YAML parse error upstream; install.py copies it fine. 'npx skills add' also skips the whole repo when it hits that file."
-    },
-    {
       "repo": "browser-use/browser-use",
       "license": "MIT",
       "author": "Gregor Zunic",
@@ -168,44 +148,6 @@
       "skills": [
         "humanizer"
       ]
-    },
-    {
-      "repo": "makenotion/skills",
-      "license": "MIT",
-      "author": "Notion Labs, Inc.",
-      "skills": [
-        "notion-cli"
-      ],
-      "notes": "Official Notion skills repository. The local copy was an older revision. A same-named but unrelated community repo (CaesiumY/notion-cli-skill) also exists."
-    },
-    {
-      "repo": "intellectronica/agent-skills",
-      "license": "CC0-1.0",
-      "author": "intellectronica",
-      "skills": [
-        "raindrop-api"
-      ],
-      "notes": "Large multi-skill repo; only raindrop-api is used locally."
-    },
-    {
-      "repo": "PleasePrompto/notebooklm-skill",
-      "license": "MIT",
-      "author": "Please Prompto!",
-      "skills": [
-        "notebooklm"
-      ],
-      "notes": "The local notebooklm directory is empty."
-    },
-    {
-      "repo": "omacom/omarchy",
-      "license": "MIT",
-      "author": "David Heinemeier Hansson",
-      "skills": [
-        "omarchy",
-        "diagnose-crash",
-        "omarchy-app"
-      ],
-      "notes": "Skills that ship with the Omarchy Linux distribution (package: omarchy). Locally they are symlinked from /usr/share/omarchy/default/agents/skills into this store, so `omarchy update` keeps them current; the CLI install below is the portable path for machines without Omarchy. Upstream lives at github.com/basecamp/omarchy (the GitHub owner is omacom)."
     },
     {
       "repo": "emilkowalski/skills",
@@ -255,7 +197,7 @@
       "url": "https://github.com/DeusData/codebase-memory-mcp",
       "author": "DeusData",
       "license": "MIT",
-      "usedBy": "`code-discovery` — the code graph it queries, and `scripts/cbm-here.sh`",
+      "usedBy": "`code-discovery` \u2014 the code graph it queries, and `scripts/cbm-here.sh`",
       "notes": "Installed separately by its own installer; it is a binary, not a skill, so it is not in `sources`. The skill only documents how to install and register it."
     },
     {

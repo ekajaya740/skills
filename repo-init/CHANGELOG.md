@@ -5,6 +5,19 @@ All notable changes to the `repo-init` skill are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 The version in this file matches the `version` field in `SKILL.md`.
 
+## [0.4.0] - 2026-10-31
+
+### Added
+
+- `INIT.md` § 0 and `SKILL.md` § Step 0: ask whether the project uses `ekajaya740/dotfiles`
+  before reading anything else. The entry point carries the gate too, because an agent loads
+  `SKILL.md` first and would otherwise reach the question only from the deep file; the step count
+  is now eight everywhere it is stated.
+  The dotfiles are tuned for omp (omp-jev routing, 9router model aliases, the `claude/` and `jev/`
+  deploy scripts), so a repo on another harness inherits wiring it never reads. A `yes` turns the
+  harness shims into a pointer at the machine layer; a `no` means they are written by hand. The
+  question has to be asked: `~/dotfiles` existing on the machine is not evidence the repo uses it.
+
 ## [0.3.0] - 2026-10-31
 
 ### Changed

@@ -123,11 +123,12 @@ release workflow runs it before it cuts a tag.
 
 ## Known issues
 
-- **The `jev` CLI is broken.** `~/.local/bin/jev` and `~/.hermes/bin/jev` are
-  dangling symlinks into a deleted `/private/tmp/hjs`, so the ten `jev-*` skills
-  cannot run. Repairing it means running the upstream installer
-  (`kerpopule/hermes-jev-skills`), which also writes plugins and agent files
-  outside this repository.
+- **Jev was removed from this machine.** The CLI was two dangling symlinks into a
+  deleted `/private/tmp/hjs`, so the `jev-*` skills could not run; the broken
+  commands, the thirteen store links, the twenty-six harness links and
+  `jev-router` are gone, and `kerpopule/hermes-jev-skills` is no longer a source
+  in `skills.json`. Reinstalling it means running that repository's own
+  `install.py`.
 - **`autoprompt` is third-party.** It is the public MIT skill
   `Spielewoy/autoprompt-skill` at v1.0.3, installed by its own CLI
   (`~/.vite-plus/bin/autoprompt`). It is not authored here and must not be

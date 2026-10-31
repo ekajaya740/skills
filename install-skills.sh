@@ -58,16 +58,8 @@ SOURCES=(
   "jakubkrehel/make-interfaces-feel-better|make-interfaces-feel-better"
   "browser-use/browser-use|browser-use"
   "blader/humanizer|humanizer"
-  "makenotion/skills|notion-cli"
-  "intellectronica/agent-skills|raindrop-api"
-  "PleasePrompto/notebooklm-skill|notebooklm"
-  "omacom/omarchy|omarchy,diagnose-crash,omarchy-app"
   "ayghri/i-have-adhd|i-have-adhd"
 )
-
-# The Jev skills ship their own installer and are handled separately below,
-# because `npx skills add` skips the whole repo over one malformed file.
-JEV_REPO="https://github.com/kerpopule/hermes-jev-skills"
 
 run() {
   if [ "$DRY_RUN" -eq 1 ]; then
@@ -187,19 +179,8 @@ if [ "$UPDATE" -eq 1 ]; then
   echo
   preview_update
   echo
-  echo "• kerpopule/hermes-jev-skills (via its own installer)"
-  credit "kerpopule/hermes-jev-skills"
-  confirm
   run npx --yes skills@latest update -g -y || true
 
-  echo
-  run bash -c '
-    set -e
-    src="${XDG_CACHE_HOME:-$HOME/.cache}/hermes-jev-skills"
-    [ -d "$src/.git" ] || git clone --depth 1 "$1" "$src"
-    git -C "$src" pull --ff-only
-    python3 "$src/install.py"
-  ' _ "$JEV_REPO" || echo "  ! jev installer reported an error (see above)"
   exit 0
 fi
 
@@ -230,19 +211,6 @@ for entry in "${SOURCES[@]}"; do
   run "${args[@]}" || echo "  ! $repo reported an error (see above)"
   echo
 done
-
-# Jev skills: use their own installer rather than `npx skills add`, which skips
-# the repository entirely because one of its files has malformed frontmatter.
-echo "• kerpopule/hermes-jev-skills (via its own installer)"
-credit "kerpopule/hermes-jev-skills"
-run bash -c '
-  set -e
-  src="${XDG_CACHE_HOME:-$HOME/.cache}/hermes-jev-skills"
-  [ -d "$src/.git" ] || git clone --depth 1 "$1" "$src"
-  git -C "$src" pull --ff-only
-  python3 "$src/install.py"
-' _ "$JEV_REPO" || echo "  ! jev installer reported an error (see above)"
-echo
 
 echo "Done. Skills that upstream has renamed or withdrawn are listed under"
 echo "\"notAvailableUpstream\" in skills.json."

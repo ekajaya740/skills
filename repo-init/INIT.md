@@ -9,6 +9,35 @@ the existing layer instead of replacing it.
 The failure this prevents: a repo where every session re-derives the same facts, and the rules
 that matter live in a skill the agent never opens. See skill `agent-rules` § The tier test.
 
+## 0. Ask about dotfiles, before anything else
+
+One question cannot be answered from the repo, and the answer changes what steps 1, 4 and 5 may
+write: **does this project use `ekajaya740/dotfiles`?**
+
+```bash
+ls -d ~/dotfiles 2>/dev/null          # does the machine even have it?
+git config --global --get user.email  # is this the same person?
+```
+
+Ask once, plainly, and wait for the answer — do not infer it from the repo's file list:
+
+> Does this project use your `ekajaya740/dotfiles`? They are tuned for **omp** (omp-jev routing,
+> 9router model aliases, the `claude/` and `jev/` deploy scripts), so a repo on another harness
+> inherits wiring it will never read.
+
+Two outcomes:
+
+| Answer | What changes |
+| --- | --- |
+| **Yes** | The dotfiles are the machine layer. `AGENTS.md` records them as a pointer, not a copy: which harness shims come from them, and that `bash ~/dotfiles/bootstrap.sh` is the machine setup step. Do not restate their rules here — one rule, one home. |
+| **No** | Write the shims by hand in step 4, and record no dotfiles dependency anywhere. A repo that does not use them must not document them. |
+
+**Done when** the answer is recorded in one line of `AGENTS.md` under the stack section — either
+"machine layer: `ekajaya740/dotfiles` (omp-tuned)" or "self-contained, no dotfiles dependency".
+
+This is a question, not a lookup: a repo cloned on a machine with `~/dotfiles` is not evidence that
+it uses them.
+
 ## 1. Read the repo before writing a word
 
 Answer these from the files, not from memory. Do not ask the user anything you can look up.

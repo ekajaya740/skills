@@ -2,12 +2,12 @@
 name: repo-init
 description: Bootstrap a repo's agent layer from nothing — AGENTS.md, detail tier, harness shims, and the commands table. Covers code repos, non-coding repos (docs vaults, research notes, writing) whose green check is a link or schema lint rather than a build, and empty folders that have no facts to record yet. Use only when a repo has no AGENTS.md at all. For a repo that already has one, use repo-align.
 disable-model-invocation: true
-version: 0.3.0
+version: 0.4.0
 ---
 
 # Repo Init
 
-Build the instruction layer for a repo that has none, in seven steps, ending with a green check
+Build the instruction layer for a repo that has none, in eight steps, ending with a green check
 you can paste as evidence.
 
 The failure this prevents: a repo where every session re-derives the same facts, and the rules
@@ -15,6 +15,25 @@ that matter live in a skill the agent never opens.
 
 Read [`INIT.md`](INIT.md) and run it. This file is only the entry point: what the job is, what it
 produces, and how to know it is done.
+
+## Step 0, before reading the repo
+
+One question cannot be answered from the files, and it decides who owns the harness shims:
+**does this project use `ekajaya740/dotfiles`?** They are tuned for **omp** — omp-jev routing,
+9router model aliases, the `claude/` and `jev/` deploy scripts — so a repo on another harness
+inherits wiring it never reads.
+
+Ask it and wait. `~/dotfiles` existing on the machine is not a yes, and a repo cloned onto a
+machine that has them is not evidence it uses them.
+
+| Answer | What it changes |
+| --- | --- |
+| **Yes** | Record the dotfiles as the machine layer, by pointer: `AGENTS.md` names `~/dotfiles` and `bash ~/dotfiles/bootstrap.sh`, and the shims come from there. Never restate their rules here. |
+| **No** | Write the shims by hand in step 4, and record no dotfiles dependency anywhere. |
+
+**Done when** `AGENTS.md` carries one line under the stack section: either "machine layer:
+`ekajaya740/dotfiles` (omp-tuned)" or "self-contained, no dotfiles dependency". Full text in
+[`INIT.md`](INIT.md) § 0.
 
 ## First, what kind of repo is this
 
@@ -31,7 +50,7 @@ cat package.json pyproject.toml Cargo.toml go.mod Makefile 2>/dev/null | head -4
 | --- | --- | --- |
 | **Empty** | Nothing but `.git` | No content, no facts to record |
 | **Non-coding** | Files exist, but no manifest and no build | Docs vault, research notes, writing, a knowledge base |
-| **Code** | A manifest, or a build/CI config | Run the seven steps normally |
+| **Code** | A manifest, or a build/CI config | Run the eight steps normally |
 
 A docs vault is **not** empty. It has a tree, conventions, a schema, and often a link graph — all
 of them facts `AGENTS.md` should carry. Treating it as empty would throw that away and tell the
@@ -96,7 +115,7 @@ empty one: the agent runs it, it fails, and the file teaches the agent to distru
 `AGENTS.md` with four known-unknowns is honest and useful; one with `bun test` in a repo that has
 no `package.json` is a lie the next session will act on.
 
-**Done when** either the folder has enough evidence to run the seven steps, or the user has been
+**Done when** either the folder has enough evidence to run the eight steps, or the user has been
 asked and has chosen a path.
 
 ## Non-coding repo
@@ -195,7 +214,7 @@ missing rules against the same template, and changes nothing until you approve.
 
 ## Related
 
-- The seven steps → [`INIT.md`](INIT.md)
+- The eight steps → [`INIT.md`](INIT.md)
 - What to pin and how → [`SKILLS.md`](SKILLS.md)
 - The file to copy → [`TEMPLATE-AGENTS.md`](TEMPLATE-AGENTS.md)
 - Tiers and ownership → skill `agent-rules`

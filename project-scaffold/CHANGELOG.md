@@ -5,6 +5,15 @@ All notable changes to the `project-scaffold` skill are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 The version in this file matches the `version` field in `SKILL.md`.
 
+## [0.2.0] - 2026-10-31
+
+### Added
+
+- § 3 asks whether the project uses `ekajaya740/dotfiles` before the agent layer is laid down.
+  They are tuned for omp, so a `yes` makes the harness shims a pointer at the machine layer
+  (`bash ~/dotfiles/bootstrap.sh`) and a `no` means writing `CLAUDE.md` and `.cursor/rules` by
+  hand. Recorded as one line under the stack section, either way.
+
 ## [0.1.0] - 2026-10-31
 
 ### Added
