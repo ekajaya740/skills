@@ -2,7 +2,7 @@
 name: repo-align
 description: Apply the fixes an audit named — bring an existing repo in line with this standard by editing only what the user approved, then prove each fix with the repo's own command. Also refreshes the machine's installed skills, because a stale skill is the standard being violated by the tool that enforces it. Use when an audit report exists and the user has named which findings to fix, or when they say "align this repo". Use repo-audit to get the report; use this only once someone has agreed to a change.
 disable-model-invocation: true
-version: 0.5.0
+version: 0.5.1
 ---
 
 # Repo Align
@@ -32,16 +32,20 @@ Two different refreshes, and they are not interchangeable:
 ```bash
 cd ~/skills                        # the store; `.agents/skills` where the repo pins its own set
 
-git pull                           # 1. the standard's own skills — this clone, from origin
-python3 scripts/link_harnesses.py --apply   #    links any skill that is new; restart after
+git fetch origin                   # 1. the standard's own skills — this clone, from origin
+git merge --ff-only origin/main    #    not `git pull`: with no upstream set it prints advice and
+                                   #    does nothing, and a silent no-op reads like a refresh
+python3 scripts/link_harnesses.py --apply   # links any skill that is new; restart after
 
 ./install-skills.sh --dry-run      # 2. third-party skills. Each fetch is a consent gate
 ./install-skills.sh --update       #    shows each source, asks once, then updates
 ```
 
 `--update` walks third-party sources only. It will never deliver a skill published by the standard
-itself, which is why the `git pull` is first and separate: a store one commit behind loads an old
-`repo-align` and does not have `repo-audit` at all.
+itself, which is why the fetch is first and separate: a store one commit behind loads an old
+`repo-align` and does not have `repo-audit` at all. **Check the merge moved `HEAD`**, or said
+"Already up to date" — a store whose `main` has no upstream and a `git pull` that printed a hint is
+the failure this line exists to avoid.
 
 **Stop when there is nothing to update.** No `~/.agents/.skill-lock.json` means no recorded
 third-party sources, so `--update` would be an install from scratch — say that and move on to § 1.

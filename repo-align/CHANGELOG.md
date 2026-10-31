@@ -5,6 +5,23 @@ All notable changes to the `repo-align` skill are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 The version in this file matches the `version` field in `SKILL.md`.
 
+## [0.5.1] - 2026-11-01
+
+### Fixed
+
+- § 0 said `git pull` in the store. `~/skills` had no upstream configured, so `git pull` printed
+  "If you wish to set tracking information for this branch…" and exited 0 without fetching — a
+  documented refresh step that silently did nothing, and the reason `repo-audit` was never going to
+  arrive by that instruction. Now `git fetch origin && git merge --ff-only origin/main`, which needs
+  no upstream config, plus the check that says whether `HEAD` actually moved. The upstream is also
+  set on this machine, but the instruction must not depend on that.
+
+### Changed
+
+- § 0 separates the two refreshes. `install-skills.sh --update` walks third-party sources only, so
+  it can never deliver a skill published by the standard itself; the fetch has to be its own step,
+  and it comes first.
+
 ## [0.5.0] - 2026-11-01
 
 ### Changed

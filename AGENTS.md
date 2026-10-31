@@ -32,8 +32,9 @@ To update the installed skills:
 
 This reads `~/.agents/.skill-lock.json` and rewrites the skills that changed,
 leaving a renamed or withdrawn upstream skill in place rather than removing it.
-Neither command installs the standard's own skills — those arrive by `git pull`
-in the store. Skill `skills-install` owns the full procedure.
+Neither command installs the standard's own skills — those arrive by
+`git fetch origin && git merge --ff-only origin/main` in the store.
+Skill `skills-install` owns the full procedure.
 
 To install a skill that is missing:
 
