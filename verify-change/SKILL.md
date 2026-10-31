@@ -2,7 +2,7 @@
 name: verify-change
 description: Decide what counts as proof a change works, and say it correctly. Use before claiming done, fixed, or working, when choosing between a test and a manual check, or when a change touches UI, data, or a deploy. Covers code repos and non-coding ones (docs, notes, writing) where the check is a link or schema lint instead of a build.
 disable-model-invocation: true
-version: 0.1.0
+version: 0.2.0
 ---
 
 # Verify Change
@@ -125,6 +125,55 @@ bun run build && bun run check-types && bun test
 If a command is documented but broken, say so once and fix it or delete the row — a command in
 the table that nobody can run is worse than a missing row.
 
+## The commit hook
+
+A pre-commit hook is the cheapest rung-2 check there is — it runs the command you would otherwise
+forget. It is also the easiest thing in a repo to turn into decoration. Three rules decide whether
+it is real:
+
+1. **Cheap is the requirement; scope follows from cost.** Lint, format, and the repo's one gate —
+   nothing that takes more than a few seconds. A hook that runs the full suite gets bypassed with
+   `--no-verify`, and once that reflex exists it protects nothing, not even the cheap part. The
+   full suite belongs in CI, where nobody is waiting on it.
+2. **Scope a slow check to the staged set; a cheap one may read the whole index.** A tree-walking
+   tool (a formatter, a type-checker, a token budget) must be handed `git diff --cached --name-only`
+   — remember `--diff-filter=d`, or a deleted path is passed to a tool that cannot open it — because
+   a repo-wide run fails on pre-existing drift and trains everyone to reach for `--no-verify`. A
+   check that finishes in well under a second may run repo-wide: filtering buys nothing and lets a
+   broken sibling through. **Know what each one reads:** `git ls-files` returns the *index's* file
+   set, but most scripts then open the *working tree* copy, so a partially staged file is checked
+   as it sits on disk, not as it will be committed. That gap is fine for a coarse gate. When
+   per-hunk fidelity matters, compare the two sets per path — never `git diff --quiet || git diff
+   --cached --quiet`, which is false for *any* pending commit and would refuse all of them:
+
+   ```sh
+   # A path staged and also modified on disk: the hook would read the wrong bytes.
+   changed=$(git diff --cached --name-only)
+   unstaged=$(git diff --name-only)
+   comm -12 <(printf '%s\n' "$changed" | sort) <(printf '%s\n' "$unstaged" | sort)
+   ```
+
+   Non-empty output means refuse, or say so and gate on CI instead.
+3. **Prove it fires, once, deliberately.** A gate that skips work on an empty stage is not a gate
+   that passed: stage one file you know is wrong, watch the commit fail, then unstage it. `git
+   commit` on a clean tree proves only that the guard had no input.
+
+**A hook that is not installed is not a hook.** Two failures look identical from inside the repo
+and are worth checking separately:
+
+| Symptom | Cause | Check |
+| --- | --- | --- |
+| The hook file exists and never runs | `core.hooksPath` points somewhere else — often a global dotfiles path, or a Husky `.husky/_` that is unset in a fresh clone | `git config --get core.hooksPath`, then `git rev-parse --git-path hooks` |
+| It runs on your machine, not a colleague's | Wiring is local config, which is not committed | The repo must ship the *way to enable it*: a script, or a line in `AGENTS.md`/README naming the exact command |
+
+Commit the hook itself under `.githooks/` (or Husky's `.husky/`), record the enable command
+`git config core.hooksPath .githooks` in `AGENTS.md` or the README, and never rely on the
+`.git/hooks/*.sample` files — they are not live, by design.
+
+In a deny-by-default `.gitignore`, the hooks directory needs its own `!/.githooks/` allowlist
+entry. Without it the hook is silently never committed, which is the same failure with extra
+steps.
+
 ## The trap log
 
 When a change took longer than it should have, the cause was one of these. Record it (symptom →
@@ -137,6 +186,7 @@ cause → fix) in the file that owns that area, then move on.
 | "Test passes, user sees broken UI" | The test sits below the seam the bug lives above |
 | "Fixed, then broke again" | No test at the seam — the fix was a probe |
 | "Migration ran, app cannot read" | Migration ran against the wrong database |
+| "The hook is in the repo and never fires" | `core.hooksPath` points elsewhere; the enable command was never run |
 
 ## Pinning a criterion
 

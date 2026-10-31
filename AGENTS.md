@@ -118,8 +118,20 @@ Releasing is automatic: bump the version and push. See the README.
 | Installer | `./install-skills.sh --dry-run` | exit 0; no malformed command |
 | Alignment | `python3 repo-align/scripts/audit.py . --strict` | exit 0, no `blocking (strict)` line |
 
-The first is the gate: a version bump that fails it is never tagged, because the
-release workflow runs it before it cuts a tag.
+The first row is the gate: a version bump that fails it is never tagged, because the release
+workflow runs it before it cuts a tag. It also runs in `.githooks/pre-commit`, on every commit —
+checked in, but **not installed by cloning**, because git wiring is local config. Enable it once
+per clone:
+
+```sh
+git config core.hooksPath .githooks
+```
+
+The hook runs the gate only, not the alignment audit: at ~0.2s it is invisible,
+where a slow hook trains everyone to use `--no-verify`. It reads the working
+tree, so a partially staged file is checked as it sits on disk. The rule behind
+this setup, including how to prove the hook still fires, is skill
+`verify-change` § The commit hook.
 
 ## Known issues
 

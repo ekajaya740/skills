@@ -23,6 +23,7 @@ Ids are stable — cite them in the report so the user can say "fix 2 and 5".
 
 | Id | Detect | Drift when | Fix |
 | --- | --- | --- | --- |
+| `BRANCH-01` | `git branch --format='%(refname:short)'`, then grep `^\| *[Bb]ranch` across `AGENTS.md docs/agents/` | More than one branch and no `\| Branch \|` table. One branch is `ok` by definition — the count is never the defect | Ask which mirrors production, which is staging, which carry content only; record it. See skill `workflow` § [`BRANCHES.md`](../workflow/BRANCHES.md) |
 | `STRUCT-01` | `ls -a` at the root | A top-level folder with no one-line justification | Justify it in `docs/architecture.md` or delete it |
 | `STRUCT-02` | `find . -maxdepth 2 -name 'utils*' -o -maxdepth 2 -name 'shared*' -o -maxdepth 2 -name 'helpers*'` | A dumping-ground folder exists | Name the concept; split or delete |
 | `STRUCT-03` | `ls src tests docs scripts 2>/dev/null` | A non-trivial project has no `docs/` or `scripts/` | Create the one that is missing, with one real file in it |
@@ -43,6 +44,20 @@ Ids are stable — cite them in the report so the user can say "fix 2 and 5".
 | `VERIFY-03` | `ls .github/workflows 2>/dev/null` | A `code` repo that documents commands has no CI, or CI runs commands the developer cannot run locally. No documented command is `n/a`; `knowledge` with no build is `manual` | Make CI call the same scripts |
 | `VERIFY-04` | `rg -n 'Loading\.\.\.\|TODO\|FIXME' --type-add 'src:*.{ts,tsx,py,go,rs}' -tsrc` | A placeholder the repo treats as done | Fix it or file it |
 | `VERIFY-05` | Look for test files asserting on mocks of the changed unit | A test that passes before and after the fix | Rewrite at the seam the behaviour lives at |
+
+## `hook`
+
+Decided by `scripts/audit.py`, and reported under the `verify` section. The rule's owner is skill
+`verify-change` § The commit hook; these rows only decide compliance.
+
+| Id | Detect | Drift when | Fix |
+| --- | --- | --- | --- |
+| `HOOK-01` | Read `.githooks/`, `.husky/`, `.git/hooks/`; strip comment lines; match `bun test`, `npm test`, `pytest`, `audit.py`, `tsc --noEmit`, `vitest run`, `jest`, `run build` | A `pre-commit` or `commit-msg` runs the full suite, or the file is not executable — git skips that silently | Move the suite to CI; keep lint, format and the one cheap gate. `chmod +x` |
+| `HOOK-02` | `git ls-files --error-unmatch <hook>`, then `git check-ignore`, then `git config --get core.hooksPath` | The hook is ignored by a deny-by-default `.gitignore` (so it can never ship), or it is uncommitted | Add `!/.githooks/` and commit it |
+| `HOOK-02` (local) | Same commands | The hook is committed but this clone does not run it | **`manual`, never `drift`** — `core.hooksPath` is per-clone config, absent in a fresh CI checkout. Enable it, and confirm `AGENTS.md` or the README names the command |
+
+`pre-push` is out of `HOOK-01`'s scope: the developer already waits on the network there, so a slow
+push-time suite is not the bypass magnet a slow commit hook is.
 
 ## `design`
 

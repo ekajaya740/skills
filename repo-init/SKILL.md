@@ -2,7 +2,7 @@
 name: repo-init
 description: Bootstrap a repo's agent layer from nothing — AGENTS.md, detail tier, harness shims, and the commands table. Covers code repos, non-coding repos (docs vaults, research notes, writing) whose green check is a link or schema lint rather than a build, and empty folders that have no facts to record yet. Use only when a repo has no AGENTS.md at all. For a repo that already has one, use repo-align.
 disable-model-invocation: true
-version: 0.4.0
+version: 0.5.0
 ---
 
 # Repo Init
@@ -34,6 +34,25 @@ machine that has them is not evidence it uses them.
 **Done when** `AGENTS.md` carries one line under the stack section: either "machine layer:
 `ekajaya740/dotfiles` (omp-tuned)" or "self-contained, no dotfiles dependency". Full text in
 [`INIT.md`](INIT.md) § 0.
+
+## Step 0b, the second question the files cannot answer
+
+**How many permanent branches does this repo have, and what does each one mirror?** `git branch -r`
+gives the names; nothing in the repo says which is production. That matters because **deployments
+fire on merge, per target branch** — a merge to the production branch ships to users — so the
+answer decides where an agent is allowed to edit. A second permanent branch (staging, or a
+prose-only branch that cannot trigger a deploy) is how a change gets tested or a doc change avoids
+shipping a migration.
+
+Ask, and say why: one permanent branch is a **complete** answer; the defect is a branch with no
+stated purpose, or two with the same one. Then record it as a `| Branch |` table in
+`docs/agents/`, plus the production branch's name in `AGENTS.md`.
+
+Full reasoning, the questions, and the record's shape → skill `workflow`
+[`BRANCHES.md`](../workflow/BRANCHES.md). Procedure: [`INIT.md`](INIT.md) § 1b.
+
+**Done when** every permanent branch has a stated purpose and `AGENTS.md` names the production
+branch.
 
 ## First, what kind of repo is this
 

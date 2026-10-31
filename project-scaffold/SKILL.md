@@ -2,7 +2,7 @@
 name: project-scaffold
 description: Scaffold a new project of any kind — pick the layout, stack defaults, and agent layer, and get to the first green run. Covers TypeScript/Node, Astro/Cloudflare, Python, monorepo, and agent-only/skill repos.
 disable-model-invocation: true
-version: 0.2.0
+version: 0.2.1
 ---
 
 # Project Scaffold

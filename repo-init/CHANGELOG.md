@@ -5,6 +5,16 @@ All notable changes to the `repo-init` skill are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 The version in this file matches the `version` field in `SKILL.md`.
 
+## [0.5.0] - 2026-10-31
+
+### Added
+
+- `INIT.md` § 1b: branch topology, asked rather than inferred. Step 1 can read branch *names*
+  from `git branch -r`; it cannot read which one mirrors production, so the question is put to
+  the user with the reasoning attached — deployments fire per target branch, a permanent branch
+  is a review boundary, and release automation keys on the name. Records the answers as one
+  table plus one binding line in `AGENTS.md`.
+
 ## [0.4.0] - 2026-10-31
 
 ### Added

@@ -5,6 +5,15 @@ All notable changes to the `project-scaffold` skill are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 The version in this file matches the `version` field in `SKILL.md`.
 
+## [0.2.1] - 2026-10-31
+
+### Changed
+
+- `DEFAULTS.md` § Tooling: the pre-commit row said "optional, and only lint + format", which
+  competed with the third-party `setup-pre-commit` skill's "lint-staged + typecheck + test" — two
+  answers, no owner. The row now names the repo's one gate as fair game and points at skill
+  `verify-change` § The commit hook for scope, so the detail lives in exactly one place.
+
 ## [0.2.0] - 2026-10-31
 
 ### Added

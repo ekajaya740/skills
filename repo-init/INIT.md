@@ -61,6 +61,21 @@ ls .github/workflows 2>/dev/null
 **Done when** you can name the build command, the green command, and the primary branch without
 opening a file again.
 
+## 1b. Branch topology — ask, do not infer
+
+Step 1 gives you the branch **names**; it cannot give you what they **mean**. Ask, once, and record
+the answer alongside the other non-lookup question in § 0. The reasoning is owned by skill `workflow`
+[`BRANCHES.md`](../workflow/BRANCHES.md) — point at it, never restate it here.
+
+Ask the four questions in `BRANCHES.md` § Ask these, once — production, staging, content-only, and
+the count — because none of them can be read from the filesystem. Take the branch names from
+`git branch -r`; never propose a name from the example table, because each project's names differ.
+Then record the answers as that file's table in `docs/agents/`, and one binding line in `AGENTS.md`
+naming the primary branch and the rule that work never starts on a permanent one.
+
+**Done when** every permanent branch in the repo has a stated purpose, the production branch is
+named, and `AGENTS.md` says which one it is.
+
 ## 2. Pick the tier for each fact
 
 Everything you learned is either **binding** (an agent that never opened another file would

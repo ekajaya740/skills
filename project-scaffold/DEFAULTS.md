@@ -38,7 +38,7 @@ both. Two lockfiles for one language is a bug.
 | Lint + format | **oxlint + oxfmt** for TS; **ruff** for Python | One binary each; no plugin ecosystem to maintain |
 | Test runner | **bun test** or **vitest**; **pytest** | Match the runtime — a second toolchain is a second failure mode |
 | CI | One workflow, one job, the same commands as local | CI that runs different commands than the developer is CI that finds different bugs |
-| Pre-commit | Optional, and only `lint` + `format` | A pre-commit hook that runs the full suite gets bypassed with `--no-verify` |
+| Pre-commit | Optional. Cheap lint + format, plus the repo's one gate; never the full suite | Scope and the disable check belong to skill `verify-change` § The commit hook — one owner, no second copy |
 
 ## Astro / Cloudflare
 

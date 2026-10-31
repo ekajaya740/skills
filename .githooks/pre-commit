@@ -1,0 +1,48 @@
+#!/bin/sh
+# Pre-commit gate: the repository's one mechanical check, on every commit.
+#
+# What it runs: `scripts/validate_skills.py` — the same command AGENTS.md
+# § Checks calls "Everything (the gate)", and the same one CI runs before it
+# cuts a tag.
+#
+# Scope, stated exactly: the script takes its *file list* from `git ls-files`
+# (the index) but reads each file from the working tree. So it validates "the
+# index's file set, as the files currently sit on disk". A partially staged
+# file is therefore checked in its working-tree form, not its staged form —
+# this hook catches a wrong file, not a wrong hunk. That is the deliberate
+# trade for a 0.2s check with no plumbing to extract blobs; see the rule in
+# skill `verify-change` § The commit hook. If per-hunk fidelity ever matters
+# here, intersect `git diff --cached --name-only` with `git diff --name-only`
+# and refuse on a non-empty result, rather than switching to a slower check.
+# (Not `git diff --quiet || git diff --cached --quiet`: that is false for any
+# pending commit and would refuse all of them.)
+#
+# Why only this and not the full audit: a hook that runs the whole suite is a
+# hook everyone learns to bypass with `--no-verify`, and once that reflex
+# exists the gate protects nothing — not even the cheap check. `audit.py`
+# stays in CI, where a slow run costs nothing.
+#
+# Why it runs on every commit rather than only when a skill path is staged: at
+# ~0.2s, path filtering buys nothing, and the check is about the index as a
+# whole (allowlist, secrets, version/CHANGELOG/README agreement). Filtering
+# would let a commit that adds one file slip a broken sibling through.
+#
+# Bypass for a WIP checkpoint: `git commit --no-verify`. Do not push it.
+
+root=$(git rev-parse --show-toplevel) || exit 1
+cd "$root" || exit 1
+
+if ! command -v python3 >/dev/null 2>&1; then
+  echo "ERROR: python3 not found, so the repository gate cannot run."
+  echo "Install python3, or commit with --no-verify if you accept an unvalidated commit."
+  exit 1
+fi
+
+if ! python3 scripts/validate_skills.py; then
+  echo ""
+  echo "Commit refused: the gate above failed."
+  echo "Fix the reported problem(s), or use --no-verify for a WIP checkpoint you will not push."
+  exit 1
+fi
+
+exit 0

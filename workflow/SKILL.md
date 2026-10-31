@@ -1,8 +1,8 @@
 ---
 name: workflow
-description: The route work takes, idea to shipped — sharpen, prototype, split, plan, build, review, ship, retro — with the done-criterion for each phase and which skill to run at each. Use when deciding what to do next, when a request is underspecified, when a task has grown past one session, or when work was finished but not proven.
+description: The route work takes, idea to shipped — sharpen, prototype, split, plan, build, review, ship, retro — with the done-criterion for each phase and which skill to run at each. Use when deciding what to do next, when a request is underspecified, when a task has grown past one session, when work was finished but not proven, or when nobody has written down which branches are permanent and where a task may edit.
 disable-model-invocation: true
-version: 0.1.0
+version: 0.2.0
 ---
 
 # Workflow
@@ -39,6 +39,13 @@ Full per-phase detail, including the exit questions and the failure each phase p
 5. **Retro is manual, and proposes only.** Phase 8 runs **on the user's request** — never
    automatically at the end of a task, a session, or a worktree teardown. The session that made
    the mistakes cannot accept the lessons either: findings go to the user, who decides.
+
+6. **Know where the work lands before you start it.** Branch topology is decided once per repo —
+   which branch mirrors production, which mirrors staging, which exists only for prose — and every
+   task then runs on a working branch cut from the one it targets. Never author on a permanent
+   branch: the edit is valid code in the wrong place, and nothing catches it. The topology, the
+   questions to ask the user, and the way to explain why a permanent branch exists at all are in
+   [`BRANCHES.md`](BRANCHES.md).
 
 ## Which skill runs at each phase
 
@@ -93,6 +100,7 @@ process stops meaning anything.
 ## Related
 
 - Every phase's exit criteria and failure mode → [`PHASES.md`](PHASES.md)
+- Which branches are permanent, and where a task runs → [`BRANCHES.md`](BRANCHES.md)
 - Proving a phase's output → skill `verify-change`
 - Where decisions and rules get written down → skill `agent-rules`
 - Bootstrapping the layer a repo needs first → skill `repo-init`

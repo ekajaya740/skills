@@ -2,7 +2,7 @@
 name: repo-align
 description: Audit an existing repo against this standard and fix the drift — missing or duplicated rules, wrong tier, broken harness shims, undocumented green command, missing design docs. Use when a repo predates the standard, a rule has drifted, or an agent keeps making the same mistake in a repo that has an AGENTS.md.
 disable-model-invocation: true
-version: 0.2.0
+version: 0.3.0
 ---
 
 # Repo Align
@@ -37,7 +37,11 @@ Sections match skill `standard`: `rules`, `structure`, `verify`, `design`, `skil
 that is off is not checked, not reported, and not mentioned again.
 
 The script accepts `rules`, `structure`, `verify`, and `design`. `skills` has no mechanical
-checks — it audits this repository's own publishing rules and stays agent-run.
+checks — it audits this repository's own publishing rules and stays agent-run. The commit-hook
+checks (`HOOK-01`, `HOOK-02`) report under `verify` because that is the section whose question
+they answer — "prove the repo is green" — and they carry a trap worth knowing: a hook that is
+committed but not enabled in this clone is `manual`, not `drift`, because `core.hooksPath` is
+per-clone config and a fresh CI checkout never has it.
 
 ## 2. Audit
 

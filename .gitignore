@@ -18,8 +18,9 @@
 !/skills.json
 !/install-skills.sh
 
-# Release tooling and CI
+# Release tooling, the commit gate, and CI
 !/scripts/
+!/.githooks/
 !/.github/
 
 # Published skills

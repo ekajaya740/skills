@@ -5,6 +5,43 @@ All notable changes to the `repo-align` skill are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 The version in this file matches the `version` field in `SKILL.md`.
 
+- `BRANCH-01` in `scripts/audit.py`: a repo with more than one branch must state what each one
+  is for. `missing` when no `| Branch |` table exists anywhere in `AGENTS.md` or
+  `docs/agents/*.md`; `ok` when one does, naming the file that owns it. A single-branch repo is
+  `ok` by definition. Found by auditing PROFILL, which keeps its topology in `merge-policy.md` —
+  the check scans every area doc, because a second copy in `version-control.md` would be the
+  drift the standard forbids.
+
+## [0.3.0] - 2026-10-31
+
+### Added
+
+- `HOOK-01` and `HOOK-02` in `scripts/audit.py`, reported under `verify`, plus a `hook` section in
+  `CHECKLIST.md`. The standard now had a rule about pre-commit hooks (skill `verify-change`
+  § The commit hook) but nothing that checked compliance, so the rule could not drift into a
+  finding.
+- `HOOK-01` reads only `pre-commit` and `commit-msg`, and strips comment lines before matching. A
+  suite in `pre-push` is legitimate, and a hook that *explains* why it avoids the suite must not be
+  read as running one.
+- `HOOK-02` separates shipped wiring from local wiring: a hook ignored by a deny-by-default
+  `.gitignore`, or left uncommitted, is `drift`; a committed hook that this clone does not run is
+  `manual`, because `core.hooksPath` is per-clone config and a fresh CI checkout never has it.
+- `BRANCH-01` in `scripts/audit.py`, plus a `structure` row in `CHECKLIST.md`: a repo with more
+  than one branch must state what each one is for. `missing` when no `| Branch |` table exists in
+  `AGENTS.md` or any `docs/agents/*.md`; `ok` when one does, naming the file that owns it. A
+  single-branch repo is `ok` by definition. Found by auditing PROFILL, which keeps its topology in
+  `merge-policy.md` — the check scans every area doc, because a second copy in `version-control.md`
+  would be the drift the standard forbids.
+
+### Fixed
+
+- `HOOK-02` compares resolved paths instead of strings, so `.githooks`, `.githooks/` and the
+  absolute form all count as wired. Stripping `./` had eaten the leading dot of the directory name,
+  which pinned the check at `manual` for every correctly wired clone.
+- `HOOK-02` accepts Husky's shim layout. Husky sets `core.hooksPath=.husky/_`, where `_/pre-commit`
+  sources `../pre-commit`; a shim directory directly inside the hooks directory is now `ok`, not
+  `manual`. Found by auditing a real Husky repo with the check.
+
 ## [0.2.0] - 2026-10-31
 
 ### Added
