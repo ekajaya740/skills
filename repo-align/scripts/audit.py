@@ -313,7 +313,9 @@ def check_shim_claude(ctx: Context) -> Finding:
         return Finding("SHIM-01", "rules", "ok", "CLAUDE.md points at AGENTS.md", strict=True)
     return Finding(
         "SHIM-01", "rules", "drift", f"CLAUDE.md restates content ({len(text.splitlines())} lines)",
-        f"Replace with the single line `{SHIM_POINTER}`.", strict=True,
+        "Extract its rules into AGENTS.md or docs/agents/ (RULE-SHIM-01), then replace the file "
+        f"with the single line `{SHIM_POINTER}`.",
+        strict=True,
     )
 
 
@@ -329,7 +331,9 @@ def check_shim_cursor(ctx: Context) -> Finding:
     if offenders:
         return Finding(
             "SHIM-02", "rules", "drift", f"restates rules instead of pointing: {', '.join(offenders)}",
-            "Keep `alwaysApply: true` and replace the body with `See AGENTS.md`.", strict=True,
+            "Keep `alwaysApply: true`; extract the rules into AGENTS.md or docs/agents/ "
+            "(RULE-SHIM-01), then replace the body with `See AGENTS.md`.",
+            strict=True,
         )
     return Finding("SHIM-02", "rules", "ok", f"{len(rules)} cursor rule file(s)", strict=True)
 

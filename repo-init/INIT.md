@@ -56,7 +56,7 @@ ls .github/workflows 2>/dev/null
 | How do I know it is green? | CI workflow, `scripts/`, `package.json` `test`/`lint` |
 | What is the primary branch? | `git branch -r --format='%(refname:short)'` |
 | Which files hold secrets? | `.env.example`, `.gitignore`, workflow `secrets.*` |
-| Is there existing agent instruction? | `AGENTS.md`, `CLAUDE.md`, `.cursor/rules`, `.github/copilot-instructions.md` |
+| Is there existing agent instruction? | `AGENTS.md`, `CLAUDE.md`, `.cursor/rules`, `.github/copilot-instructions.md`. List it **and read it**: a hand-written shim holds rules, and § 4 must place them before it becomes a pointer |
 
 **Done when** you can name the build command, the green command, and the primary branch without
 opening a file again.
@@ -114,6 +114,40 @@ Different harnesses read different files. A shim points; it never restates.
 A shim that repeats the rules is the exact drift `agent-rules` § One rule, one home forbids.
 If a harness genuinely cannot read a pointer, it still gets the pointer plus a one-line summary —
 not the file.
+
+### An existing shim is a rule source, not a file to overwrite
+
+A repo can arrive with a hand-written `CLAUDE.md` full of real rules and no `AGENTS.md`. Rewriting it
+as `@AGENTS.md` deletes them, and the result still looks correct: the pointer resolves, the rules are
+gone. Step 1 lists the files; this step drains each one **before** it writes.
+
+For each existing shim, in this order:
+
+1. **Extract every rule it states** — one line per rule, verbatim, with its line number.
+2. **Tier each rule** with `agent-rules` § The tier test. Would an agent that never opened another
+   file break this? Yes → `AGENTS.md` § Hard rules. No → `docs/agents/<area>.md`. The cap still
+   binds: past seven binding rules the excess is detail, not a longer list — a hand-written shim
+   does not earn `AGENTS.md` a bigger budget. A shim with fifteen rules promotes a handful and
+   demotes the rest.
+3. **Drop the no-ops** — "write clean code", "be thorough". `agent-rules` § Adding a rule,
+   question 2. Name what you dropped and why; a silent deletion reads as a mistake.
+4. **Merge, never duplicate** — if `AGENTS.md` already states it, extend that statement. A placed
+   rule and its old copy in a shim is the drift § 4 exists to prevent. When the two **contradict**,
+   neither: show both versions side by side and ask which is true. A stale shim silently
+   overwriting a deliberate decision is the one loss this step cannot undo.
+5. **Only now rewrite the shim** as the pointer in the table above.
+
+Never replace a shim whose rules you have not placed, and never run this over a file you have not
+read end to end. A shim that is already a bare pointer needs no migration — say so rather than
+rewriting it.
+
+If § 0 answered **yes**, the pointer shims may come from the machine layer — the dotfiles supply
+`CLAUDE.md` and friends and this step writes none. The migration still runs on any shim already
+committed to the repo, because a rule about this repo cannot live in a dotfiles repository shared
+by every project. Machine layer and repo-local shim are different scopes, not two copies.
+
+**Migration done when** every rule in the old shim has a named destination, or a stated reason it
+was dropped, and the evidence line lists the extracted rules beside where each one went.
 
 **Done when** a second harness opening the repo lands in `AGENTS.md` in one hop.
 

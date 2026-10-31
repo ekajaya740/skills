@@ -5,6 +5,28 @@ All notable changes to the `repo-init` skill are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 The version in this file matches the `version` field in `SKILL.md`.
 
+## [0.6.0] - 2026-10-31
+
+### Fixed
+
+- `INIT.md` § 4 opened with "a shim points; it never restates" and then wrote the pointer. On a
+  repo that arrives with a hand-written `CLAUDE.md` full of rules and no `AGENTS.md` — the common
+  case, not the edge case — that step deleted the rules and left a shim that resolves, so the
+  result looked correct. The migration was added: extract every rule with its line number, tier it
+  with `agent-rules` § The tier test, drop the no-ops with the reason stated, merge rather than
+  duplicate, and rewrite the shim only after every rule has a destination. Evidence line names
+  each rule and where it went. Step 1's row now says to read the existing instruction files, not
+  just list them.
+- The migration inherits three limits it would otherwise override. The seven-rule cap still binds,
+  so a fifteen-rule shim promotes a handful and demotes the rest rather than growing `AGENTS.md`.
+  A shim rule that *contradicts* `AGENTS.md` is neither merged nor dropped: both versions are shown
+  and the user picks, because a stale shim silently overwriting a deliberate decision is the one
+  loss the step cannot undo. And on a `yes` to § 0, the dotfiles supply the pointer shims while the
+  migration still runs on any repo-local shim — a rule about this repo cannot live in a dotfiles
+  repository shared by every project.
+- `SKILL.md` § The one rule that makes it work gained the mirror-image failure: the same "one rule,
+  one home" rule that forbids a second copy also forbids overwriting the only copy.
+
 ## [0.5.0] - 2026-10-31
 
 ### Added

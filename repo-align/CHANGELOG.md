@@ -5,12 +5,16 @@ All notable changes to the `repo-align` skill are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 The version in this file matches the `version` field in `SKILL.md`.
 
-- `BRANCH-01` in `scripts/audit.py`: a repo with more than one branch must state what each one
-  is for. `missing` when no `| Branch |` table exists anywhere in `AGENTS.md` or
-  `docs/agents/*.md`; `ok` when one does, naming the file that owns it. A single-branch repo is
-  `ok` by definition. Found by auditing PROFILL, which keeps its topology in `merge-policy.md` —
-  the check scans every area doc, because a second copy in `version-control.md` would be the
-  drift the standard forbids.
+## [0.4.0] - 2026-10-31
+
+### Fixed
+
+- `RULE-SHIM-01` told the reader to "replace with `@AGENTS.md` or a one-line pointer" and said
+  nothing about the rules being replaced. `SHIM-01`/`SHIM-02` in `scripts/audit.py` carried the same
+  fix text. On a repo whose `CLAUDE.md` is the only place a rule lives, that instruction deletes the
+  rule and leaves a shim that resolves, so the next audit reports `ok`. The fix now extracts each
+  rule, places it per `RULE-TIER-01`, drops the no-ops per `RULE-NOOP-01`, and replaces the shim only
+  after every rule has a destination.
 
 ## [0.3.0] - 2026-10-31
 

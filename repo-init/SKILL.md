@@ -2,7 +2,7 @@
 name: repo-init
 description: Bootstrap a repo's agent layer from nothing — AGENTS.md, detail tier, harness shims, and the commands table. Covers code repos, non-coding repos (docs vaults, research notes, writing) whose green check is a link or schema lint rather than a build, and empty folders that have no facts to record yet. Use only when a repo has no AGENTS.md at all. For a repo that already has one, use repo-align.
 disable-model-invocation: true
-version: 0.5.0
+version: 0.6.0
 ---
 
 # Repo Init
@@ -198,7 +198,7 @@ conventions that nothing else enforces are written down as hard rules.
 | --- | --- | --- |
 | `AGENTS.md` | Binding | What this repo is, hard rules, the commands table, out-of-bounds. Under ~150 lines. |
 | `docs/agents/` | Detail | One file per area. Created on the first detail rule that earns a file — not before. |
-| `CLAUDE.md`, `.cursor/rules/*.mdc`, … | Shim | A pointer to `AGENTS.md`. Never a second copy. |
+| `CLAUDE.md`, `.cursor/rules/*.mdc`, … | Shim | A pointer to `AGENTS.md`. Never a second copy. An existing hand-written shim is a rule source first: its rules are extracted and placed before the pointer replaces it. |
 | `.agents/skills/` + `skills-lock.json` | Store | The pinned skills the repo's procedures live in. Lock committed, directory ignored. |
 
 Template: [`TEMPLATE-AGENTS.md`](TEMPLATE-AGENTS.md). Copy it, fill it from the repo, delete every
@@ -209,6 +209,11 @@ row with no true answer.
 **Never write a second copy of a rule for a second harness.** A harness that cannot follow a
 pointer gets the pointer plus a one-line summary, not the file. Two copies drift, and a drifted
 rule is violated — see skill `agent-rules` § One rule, one home.
+
+The same rule forbids the opposite mistake at bootstrap: a repo that already has a hand-written
+`CLAUDE.md` and no `AGENTS.md` is the common case, and replacing that file with a pointer deletes
+its rules while leaving a shim that looks correct. [`INIT.md`](INIT.md) § 4 drains each existing
+shim into `AGENTS.md` or `docs/agents/` before rewriting it, and reports where every rule went.
 
 ## Done when
 

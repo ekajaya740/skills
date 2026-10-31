@@ -2,7 +2,7 @@
 name: repo-align
 description: Audit an existing repo against this standard and fix the drift — missing or duplicated rules, wrong tier, broken harness shims, undocumented green command, missing design docs. Use when a repo predates the standard, a rule has drifted, or an agent keeps making the same mistake in a repo that has an AGENTS.md.
 disable-model-invocation: true
-version: 0.3.0
+version: 0.4.0
 ---
 
 # Repo Align
@@ -72,7 +72,7 @@ One table. Highest-consequence first, not file order.
 | - | ----- | ------- | --- |
 | 1 | RULE-DUP-01 | "apps run on host" stated in AGENTS.md:41 and docs/environment.md:12, differently | Keep AGENTS.md as owner, make the other a pointer |
 | 2 | VERIFY-01 | No green-command table in AGENTS.md | Add it; 4 commands detected from package.json |
-| 3 | SHIM-01 | CLAUDE.md restates all 7 hard rules | Replace with `@AGENTS.md` |
+| 3 | SHIM-01 | CLAUDE.md restates all 7 hard rules | Extract the 7 into AGENTS.md § Hard rules, then replace the file with `@AGENTS.md` |
 ```
 
 Then: **which of these should I apply?** Apply the ones the user names; leave the rest in the
@@ -98,7 +98,7 @@ The full checklist is long; these five catch most drift in most repos.
 | --- | --- | --- |
 | **RULE-DUP** | The same rule, in two files, worded differently | A drifted rule is violated via the weaker copy |
 | **RULE-TIER** | "How to work" rules sitting in a detail file or a skill | An agent that never opens that file breaks it |
-| **SHIM** | `CLAUDE.md` restating `AGENTS.md` | Two sources of truth for the same rule |
+| **SHIM** | `CLAUDE.md` restating `AGENTS.md` | Two sources of truth for the same rule — and replacing it before its unique rules are placed deletes them |
 | **VERIFY** | No command that proves the repo is green | "It works" becomes unfalsifiable |
 | **STRUCT** | Folders nobody can justify, or a `utils/` | An unjustified folder collects orphans |
 
