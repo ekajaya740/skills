@@ -40,6 +40,12 @@ jobs:
       - name: File-size budget
         run: python3 repo-audit/scripts/check_file_size.py --all
 
+      # The alignment audit, at the strictness this repo's AGENTS.md documents.
+      # It is a documented green command, so CI has to run it - the check that
+      # compares the table against this file is what caught it missing.
+      - name: Repo aligns with the standard
+        run: python3 repo-audit/scripts/audit.py . --strict
+
       - name: skills.json is valid JSON
         run: python3 -m json.tool skills.json > /dev/null
 

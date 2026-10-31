@@ -8,6 +8,7 @@ than inventing a command.
 
 from __future__ import annotations
 
+import re
 import subprocess
 
 from audit_model import DANGEROUS, GREEN_WHEN, NO_CHECK_ROW, TABLE_COMMAND, Context, Finding
@@ -106,6 +107,19 @@ def check_verify_runs(ctx: Context, run: bool) -> Finding:
     return Finding("VERIFY-02", "verify", "ok", f"{len(cmds)} command(s) exit 0", strict=True)
 
 
+def _runs(cmd: str, body: str) -> bool:
+    """Is `cmd` actually invoked in the workflow bodies?
+
+    Plain substring is not enough in either direction. `bun run build` must not
+    be satisfied by `bun run build:ci`, a different script, and must be by
+    `bun run build --filter=portfolio`, the same script with a flag. So the
+    match has to end where the command ends: a space, a quote, or the end of
+    the file — never a character that continues the word.
+    """
+    pattern = re.escape(" ".join(cmd.split())) + r"(?![\w:=\-./])"
+    return re.search(pattern, body) is not None
+
+
 def check_verify_ci(ctx: Context) -> Finding:
     wf = sorted(ctx.path(".github/workflows").glob("*.y*ml")) if ctx.path(".github/workflows").is_dir() else []
     if not wf:
@@ -134,8 +148,17 @@ def check_verify_ci(ctx: Context) -> Finding:
             "VERIFY-03", "verify", "missing", "no .github/workflows/*.yml",
             "Add one job that runs the same commands as local.", strict=True,
         )
-    body = "\n".join(p.read_text(errors="replace") for p in wf)
-    missing = [c for _, c in documented_commands(ctx) if c.split()[0] not in body]
+    body = " ".join(
+        " ".join(p.read_text(errors="replace").split()) for p in wf
+    )
+    # The whole command, not its first word. Matching `c.split()[0]` meant a
+    # workflow that mentions `bun` once satisfied every row whose command
+    # starts with `bun`, so `bun run build` passed on a CI that only ran
+    # `bun install --frozen-lockfile` — a green that proves nothing. Substring
+    # still allows extra arguments (`bun run build --filter=portfolio` covers
+    # `bun run build`), which is the difference between the same script with a
+    # flag and a different script.
+    missing = [c for _, c in documented_commands(ctx) if not _runs(c, body)]
     if missing:
         return Finding(
             "VERIFY-03", "verify", "drift", f"CI never runs: {', '.join(missing[:4])}",

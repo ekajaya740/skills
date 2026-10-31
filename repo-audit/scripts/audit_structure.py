@@ -189,12 +189,26 @@ def check_store_ignored(ctx: Context) -> Finding:
         return Finding("STRUCT-09", "structure", "n/a", "not a git repo", strict=True)
     if not ctx.path(".agents").is_dir():
         return Finding("STRUCT-09", "structure", "n/a", "no .agents/ store", strict=True)
-    tracked = ctx.git("ls-files", ".agents").strip()
+    # `ls-files` alone counts a submodule as a tracked file. A gitlink is a
+    # pin — `.agents/skills` pointing at ekajaya740/skills so a fresh clone
+    # gets the standard — and it was the only entry making this check red on
+    # a repo that does the right thing. Drop mode-160000, keep the rest: a
+    # leaked file inside the store still reports.
+    tracked = [
+        line.split("\t", 1)[1]
+        for line in ctx.git("ls-files", "-s", ".agents").splitlines()
+        if "\t" in line and not line.startswith("160000 ")
+    ]
+    gitlinks = [
+        line.split("\t", 1)[1]
+        for line in ctx.git("ls-files", "-s", ".agents").splitlines()
+        if line.startswith("160000 ")
+    ]
     lock_tracked = ctx.git("ls-files", "skills-lock.json").strip()
     lock_ignored = bool(ctx.git("check-ignore", "skills-lock.json").strip())
     problems = []
     if tracked:
-        problems.append(f"{len(tracked.splitlines())} file(s) under .agents/ are tracked")
+        problems.append(f"{len(tracked)} file(s) under .agents/ are tracked")
     if not lock_tracked and not lock_ignored:
         problems.append("skills-lock.json is neither tracked nor ignored")
     if problems:
@@ -204,6 +218,9 @@ def check_store_ignored(ctx: Context) -> Finding:
             strict=True,
         )
     policy = "lock tracked" if lock_tracked else "store and lock machine-local"
+    if gitlinks:
+        policy += f"; {', '.join(gitlinks)} pinned as a submodule"
+
     return Finding("STRUCT-09", "structure", "ok", f"store ignored, {policy}", strict=True)
 
 

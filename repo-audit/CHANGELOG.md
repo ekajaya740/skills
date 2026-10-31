@@ -5,6 +5,21 @@ All notable changes to the `repo-audit` skill are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 The version in this file matches the `version` field in `SKILL.md`.
 
+## [0.1.1] - 2026-11-01
+
+### Fixed
+
+- `STRUCT-09` reported `drift` on a repo that pins the standard as a submodule. `git ls-files`
+  lists a gitlink, so `.agents/skills -> ekajaya740/skills` counted as "1 file(s) under .agents/ are
+  tracked" — the one correct way to keep the store out of a repo, marked as the failure. Mode
+  `160000` entries are now separated from real files and named in the detail line; a leaked file
+  inside the store still reports.
+- `VERIFY-03` matched only the first word of each documented command, so a workflow containing
+  `bun` anywhere satisfied every `bun …` row. `bun run build` passed on a CI that only ran
+  `bun install --frozen-lockfile`. Now the whole command is matched with a right boundary:
+  `bun run build:ci` and `bun install` do not satisfy it, `bun run build --filter=x` does.
+  Whitespace is normalised, so a wrapped or re-spaced command still matches.
+
 ## [0.1.0] - 2026-11-01
 
 ### Added
