@@ -17,6 +17,7 @@
 !/README.md
 !/skills.json
 !/install-skills.sh
+!/.file-size-ignore
 
 # Release tooling, the commit gate, and CI
 !/scripts/
@@ -29,6 +30,7 @@
 !/design/
 !/project-scaffold/
 !/repo-align/
+!/repo-audit/
 !/repo-init/
 !/skills-install/
 !/standard/

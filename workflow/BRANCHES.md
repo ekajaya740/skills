@@ -144,5 +144,5 @@ are its record, and both are live rather than written down.
 
 - Writing the rule down, and its tier → skill `agent-rules` § The tier test
 - Where the record goes at init → [`repo-init/INIT.md`](../repo-init/INIT.md) § 1b
-- Auditing a repo that has branches but no topology → skill `repo-align`, check `BRANCH-01`
+- Auditing a repo that has branches but no topology → skill `repo-audit`, check `BRANCH-01`
 - Proving a change before it merges → skill `verify-change`

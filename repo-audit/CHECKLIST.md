@@ -1,9 +1,11 @@
-# Align checklist
+# Audit checklist
 
 One row per check. Every check is mechanical: it has a shell command that finds the candidate, a
 test that decides `drift` vs `ok`, and a fix. Run only the enabled sections.
 
-Ids are stable — cite them in the report so the user can say "fix 2 and 5".
+Ids are stable — cite them in the report so the user can say "fix 2 and 5". Applying a named id is
+skill `repo-align`; this file owns the detection and the fix text, so the fixer does not restate
+either.
 
 ## `rules`
 

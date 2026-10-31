@@ -28,6 +28,15 @@
 # would let a commit that adds one file slip a broken sibling through.
 #
 # Bypass for a WIP checkpoint: `git commit --no-verify`. Do not push it.
+#
+# Second check: the file-size gate, on the staged set only. A tree-walking size
+# check scoped to the whole index would fail on a file that is already too big
+# and was not touched, which is exactly how a hook earns `--no-verify`. The
+# budget is 5,000 tokens (bytes / 4); generated files are skipped inside the
+# script, and a genuinely atomic file is exempted by a reviewed line in
+# `.file-size-ignore`, never by raising the number.
+#
+
 
 root=$(git rev-parse --show-toplevel) || exit 1
 cd "$root" || exit 1
@@ -42,6 +51,10 @@ if ! python3 scripts/validate_skills.py; then
   echo ""
   echo "Commit refused: the gate above failed."
   echo "Fix the reported problem(s), or use --no-verify for a WIP checkpoint you will not push."
+  exit 1
+fi
+
+if ! python3 repo-audit/scripts/check_file_size.py; then
   exit 1
 fi
 

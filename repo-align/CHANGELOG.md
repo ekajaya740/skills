@@ -5,6 +5,33 @@ All notable changes to the `repo-align` skill are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 The version in this file matches the `version` field in `SKILL.md`.
 
+## [0.5.0] - 2026-11-01
+
+### Changed
+
+- **The audit moved out.** `scripts/audit.py` and `CHECKLIST.md` now belong to skill `repo-audit`,
+  which writes nothing. Auditing and editing were one permission here: a user asking "how far off
+  is this repo" got a tool allowed to edit it, and the checks could not be run read-only in CI.
+  This skill keeps the editing half — § 1 takes the ids the report produced, § 2 applies them, § 3
+  proves each one.
+- § 2 no longer restates check logic; it points at `repo-audit/CHECKLIST.md` as the owner. Two
+  copies of a fix instruction drift exactly like two copies of a rule.
+- The scope declaration and the repo-kind table (`code` vs `knowledge`) moved to `repo-audit`
+  § 1, because both are about reading the repo, and both were being repeated here.
+
+### Added
+
+- § 0 — refresh the installed skills before aligning a repo. A repo brought in line with an older
+  copy of the standard is aligned to a standard nobody is reading. Covers `--dry-run` before
+  `--update`, consent before `--yes`, no lock means nothing to update, and the relink-plus-restart
+  step that makes a new skill visible to a harness.
+- Two constraints on applying: one id per edit, and move rules before deleting the file that held
+  them. The second is the `RULE-SHIM-01` bug of 0.4.0 stated as a rule instead of a footnote.
+
+### Fixed
+
+- The description named auditing, so the skill fired on inspection requests it must not act on.
+
 ## [0.4.0] - 2026-10-31
 
 ### Fixed

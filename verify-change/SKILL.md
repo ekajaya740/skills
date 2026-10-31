@@ -2,7 +2,7 @@
 name: verify-change
 description: Decide what counts as proof a change works, and say it correctly. Use before claiming done, fixed, or working, when choosing between a test and a manual check, or when a change touches UI, data, or a deploy. Covers code repos and non-coding ones (docs, notes, writing) where the check is a link or schema lint instead of a build.
 disable-model-invocation: true
-version: 0.2.0
+version: 0.3.0
 ---
 
 # Verify Change
@@ -173,6 +173,51 @@ Commit the hook itself under `.githooks/` (or Husky's `.husky/`), record the ena
 In a deny-by-default `.gitignore`, the hooks directory needs its own `!/.githooks/` allowlist
 entry. Without it the hook is silently never committed, which is the same failure with extra
 steps.
+
+## The file-size gate
+
+A file past a few thousand tokens is not read in one pass — by an agent or by a reviewer. It costs
+a slice of context on every load, and the part that matters ends up buried. So the cap is a rule
+with teeth: **5,000 tokens per file, estimated as `bytes / 4`.**
+
+| Decision | Value | Why |
+| --- | --- | --- |
+| Budget | 5,000 tokens = 20,000 bytes | Roughly one file a reader finishes. Above it, the file is a set of files that has not been split |
+| Measure | `bytes / 4` | No tokenizer to disagree between machines. The claim is coarse on purpose — "too big to read in one pass" survives an estimate error of 30% |
+| Scope | Staged files in the hook; `--all` in CI | A tree-wide check in a commit hook fails on pre-existing drift, and that is how `--no-verify` becomes a habit |
+| Source | The **index** blob | `git cat-file -s :path`, so a file staged at one size and edited after another is judged as committed |
+| Exemption | A line in `.file-size-ignore` with a reason | An exemption is a reviewed line in the repo. Raising the number is the silencer |
+
+Skipped without asking: lockfiles, minified bundles, sourcemaps, generated protobuf/Dart, vendored
+trees, build output, binaries. Everything else is the author's. If a file is genuinely atomic —
+a generated client, a data fixture — exempt that path by name, not the category.
+
+**The error message is the instruction.** A gate that says "file too large" teaches the reader to
+raise the budget. This one names the seam-finding command, the split, the pointer to leave behind,
+and the exemption path, in that order:
+
+```
+repo-audit/scripts/audit_model.py 26,000 B ≈6,500 tokens (1,500 over)
+Commit refused. Split the file; do not raise the budget.
+  1. Find the seams, don't guess them:  grep -nE '^(def|class|# ──)' FILE
+  ...
+  5. Only if the file is generated or genuinely atomic, exempt it:
+       echo 'PATH_OR_GLOB  # why this cannot be split' >> .file-size-ignore
+```
+
+Wiring it into the repo's hook is one line after the existing gate —
+`python3 repo-audit/scripts/check_file_size.py` — and the script itself ships with skill
+`repo-audit` at `scripts/check_file_size.py`. Two things to get right, both learned the hard way:
+
+1. **Stage, then test.** A hook verified with `git commit` on a clean tree proves only that the
+   guard had no input. Stage a file you know is oversized, watch it refuse, unstage it.
+2. **A split file must leave a pointer.** Moving half a module out and forgetting the import is a
+   green size check over a broken repo; the green command in § The commit hook has to run after.
+
+This repo's own `repo-audit/scripts/audit.py` is the worked example: 49 KB, 12,261 tokens, split
+into `audit_model.py`, `audit_rules.py`, `audit_verify.py`, `audit_hooks.py`, `audit_structure.py`
+behind a CLI. Output was byte-identical before and after, which is the only acceptable way to
+prove a split changed nothing but the file count.
 
 ## The trap log
 

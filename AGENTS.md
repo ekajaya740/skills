@@ -2,7 +2,7 @@
 
 Instructions for agents working in this repository.
 
-This repository publishes the ten skills of the engineering standard. The
+This repository publishes the eleven skills of the engineering standard. The
 live skill store on this machine is `~/skills`, which `~/.agents/skills` points
 at; `~/.claude/skills` and `~/.codex/skills` hold one symlink per skill into it.
 The skills here are linked into that store, so editing one changes what every
@@ -114,9 +114,10 @@ Releasing is automatic: bump the version and push. See the README.
 | Check | Command | Green when |
 | ----- | ------- | ---------- |
 | Everything (the gate) | `python3 scripts/validate_skills.py` | exit 0; every published skill printed `ok` |
+| File size | `python3 repo-audit/scripts/check_file_size.py --all` | exit 0; no file over 5,000 tokens (bytes / 4) |
 | Release pending | `python3 scripts/release_skills.py --check` | reports nothing `DUE` |
 | Installer | `./install-skills.sh --dry-run` | exit 0; no malformed command |
-| Alignment | `python3 repo-align/scripts/audit.py . --strict` | exit 0, no `blocking (strict)` line |
+| Alignment | `python3 repo-audit/scripts/audit.py . --strict` | exit 0, no `blocking (strict)` line |
 
 The first row is the gate: a version bump that fails it is never tagged, because the release
 workflow runs it before it cuts a tag. It also runs in `.githooks/pre-commit`, on every commit —
@@ -127,11 +128,13 @@ per clone:
 git config core.hooksPath .githooks
 ```
 
-The hook runs the gate only, not the alignment audit: at ~0.2s it is invisible,
-where a slow hook trains everyone to use `--no-verify`. It reads the working
-tree, so a partially staged file is checked as it sits on disk. The rule behind
-this setup, including how to prove the hook still fires, is skill
-`verify-change` § The commit hook.
+The hook runs the gate and the file-size check, and not the alignment audit: at ~0.2s the pair is
+invisible, where a slow hook trains everyone to use `--no-verify`. The size check reads the
+**staged** blobs (`git cat-file -s :path`), not the tree, so a file is judged as it will be
+committed and a pre-existing oversized file nobody touched cannot block a commit. The gate reads
+the working tree, so a partially staged file is checked as it sits on disk. The rules behind this
+setup, including how to prove the hook still fires, are skill `verify-change` § The commit hook
+and § The file-size gate.
 
 ## Known issues
 

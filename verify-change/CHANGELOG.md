@@ -5,6 +5,22 @@ All notable changes to the `verify-change` skill are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 The version in this file matches the `version` field in `SKILL.md`.
 
+## [0.3.0] - 2026-11-01
+
+### Added
+
+- `## The file-size gate`: a stated budget of 5,000 tokens per file, measured as `bytes / 4`, with
+  the decisions written down — why the estimate is crude, why the hook reads the staged blob rather
+  than the tree, why an exemption is a reviewed line instead of a raised number, and which
+  generated categories are skipped without asking. The error message is treated as part of the
+  rule: it names the seam-finding command and the split, because a gate that only says "too large"
+  teaches the reader to raise the budget.
+- The worked example: this repo's `repo-align/scripts/audit.py`, 12,261 tokens, split into five
+  section modules behind a CLI with byte-identical output — the only proof that a split changed the
+  file count and nothing else.
+- Two failure modes from doing it: testing the hook on a clean tree proves nothing, and a split
+  that drops an import is a green size check over a broken repo.
+
 ## [0.2.0] - 2026-10-31
 
 ### Added

@@ -7,7 +7,7 @@ version: 0.1.0
 
 # The Standard
 
-One entry point over ten skills. You do not remember which one applies, so ask here.
+One entry point over eleven skills. You do not remember which one applies, so ask here.
 
 A **profile** is a named bundle of sections. A **section** is one area of the standard
 (`rules`, `discovery`, `structure`, `workflow`, `skills`, `verify`, `design`, `tests`, `tracker`, `style`) and the
@@ -72,16 +72,19 @@ these summaries are orientation only.
 | `tests`     | `verify-change`      | What gets a test, what gets a manual check, what gets nothing          | Deciding how to pin a behaviour                          |
 | `tracker`   | `agent-rules`        | Issue-first, plan-first, which mutations need the user's go-ahead      | Work that outlives the session                           |
 
-## The two repo commands
+## The repo commands
 
 | Command | Skill | Use when |
 | --- | --- | --- |
 | **`repo-init`** | `repo-init` | The repo has no `AGENTS.md`, or has one that is stale or copied from a template |
-| **`repo-align`** | `repo-align` | The repo has an `AGENTS.md` and has drifted; audit against the standard, then fix what you approve |
+| **`repo-audit`** | `repo-audit` | Anyone asks how far the repo is from the standard. Read-only, so it is safe before consent, in CI, or on a repo you do not own |
+| **`repo-align`** | `repo-align` | An audit report exists and the user has named which findings to fix. Edits only those, then proves each one |
 
-`repo-init` writes the layer from nothing. `repo-align` audits an existing one and reports before
-it edits. Neither writes a second copy of a rule for a second harness — the shim points at
-`AGENTS.md`; see skill `agent-rules` § One rule, one home.
+`repo-init` writes the layer from nothing. `repo-audit` inspects an existing one and writes
+nothing — that is the whole reason it is separate: a report nobody has agreed to act on must not
+be produced by something allowed to act. `repo-align` is the only one of the three that edits, and
+it edits only named ids. None of them writes a second copy of a rule for a second harness — the
+shim points at `AGENTS.md`; see skill `agent-rules` § One rule, one home.
 
 ## The reply skeleton
 
@@ -141,7 +144,8 @@ two rules collide.
 ## Related
 
 - Bootstrapping a repo → skill `repo-init`
-- Auditing a repo that already has `AGENTS.md` → skill `repo-align`
+- Auditing a repo that already has `AGENTS.md` → skill `repo-audit` (read-only)
+- Applying an audit finding → skill `repo-align`
 - The phase route → skill `workflow`
 - Rule ownership and tiers → skill `agent-rules`
 - New project, any stack → skill `project-scaffold`

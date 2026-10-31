@@ -1,6 +1,6 @@
 ---
 name: repo-init
-description: Bootstrap a repo's agent layer from nothing — AGENTS.md, detail tier, harness shims, and the commands table. Covers code repos, non-coding repos (docs vaults, research notes, writing) whose green check is a link or schema lint rather than a build, and empty folders that have no facts to record yet. Use only when a repo has no AGENTS.md at all. For a repo that already has one, use repo-align.
+description: Bootstrap a repo's agent layer from nothing — AGENTS.md, detail tier, harness shims, and the commands table. Covers code repos, non-coding repos (docs vaults, research notes, writing) whose green check is a link or schema lint rather than a build, and empty folders that have no facts to record yet. Use only when a repo has no AGENTS.md at all. For a repo that already has one, use repo-audit to see what is wrong, then repo-align to fix what you approve.
 disable-model-invocation: true
 version: 0.6.0
 ---
@@ -233,8 +233,9 @@ that would never be broken is noise.
 
 ## Repo already has `AGENTS.md`
 
-Do not rewrite it. Run the audit instead: skill `repo-align`. It reports wrong, duplicated, and
-missing rules against the same template, and changes nothing until you approve.
+Do not rewrite it. Run the audit instead: skill `repo-audit`. It reports wrong, duplicated, and
+missing rules against the same template, and writes nothing. Then skill `repo-align` applies only
+the ids you name.
 
 ## Related
 
@@ -242,5 +243,6 @@ missing rules against the same template, and changes nothing until you approve.
 - What to pin and how → [`SKILLS.md`](SKILLS.md)
 - The file to copy → [`TEMPLATE-AGENTS.md`](TEMPLATE-AGENTS.md)
 - Tiers and ownership → skill `agent-rules`
-- Audit an existing repo → skill `repo-align`
+- Audit an existing repo, read-only → skill `repo-audit`
+- Apply the findings you approve → skill `repo-align`
 - The whole routing table → skill `standard`

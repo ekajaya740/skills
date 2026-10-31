@@ -1,120 +1,115 @@
 ---
 name: repo-align
-description: Audit an existing repo against this standard and fix the drift — missing or duplicated rules, wrong tier, broken harness shims, undocumented green command, missing design docs. Use when a repo predates the standard, a rule has drifted, or an agent keeps making the same mistake in a repo that has an AGENTS.md.
+description: Apply the fixes an audit named — bring an existing repo in line with this standard by editing only what the user approved, then prove each fix with the repo's own command. Also refreshes the machine's installed skills, because a stale skill is the standard being violated by the tool that enforces it. Use when an audit report exists and the user has named which findings to fix, or when they say "align this repo". Use repo-audit to get the report; use this only once someone has agreed to a change.
 disable-model-invocation: true
-version: 0.4.0
+version: 0.5.0
 ---
 
 # Repo Align
 
-Bring an existing repo in line with the standard. **Reports first, edits only what you approve.**
+Change the repo. **Only what the user named, one finding at a time, each with a command that shows
+it worked.**
 
-Use `repo-init` when there is no `AGENTS.md`. Use this when there is one, and it has drifted —
-or when the repo predates the standard and you want to know how far off it is.
+This skill is the editing half of the standard's alignment. The reading half is `repo-audit`, which
+writes nothing; it owns every check id and the report. Keeping them in one skill meant the only way
+to learn how far off a repo was, was to run something allowed to edit it.
 
-## What kind of repo it thinks this is
-
-The audit reads `Kind: code` or `Kind: knowledge` from `AGENTS.md` and prints the answer in the
-first line, because two checks mean different things by repo kind:
-
-| Kind | `VERIFY-01` | `VERIFY-03` |
+| | `repo-audit` | `repo-align` (this) |
 | --- | --- | --- |
-| `code` | A commands table with a build or test | A repo with commands but no CI is `missing` |
-| `knowledge` | A link check or schema lint; a `None yet` row is `manual`, not a failure | Optional — a badge that runs nothing reads as proof |
+| Writes | Nothing | Only the named findings |
+| Needs consent | No | Yes, before the first edit |
+| Output | Ranked findings | `<id> fixed — <command> → <line>` |
 
-With no declared kind it guesses from the file list (a manifest or CI means `code`), which
-misreads a docs-heavy code repo and a code repo before its first manifest. Declare it.
+## 0. Refresh the installed skills
 
-## 1. Declare the scope
-
-Print one line, then run only those checks:
-
-```
-Aligning: rules, structure, verify. Off: design, skills, tracker. Change: `+ design`, `no structure`.
-```
-
-Sections match skill `standard`: `rules`, `structure`, `verify`, `design`, `skills`. A section
-that is off is not checked, not reported, and not mentioned again.
-
-The script accepts `rules`, `structure`, `verify`, and `design`. `skills` has no mechanical
-checks — it audits this repository's own publishing rules and stays agent-run. The commit-hook
-checks (`HOOK-01`, `HOOK-02`) report under `verify` because that is the section whose question
-they answer — "prove the repo is green" — and they carry a trap worth knowing: a hook that is
-committed but not enabled in this clone is `manual`, not `drift`, because `core.hooksPath` is
-per-clone config and a fresh CI checkout never has it.
-
-## 2. Audit
-
-Run the script first. It decides every mechanical check the same way twice:
+Aligning a repo against an older copy of the standard produces a repo aligned to a standard nobody
+is reading. So the installed store gets refreshed first — but **in the store, not in the repo being
+aligned**: the scripts live with the skills, and a repo that merely adopts the standard has neither
+`install-skills.sh` nor `scripts/link_harnesses.py`.
 
 ```bash
-python3 scripts/audit.py .              # report only, always exits 0
-python3 scripts/audit.py . --strict     # exit 1 on a strict finding — use in CI
-python3 scripts/audit.py . --json       # machine-readable
-python3 scripts/audit.py . --run        # also execute the green-command table
-python3 scripts/audit.py . --section rules,verify
+cd ~/skills                        # the store; `.agents/skills` where the repo pins its own set
+./install-skills.sh --dry-run      # every source it would touch; runs nothing
+./install-skills.sh --update       # shows each source, asks once, then updates
+python3 scripts/link_harnesses.py --apply
 ```
 
-It prints `ok`, `drift`, `missing`, `n/a`, and `manual`. **`manual` is not `ok`** — those checks
-need judgement and the script cannot give it. Finish them by hand from
-[`CHECKLIST.md`](CHECKLIST.md), which is the source of truth for every id and fix. The script
-covers the mechanical third; the rest is still yours.
+**Stop when there is nothing to update.** No `~/.agents/.skill-lock.json` means no recorded
+sources, so `--update` would be an install from scratch — say that and move on to § 1. A repo that
+pins its own set (`skills-lock.json` committed, `.agents/` ignored) was aligned against that pin;
+refreshing the store does not move it, and the pin stays unless the user asks to bump it.
 
-**Done when** every check in every enabled section has a verdict: `ok`, `drift`, `missing`, or
-`n/a` — and no `manual` is left unread.
+Three rules, and the third is the one that gets skipped:
 
-## 3. Report, ranked by blast radius
+1. **Consent before the fetch.** Show the source, author, licence, and what changed. `--yes` answers
+   "install this" on the user's behalf; pass it only after they have said yes to these exact
+   sources in this conversation. Refreshing the store is not a licence to fetch anything new.
+2. **A failed refresh does not block the alignment.** A network error, a missing CLI, or a source
+   the user declined is reported once and then ignored — the repo edit proceeds against the skills
+   as installed, and the report says which version that was.
+3. **Relink and restart.** A skill on disk with no harness symlink is invisible, and neither Claude
+   Code nor Codex discovers a new one until it restarts. `link_harnesses.py --apply`, then tell the
+   user a restart is pending — before the next session, not before this edit.
 
-One table. Highest-consequence first, not file order.
+**Done when** the refresh either ran or was reported as unnecessary, and the user knows which
+installed version the alignment used.
+
+## 1. Take the findings, not the repo
+
+The input is a report with ids. If there is none, run `repo-audit` first — do not let a fixer
+choose its own scope, because that is how an "align this repo" request turns into an unrequested
+rewrite.
+
+Confirm the set back in one line, then stop:
 
 ```
-| # | Check | Finding | Fix |
-| - | ----- | ------- | --- |
-| 1 | RULE-DUP-01 | "apps run on host" stated in AGENTS.md:41 and docs/environment.md:12, differently | Keep AGENTS.md as owner, make the other a pointer |
-| 2 | VERIFY-01 | No green-command table in AGENTS.md | Add it; 4 commands detected from package.json |
-| 3 | SHIM-01 | CLAUDE.md restates all 7 hard rules | Extract the 7 into AGENTS.md § Hard rules, then replace the file with `@AGENTS.md` |
+Fixing: RULE-DUP-01, VERIFY-01, SHIM-01. Leaving: STRUCT-03, BRANCH-01. Say the word to change the list.
 ```
 
-Then: **which of these should I apply?** Apply the ones the user names; leave the rest in the
-report. Do not batch-apply an audit.
+**Done when** the user has named the findings, or said none. Silence is not approval.
 
-**Done when** the user has picked, or said none.
+## 2. Apply
 
-## 4. Apply
+For each approved id, the fix is the one in
+[`repo-audit/CHECKLIST.md`](../repo-audit/CHECKLIST.md) — that file is the source of truth, and this
+skill does not restate it. Two constraints on top:
 
-For each approved finding, apply the fix from the checklist exactly. After the batch:
+- **One id, one edit.** Two findings touching the same file land as two steps, so a failure is
+  attributable.
+- **Move rules, never delete them.** Replacing a shim or demoting a rule means placing what it
+  said first. A shim's unique rules have to land in `AGENTS.md` or `docs/agents/` before the shim
+  becomes `@AGENTS.md`; otherwise the fix is a deletion wearing a tidy name.
 
-1. Run the repo's green command.
-2. Re-run the checks you just fixed.
+## 3. Prove each one
+
+After the batch, in this order:
+
+1. Run the repo's green command from `AGENTS.md`.
+2. Re-run each fixed check, from the audited repo:
+   `python3 <skill-store>/repo-audit/scripts/audit.py . --section <section>`
+   (`<skill-store>` is `~/skills` on a normal install; `.agents/skills` in a repo that pins the set).
 3. Report one line per fix: `<check-id> fixed — <command> → <first meaningful line>`.
 
-**Done when** the re-run reports `ok` for every applied check.
+A fix whose check still reports `drift` is not a fix; say so instead of summarising it as done.
+The ladder is skill `verify-change`: a re-run is rung 2, and "the file looks right" is not a rung.
 
-## The five things worth checking
-
-The full checklist is long; these five catch most drift in most repos.
-
-| Check | Drift looks like | Why it matters |
-| --- | --- | --- |
-| **RULE-DUP** | The same rule, in two files, worded differently | A drifted rule is violated via the weaker copy |
-| **RULE-TIER** | "How to work" rules sitting in a detail file or a skill | An agent that never opens that file breaks it |
-| **SHIM** | `CLAUDE.md` restating `AGENTS.md` | Two sources of truth for the same rule — and replacing it before its unique rules are placed deletes them |
-| **VERIFY** | No command that proves the repo is green | "It works" becomes unfalsifiable |
-| **STRUCT** | Folders nobody can justify, or a `utils/` | An unjustified folder collects orphans |
+**Done when** every applied id reports `ok`, and the green command still exits 0.
 
 ## What this skill never does
 
-- **Never rewrites `AGENTS.md` wholesale.** An audit is a list of edits, not a replacement. A user
-  who wrote that file wants to argue about each line.
+- **Never rewrites `AGENTS.md` wholesale.** Alignment is a list of edits. A user who wrote that
+  file wants to argue about each line.
+- **Never edits a finding the user did not name.** A report is a menu, not a queue.
 - **Never deletes a rule because it looks redundant** without showing both copies first.
-- **Never applies a finding the user did not name.** Silence is not approval.
 - **Never introduces a rule the repo does not need.** A repo with three hard rules and a green
   command is aligned. Alignment is not the template's full length.
+- **Never updates the machine's skills without showing the sources first.** `--yes` before consent
+  breaks the one rule that keeps third-party instructions trustworthy.
 
 ## Related
 
-- Every check, with detection and fix → [`CHECKLIST.md`](CHECKLIST.md)
-- The mechanical checks as code → [`scripts/audit.py`](scripts/audit.py)
+- The report this skill consumes, and every check id → skill `repo-audit`
+- Installing, vetting, or relinking skills → skill `skills-install`
 - No `AGENTS.md` at all → skill `repo-init`
 - Tiers and rule ownership → skill `agent-rules`
 - Proof a fix worked → skill `verify-change`

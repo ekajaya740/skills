@@ -3,8 +3,9 @@
 Run when a repo has **no** `AGENTS.md`. Takes 10–15 minutes for a repo you know; an hour for one
 you don't.
 
-If the repo already has an `AGENTS.md`, this is the wrong skill: run `repo-align`, which audits
-the existing layer instead of replacing it.
+If the repo already has an `AGENTS.md`, this is the wrong skill: run `repo-audit`, which reports
+what is wrong with the existing layer instead of replacing it, then `repo-align` to fix only what
+you approve.
 
 The failure this prevents: a repo where every session re-derives the same facts, and the rules
 that matter live in a skill the agent never opens. See skill `agent-rules` § The tier test.

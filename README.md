@@ -2,7 +2,7 @@
 
 My own agent skills, published for use across machines and agents.
 
-This repo holds the ten skills of the engineering standard — the profile,
+This repo holds the eleven skills of the engineering standard — the profile,
 voice, workflow, and repo skills I wrote myself. Third-party skills live in
 `~/skills`, the live skill store, and are not vendored here. The `.gitignore`
 is an allowlist, so a downloaded skill can never be committed by accident.
@@ -15,11 +15,12 @@ is an allowlist, so a downloaded skill can never be committed by accident.
 | [code-discovery](./code-discovery) | 0.1.0 | Answer structural code questions from a persistent code graph instead of reading files — who calls this, what does it call, the shape of a module — and prove the index is current before trusting it. Covers index freshness, the grep-vs-graph cost order, per-directory project resolution, and reclaiming disk. |
 | [design](./design) | 0.0.1 | The craft bar for UI work — tokens, layout, motion, states, and the design doc that must match the code. Use when building, editing, or reviewing any interface, or when deciding whether a UI change is finished. |
 | [project-scaffold](./project-scaffold) | 0.2.1 | Scaffold a new project of any kind — pick the layout, stack defaults, and agent layer, and get to the first green run. Covers TypeScript/Node, Astro/Cloudflare, Python, monorepo, and agent-only/skill repos. |
-| [repo-align](./repo-align) | 0.4.0 | Audit an existing repo against this standard and fix the drift — missing or duplicated rules, wrong tier, broken harness shims, undocumented green command, missing design docs, branches with no stated topology. Ships `scripts/audit.py`, which decides the mechanical checks deterministically and prints the judgement ones as `manual`. Use when a repo predates the standard, a rule has drifted, or an agent keeps making the same mistake in a repo that has an AGENTS.md. |
+| [repo-align](./repo-align) | 0.5.0 | Apply the fixes an audit named — edit only what the user approved, then prove each one with the repo's own command. Also refreshes the machine's installed skills first, because a repo aligned to a stale copy of the standard is aligned to a standard nobody is reading. Use once a report exists and someone has agreed to a change; use `repo-audit` to get the report. |
+| [repo-audit](./repo-audit) | 0.1.0 | Report where an existing repo has drifted from this standard — duplicated or wrongly-tiered rules, shims that copy AGENTS.md instead of pointing at it, no command that proves the repo green, commit hooks that would be bypassed, unjustified folders, an undocumented environment, an unstated branch topology. Read-only, so it runs before anyone agreed to a fix, in CI with `--strict`, or on a repo you were only asked to inspect. Ships `scripts/audit.py`, which decides the mechanical checks deterministically and prints the judgement ones as `manual`. |
 | [repo-init](./repo-init) | 0.6.0 | Bootstrap a repo's agent layer from nothing — AGENTS.md, detail tier, harness shims, the green-command table, and the branch topology. An existing hand-written `CLAUDE.md` is drained into AGENTS.md before it becomes a pointer, so a bootstrap does not delete rules. Use only when a repo has no AGENTS.md at all. For a repo that already has one, use repo-align. |
 | [skills-install](./skills-install) | 0.2.1 | Install, update, relink, or vet third-party agent skills from the internet. Use when the user asks to install a skill, a skill is missing or stale, a harness cannot see a skill, or a new source needs recording. |
 | [standard](./standard) | 0.1.0 | Router over the engineering standard — choose the right rule, repo, scaffold, workflow, verify, or design skill, and see which sections are on. Shapes every reply to Answer / Why / Steps / Evidence / Next. |
-| [verify-change](./verify-change) | 0.2.0 | Decide what counts as proof a change works, and say it correctly. Use before claiming done, fixed, or working, when choosing between a test and a manual check, or when a change touches UI, data, or a deploy. |
+| [verify-change](./verify-change) | 0.3.0 | Decide what counts as proof a change works, and say it correctly. Use before claiming done, fixed, or working, when choosing between a test and a manual check, or when a change touches UI, data, or a deploy. |
 | [workflow](./workflow) | 0.2.0 | The route work takes, idea to shipped — sharpen, prototype, split, plan, build, review, ship, retro — with the done-criterion for each phase and which skill to run at each; `BRANCHES.md` states which branches are permanent and where work may edit. Use when deciding what to do next, when a request is underspecified, when a task has grown past one session, or when work was finished but not proven. |
 
 
@@ -35,7 +36,7 @@ ln -sfn ~/skills ~/.agents/skills        # the store every harness reads
 python3 ~/skills/scripts/link_harnesses.py --apply
 ```
 
-That links the ten skills into `~/.claude/skills`, `~/.codex/skills`, and any
+That links the eleven skills into `~/.claude/skills`, `~/.codex/skills`, and any
 other harness the script knows. A harness that is installed but has no `skills/`
 directory gets one created; a harness whose whole directory is absent is skipped,
 because that harness is not installed. Restart afterwards — skills are discovered
@@ -58,7 +59,7 @@ cd ~/skills
 ### As an agent
 
 **Route 1 — the published skills.** Paste this one command. It clones, points
-the store all harnesses read, links the ten skills, and stops. Nothing
+the store all harnesses read, links the eleven skills, and stops. Nothing
 third-party is installed by it:
 
 ```sh
@@ -218,7 +219,7 @@ release by hand.
   third-party skills, and what agents working in this repository must not do.
 - The live skill store is `~/skills`. `~/.agents/skills` points there, and
   `~/.claude/skills` and `~/.codex/skills` hold one symlink per skill pointing
-  back into it. This repository is separate: the ten skills here are linked
+  back into it. This repository is separate: the eleven skills here are linked
   into that store, so editing one changes what every harness loads.
 - `ekajaya740.github.io` consumes this repository as a git submodule at
   `.agents/skills`. Changes to a skill therefore need a submodule pointer bump

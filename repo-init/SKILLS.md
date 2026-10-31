@@ -50,7 +50,7 @@ it back later re-deriving what the missing skill said.
 | `pbakaus/impeccable` *(UI projects only)* | `impeccable` | Full-interface craft pass |
 | `alejandrobailo/no-use-effect` *(React only)* | `no-use-effect` | The effect-free data flow rule |
 | `ayghri/i-have-adhd` | `i-have-adhd` | Reply voice. `standard` inlines it as a fallback, so this is optional |
-| `ekajaya740/skills` (this standard) | `standard`, `repo-init`, `repo-align`, `agent-rules`, `project-scaffold`, `workflow`, `verify-change`, `design`, `skills-install` | The standard itself, when the machine has no global install. Pinned only in repos that adopt the standard; a project that only uses it does not need a copy |
+| `ekajaya740/skills` (this standard) | `standard`, `repo-init`, `repo-audit`, `repo-align`, `agent-rules`, `project-scaffold`, `workflow`, `verify-change`, `design`, `skills-install` | The standard itself, when the machine has no global install. Pinned only in repos that adopt the standard; a project that only uses it does not need a copy |
 
 Drop a row only when the project genuinely cannot use it — no UI means no `emilkowalski/skills`, no
 React means no `no-use-effect`. "We will not use it much" is not a reason.
@@ -96,7 +96,7 @@ that is a different file with a different job — `skills-install` owns it. The 
 
 - Installing, updating, and vetting a source → skill `skills-install`
 - Where the rule lives in the layer → [`INIT.md`](INIT.md) § 6
-- Auditing an existing repo for a missing or stale store → skill `repo-align`
+- Auditing an existing repo for a missing or stale store → skill `repo-audit`
 
 ## Attribution
 
